@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Platform } from 'react-native';
 import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
 import {
   widthPercentageToDP as wp,
@@ -31,7 +31,7 @@ const Custominput = ({
         }) => (
           <>
             <View style={styles.inputContainer}>
-              <Ionicons
+              <Entypo
                 name={iconName}
                 size={24}
                 color={Colors.text}
@@ -61,14 +61,12 @@ const Custominput = ({
 
 export default Custominput;
 const styles = StyleSheet.create({
-  inputWrapper: {
-    marginVertical: 2,
-  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: wp('80%'),
-
+    height: wp('10%'),
+    marginVertical: '5%',
     borderWidth: 2,
     borderColor: Colors.text,
     borderRadius: 8,

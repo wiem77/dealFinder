@@ -24,15 +24,13 @@ export default CustomBtn;
 
 const styles = StyleSheet.create({
   container: {
-    width: wp('70%'),
+    width: wp('80%'),
     height: wp('12%'),
     padding: 15,
     marginVertical: 6,
 
-    backgroundColor: Colors.black,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.white,
+    
+    
     alignItems: 'center',
 
     ...Platform.select({
@@ -52,10 +50,27 @@ const styles = StyleSheet.create({
       },
     }),
   },
-
+  container_TERTIARY: {},
   container_SECONDARY: {
     backgroundColor: Colors.white,
     borderColor: Colors.black,
+    borderRadius: 8,
+    borderWidth: 1,
+    overflow: 'hidden',
+    shadowOffset: {
+      width: 1,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 9,
+  },
+  container_PRIMARY: {
+    backgroundColor: Colors.black,borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.white,
+  },
+ 
+  container_TEXT: {
     overflow: 'hidden',
     shadowOffset: {
       width: 1,
@@ -75,4 +90,10 @@ const styles = StyleSheet.create({
     color: Colors.black,
     lineHeight: 19,
   },
+  text_TERTIARY: {
+    color: Colors.red,
+  
+    fontSize: FontSize.medium,
+  },
+ 
 });

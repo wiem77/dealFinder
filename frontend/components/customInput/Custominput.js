@@ -1,27 +1,26 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
-import { customFonts } from '../../config/config';
+import { TextInput } from 'react-native-gesture-handler';
+
 const Custominput = ({
   control,
   name,
   rules,
-  placeHolder,
   secureTextEntry,
-  inputSize,
-  containerStyle,
   iconName,
-  stylee,
   defaultValue,
+  placeHolder,
 }) => {
-  const isUserStyle = stylee !== 'admin';
-
   return (
-    <View style={[styles.inputWrapper, containerStyle]}>
+    <View>
       <Controller
         control={control}
         name={name}
@@ -31,31 +30,20 @@ const Custominput = ({
           fieldState: { error },
         }) => (
           <>
-            <View
-              style={[
-                styles.inputContainer,
-                isUserStyle ? styles.userStyle : styles.adminStyle,
-                stylee === 'storeForm' ? styles.storeForm : {},
-                { borderColor: error ? 'red' : '#e8e8e8' },
-              ]}
-            >
-              <View style={{ marginRight: 3 }}>
-                <MaterialCommunityIcons
-                  name={iconName}
-                  size={24}
-                  color="black"
-                  style={styles.icon}
-                />
-              </View>
+            <View style={styles.inputContainer}>
+              <Ionicons
+                name={iconName}
+                size={24}
+                color={Colors.text}
+                style={styles.icon}
+              />
 
               <TextInput
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={placeHolder}
-                style={[styles.input, { fontSize: inputSize }]}
                 secureTextEntry={secureTextEntry}
-                placeholderTextColor={Colors.darkText}
                 defaultValue={defaultValue}
               />
             </View>
@@ -72,5 +60,50 @@ const Custominput = ({
 };
 
 export default Custominput;
+const styles = StyleSheet.create({
+  inputWrapper: {
+    marginVertical: 2,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: wp('80%'),
 
-const styles = StyleSheet.create({});
+    borderWidth: 2,
+    borderColor: Colors.text,
+    borderRadius: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.black,
+        shadowOffset: {
+          width: 1,
+          height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+      },
+      android: {
+        shadowColor: Colors.black,
+        shadowOffset: {
+          width: 1,
+          height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 0,
+        overflow: 'hidden',
+      },
+    }),
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    lineHeight: 24,
+    color: Colors.text,
+  },
+  icon: {
+    marginLeft: 8,
+  },
+});

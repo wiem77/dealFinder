@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, Platform, TouchableHighlight } from 'react-native';
 import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -16,7 +15,7 @@ const CustomBtn = ({ onPress, text, type = 'PRIMARY' }) => {
       style={[styles.container, styles[`container_${type}`]]}
       underlayColor="None"
     >
-      <Text style={[styles.text, styles[`text_${type}`]]}>SignIN</Text>
+      <Text style={[styles.text, styles[`text_${type}`]]}>{text}</Text>
     </TouchableHighlight>
   );
 };

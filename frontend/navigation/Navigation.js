@@ -1,0 +1,27 @@
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from '../screens/LoginScreen/LoginScreen';
+import WelcomeScreen from '../screens/WelcomeScreen/WelcomeScreen';
+
+const ConsumerStack = createNativeStackNavigator();
+const ConsumerNavigation = () => {
+  return (
+    <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
+      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />
+    </ConsumerStack.Navigator>
+  );
+};
+const Navigation = () => {
+  return (
+    <NavigationContainer>
+      <ConsumerNavigation />
+    </NavigationContainer>
+  );
+};
+
+export default Navigation;
+
+const styles = StyleSheet.create({});

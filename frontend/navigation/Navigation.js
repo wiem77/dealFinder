@@ -6,14 +6,16 @@ import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import WelcomeScreen from '../screens/WelcomeScreen/WelcomeScreen';
 import SignUpScreen from '../screens/SignUpScreen/SignUpScreen';
 import OtpScreen from '../screens/otpScreen/OtpScreen';
+import SucessScreen from '../screens/UserVerified/SucessScreen';
 
 const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />
+      <ConsumerStack.Screen name="SucessScreen" component={SucessScreen} />
       <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />
+      <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />
       <ConsumerStack.Screen name="SignUp" component={SignUpScreen} />
     </ConsumerStack.Navigator>
   );

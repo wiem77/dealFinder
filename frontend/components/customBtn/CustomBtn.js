@@ -1,4 +1,4 @@
-import { StyleSheet, Text, Platform, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, Platform, TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import {
@@ -7,16 +7,28 @@ import {
 } from 'react-native-responsive-screen';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
+import { Ionicons } from '@expo/vector-icons';
+const CustomBtn = ({
+  onPress,
+  text,
+  type = 'PRIMARY',
+  nameIcon,
+  sizeIcon,
+  colorIcon,
+}) => {
+  const isIconEmpty = !nameIcon || !sizeIcon || !colorIcon;
 
-const CustomBtn = ({ onPress, text, type = 'PRIMARY' }) => {
   return (
-    <TouchableHighlight
+    <TouchableOpacity
       onPress={onPress}
       style={[styles.container, styles[`container_${type}`]]}
       underlayColor="None"
     >
+      {!isIconEmpty && (
+        <Ionicons name={nameIcon} size={sizeIcon} color={colorIcon} />
+      )}
       <Text style={[styles.text, styles[`text_${type}`]]}>{text}</Text>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 };
 
@@ -29,8 +41,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 6,
 
-    
-    
     alignItems: 'center',
 
     ...Platform.select({
@@ -50,7 +60,16 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  container_TERTIARY: {},
+  container_REDBTN: {
+    backgroundColor: Colors.red,
+    width: wp('50%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   container_SECONDARY: {
     backgroundColor: Colors.white,
     borderColor: Colors.black,
@@ -64,12 +83,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 9,
   },
+
   container_PRIMARY: {
-    backgroundColor: Colors.black,borderRadius: 8,
+    backgroundColor: Colors.black,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.white,
   },
- 
+
   container_TEXT: {
     overflow: 'hidden',
     shadowOffset: {
@@ -92,8 +113,13 @@ const styles = StyleSheet.create({
   },
   text_TERTIARY: {
     color: Colors.red,
-  
+
     fontSize: FontSize.medium,
   },
- 
+  text_REDBTN: {
+    color: Colors.white,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });

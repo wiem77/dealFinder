@@ -4,16 +4,18 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   Dimensions,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { useNavigation } from '@react-navigation/native';
-import image from '../../assets/image/Login.jpg';
+
 import { FontSize } from '../../constants/FontSize';
 import { Colors } from '../../constants/Colors';
+
 import CustomBtn from '../../components/customBtn/CustomBtn';
+
+import image from '../../assets/image/Login.jpg';
 const SucessScreen = () => {
   const navigation = useNavigation();
   const { height, width } = Dimensions.get('window');
@@ -28,12 +30,14 @@ const SucessScreen = () => {
           Email confirmé avec succès! Connectez-vous dès maintenant pour
           consulter nos offres.
         </Text>
-        <CustomBtn text={'Se Connecter'} onPress={LoginIn} type='REDBTN' nameIcon={"log-in-outline"} sizeIcon={20} colorIcon={Colors.white} />
-
-        {/* <TouchableOpacity style={styles.button} onPress={SignIn}>
-          <Ionicons name="log-in-outline" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Connexion</Text>
-        </TouchableOpacity> */}
+        <CustomBtn
+          text={'Se Connecter'}
+          onPress={LoginIn}
+          type="REDBTN"
+          nameIcon={'log-in-outline'}
+          sizeIcon={20}
+          colorIcon={Colors.white}
+        />
       </View>
     </SafeAreaView>
   );
@@ -60,19 +64,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.black,
     marginVertical: '6%',
-  },
-  button: {
-    backgroundColor: Colors.red,
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

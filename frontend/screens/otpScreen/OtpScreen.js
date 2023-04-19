@@ -8,21 +8,20 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+
 import React, { useState, useRef } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
-import CustomBtn from '../../components/customBtn';
-import Custominput from '../../components/customInput/Custominput';
 
 import { FontSize } from '../../constants/FontSize';
 import { Colors } from '../../constants/Colors';
 
 import { useNavigation } from '@react-navigation/native';
 import FourDigitInput from '../../components/otpCard/FourDigitInput';
+import CustomBtn from '../../components/customBtn';
 import ResendVerification from '../../components/resendEmailverif/ResendEmail';
 
 const OtpScreen = () => {

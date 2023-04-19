@@ -10,10 +10,16 @@ import {
 import { useNavigation } from '@react-navigation/native';
 const WelcomeScreen = () => {
   const navigation = useNavigation();
-  const OnSignInPressed = (data) => {
+  const OnLoginPressed = (data) => {
     const telephone = data.telephone;
     console.log(telephone);
     navigation.navigate('LoginIn');
+  };
+
+  const OnSignUpPressed = (data) => {
+    const telephone = data.telephone;
+    console.log(telephone);
+    navigation.navigate('SignUp');
   };
   return (
     <>
@@ -26,15 +32,15 @@ const WelcomeScreen = () => {
           Découvrez les promotions locales qui correspondent à vos intérêts.
         </Text>
         <View style={styles.btnContainer}>
-          <CustomBtn text={'Se Connecter '} onPress={OnSignInPressed} />
+          <CustomBtn text={'Se Connecter '} onPress={OnLoginPressed} />
           <CustomBtn
             text={'Continuer en tant que visiteur'}
-            onPress={OnSignInPressed}
+            onPress={OnLoginPressed}
             type="SECONDARY"
           />
           <CustomBtn
             text={'crée un compte  '}
-            onPress={OnSignInPressed}
+            onPress={OnSignUpPressed}
             type="SECONDARY"
           />
         </View>
@@ -47,6 +53,7 @@ export default WelcomeScreen;
 
 const styles = StyleSheet.create({
   headerContainer: {
+    backgroundColor:Colors.backgroundWhite,
     width: wp('84%'),
     left: wp('7%'),
     top: hp('22.2%'),

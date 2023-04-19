@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: wp('80%'),
-    height: wp('10%'),
-    marginVertical: '5%',
+    height: wp('13%'),
+ 
     borderWidth: 2,
     borderColor: Colors.text,
     borderRadius: 8,

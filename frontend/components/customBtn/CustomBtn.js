@@ -37,7 +37,7 @@ export default CustomBtn;
 const styles = StyleSheet.create({
   container: {
     width: wp('80%'),
-    height: wp('12%'),
+    height: wp('13%'),
     padding: 15,
     marginVertical: 6,
 
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  
   container_SECONDARY: {
     backgroundColor: Colors.white,
     borderColor: Colors.black,
@@ -88,11 +89,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.white,
   },
 
   container_TEXT: {
-    overflow: 'hidden',
     shadowOffset: {
       width: 1,
       height: 4,
@@ -105,7 +104,6 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
     fontSize: FontSize.medium,
     fontWeight: '500',
-    lineHeight: FontSize.medium,
   },
   text_SECONDARY: {
     color: Colors.black,

@@ -70,7 +70,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+  container_REDBTN2: {
+    backgroundColor: Colors.darkred,
+    width: wp('30%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  text_REDBTN2: {
+    color: Colors.white,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   container_SECONDARY: {
     backgroundColor: Colors.white,
     borderColor: Colors.black,

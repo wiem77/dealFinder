@@ -55,11 +55,19 @@ const SignUpScreen = () => {
   const handleAgeSelect = (value) => {
     setSelectedAge(value);
   };
+  const backPressed = () => {
+    navigation.navigate('WelcomeScreen');
+  };
+  const onLoginPressed = () => {
+    navigation.navigate('LoginIn');
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Ionicons name="chevron-back" size={35} color="black" />
+          <TouchableOpacity onPress={backPressed}>
+            <Ionicons name="chevron-back" size={35} color="black" />
+          </TouchableOpacity>
         </View>
         <View style={{ height: '50%' }}>
           <Swiper
@@ -103,7 +111,7 @@ const SignUpScreen = () => {
             {/* sexe and age Swipe */}
             <View>
               <View style={styles.textcontainer}>
-                <Text style={styles.title}> Etape 2:</Text>
+                <Text style={styles.title}> Étape 2:</Text>
                 <Text style={styles.subtitle}>
                   Précisez votre âge et votre sexe ci-dessous
                 </Text>
@@ -143,7 +151,7 @@ const SignUpScreen = () => {
             {/* Email&PHone */}
             <View>
               <View style={styles.textcontainer}>
-                <Text style={styles.title}>étape3:</Text>
+                <Text style={styles.title}>Étape 3:</Text>
                 <Text style={styles.subtitle}>
                   Veuillez fournir vos informations de contact : e-mail et
                   téléphone
@@ -184,7 +192,7 @@ const SignUpScreen = () => {
             {/*Password and Confirm pwd */}
             <View>
               <View style={styles.textcontainer}>
-                <Text style={styles.title}>étape4:</Text>
+                <Text style={styles.title}>Étape 4:</Text>
                 <Text style={styles.subtitle}>
                   Sélectionnez un mot de passe sécurisé et confirmez-le
                   ci-dessous :
@@ -233,9 +241,8 @@ const SignUpScreen = () => {
                 <Text style={styles.title}>Dérniere étape:</Text>
                 <Text style={styles.subtitle}>télecharger votre image:</Text>
               </View>
-              <View style={styles.inputWrapper}>
+              <View style={{ marginVertical: '10%' }}>
                 <ImagePi />
-                <View style={{ marginTop: '12%' }}></View>
               </View>
             </View>
           </Swiper>
@@ -249,7 +256,7 @@ const SignUpScreen = () => {
         </View>
         <View style={styles.textbtnContainer}>
           <Text style={styles.text}>Vous avez déjà un compte ?</Text>
-          <TouchableOpacity onPress={OnSignInPressed}>
+          <TouchableOpacity onPress={onLoginPressed}>
             <Text style={styles.btnText}>Connexion</Text>
           </TouchableOpacity>
         </View>

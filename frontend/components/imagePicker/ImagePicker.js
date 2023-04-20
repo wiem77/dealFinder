@@ -49,7 +49,7 @@ const ImagePi = () => {
       )}
       <CustomBtn
         text={'Image'}
-        type="REDBTN"
+        type="REDBTN2"
         nameIcon={'cloud-upload-outline'}
         onPress={handleChooseImage}
         sizeIcon={20}

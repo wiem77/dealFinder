@@ -8,6 +8,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
+import RadioButton from '../../components/Radiobtn/RadioBtn';
 const WelcomeScreen = () => {
   const navigation = useNavigation();
   const OnLoginPressed = (data) => {
@@ -24,6 +25,7 @@ const WelcomeScreen = () => {
   return (
     <>
       <View style={styles.headerContainer}>
+     
         <Image
           resizeMode="contain"
           source={require('../../assets/image/DealFinderRed.png')}

@@ -30,14 +30,7 @@ const Custominput = ({
           fieldState: { error },
         }) => (
           <>
-            <View style={styles.inputContainer}>
-              <Entypo
-                name={iconName}
-                size={24}
-                color={Colors.text}
-                style={styles.icon}
-              />
-
+            <View style={[styles.inputContainer, error && styles.errorContainer]}>
               <TextInput
                 value={value}
                 onChangeText={onChange}
@@ -45,6 +38,13 @@ const Custominput = ({
                 placeholder={placeHolder}
                 secureTextEntry={secureTextEntry}
                 defaultValue={defaultValue}
+                style={styles.input}
+              />
+              <Entypo
+                name={iconName}
+                size={24}
+                color={Colors.text}
+                style={styles.icon}
               />
             </View>
             {error && (
@@ -58,7 +58,6 @@ const Custominput = ({
     </View>
   );
 };
-
 export default Custominput;
 const styles = StyleSheet.create({
   inputContainer: {
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: wp('80%'),
     height: wp('13%'),
- 
     borderWidth: 2,
     borderColor: Colors.text,
     borderRadius: 8,
@@ -102,6 +100,9 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   icon: {
-    marginLeft: 8,
+    marginRight: 8,
+  },
+  errorContainer: {
+    borderColor: Colors.lightRed,
   },
 });

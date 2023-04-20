@@ -7,6 +7,7 @@ import {
   Keyboard,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 import React, { useState, useRef } from 'react';

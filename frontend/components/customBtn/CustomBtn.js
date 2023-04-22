@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
     fontSize: FontSize.medium,
     fontWeight: '500',
+    lineHeight: 19,
   },
   text_SECONDARY: {
     color: Colors.black,

@@ -9,6 +9,7 @@ import OtpScreen from '../screens/otpScreen/OtpScreen';
 import SucessScreen from '../screens/UserVerified/SucessScreen';
 import Test from '../screens/Test';
 import TabNavigation from './TabNavigtaion';
+import MapScreen from '../screens/mapScreen/MapScreen';
 
 const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
@@ -16,14 +17,13 @@ const ConsumerNavigation = () => {
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
       <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />
-
       <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
       <ConsumerStack.Screen name="SignUp" component={SignUpScreen} />
       <ConsumerStack.Screen name="SucessScreen" component={SucessScreen} />
-
       <ConsumerStack.Screen name="Test" component={Test} />
-
       <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />
+      <ConsumerStack.Screen name="Map" component={MapScreen} />
     </ConsumerStack.Navigator>
   );
 };

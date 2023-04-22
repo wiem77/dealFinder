@@ -1,83 +1,109 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import uri from '../../assets/image/Login.jpg';
+import { Dimensions } from 'react-native';
+import { Entypo, Ionicons } from '@expo/vector-icons';
+
 const CustomCard = ({
-  imageSource,
   storeName,
   distance,
   location,
   voucher,
   subCategory,
 }) => {
+  const handleClick = () => {
+    const newColor = iconColor === 'red' ? 'black' : 'red';
+    setIconColor(newColor);
+  };
+  const [iconColor, setIconColor] = useState('black');
   return (
     <View style={styles.container}>
-      <View style={styles.topSection}>
-        <Image source={uri} style={styles.image} />
-      </View>
-      <View style={styles.bottomSection}>
+      <View style={styles.cardHeader}>
         <Text style={styles.storeName}>{storeName}</Text>
-        <Text style={styles.subCat}>{subCategory}</Text>
-        <Text style={styles.location}>{distance}</Text>
-        <Text style={styles.location}>{location}</Text>
-        <Text style={styles.voucher}>{voucher}</Text>
+        <Entypo
+          name="heart-outlined"
+          size={24}
+          color={iconColor}
+          onPress={handleClick}
+        />
       </View>
+
+      <ImageBackground source={uri} style={styles.imageBackground}>
+        <View style={styles.overlay} />
+        <View style={styles.cardBody}>
+          <Text style={styles.subCategory}>{subCategory}</Text>
+          <Text style={styles.voucher}>{voucher}</Text>
+          <View style={styles.cardFooter}>
+            <Ionicons name="location-outline" size={16} color={Colors.grey} />
+            <Text style={styles.location}>{location}</Text>
+          </View>
+        </View>
+      </ImageBackground>
     </View>
   );
 };
+const { width } = Dimensions.get('window');
+const cardWidth = width * 0.5;
+const cardHeight = cardWidth * 0.8;
 
 const styles = StyleSheet.create({
   container: {
-    width: '40%',
-    height: '58%',
     backgroundColor: Colors.white,
-    borderRadius: 10,
-    elevation: 5,
+    borderRadius: 15,
+    width: cardWidth,
+    height: cardHeight,
     overflow: 'hidden',
+    marginRight: 20,
   },
-  topSection: {
-    flex: 1,
-    justifyContent: 'center',
+  cardHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  bottomSection: {
-    flex: 1,
+    justifyContent: 'space-between',
     padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grey,
   },
   storeName: {
     fontSize: FontSize.medium,
-    color: Colors.black,
-    textDecorationLine: 'underline',
-    fontFamily: 'inter',
-    fontWeight: '400',
-  },
-  subCat: {
-    fontSize: FontSize.xsmall,
-    color: Colors.text,
-
-    fontFamily: 'inter',
-    fontWeight: '400',
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
 
-  location: {
-    fontSize: FontSize.xsmall,
-    color: Colors.text,
-
-    fontFamily: 'inter',
-    fontWeight: '400',
+  imageBackground: {
+    width: '100%',
+    height: '75%',
+    resizeMode: 'cover',
+    justifyContent: 'flex-end',
+  },
+  // overlay: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  // },
+  cardBody: {
+    padding: 10,
+  },
+  subCategory: {
+    color: Colors.white,
+    backgroundColor: Colors.darkred,
+    padding: 5,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
+    marginBottom: 5,
   },
   voucher: {
-    fontSize: FontSize.small,
-    color: Colors.darkred,
-    fontFamily: 'poppins',
-
-    fontWeight: '900',
+    fontSize: FontSize.medium,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  location: {
+    marginLeft: 5,
   },
 });
 

@@ -1,14 +1,58 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import React, { useState } from 'react';
 import CustomCard from '../../components/customCard/CustomCard';
 import { Colors } from '../../constants/Colors';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
+import { useNavigation } from '@react-navigation/native';
+const DATA = [
+  {
+    id: '1',
+    storeName: 'My Store 1',
+    distance: '2 km away',
+    location: '123 Main Street',
+    voucher: '10% off',
+    subCategory: 'sport',
+  },
+  {
+    id: '2',
+    storeName: 'My Store 2',
+    distance: '3 km away',
+    location: '456 Main Street',
+    voucher: '20% off',
+    subCategory: 'food',
+  },
+  {
+    id: '3',
+    storeName: 'My Store 3',
+    distance: '4 km away',
+    location: '789 Main Street',
+    voucher: '30% off',
+    subCategory: 'clothing',
+  },
+];
 const HomeScreen = () => {
+  const renderItem = ({ item }) => (
+    <CustomCard
+      storeName={item.storeName}
+      distance={item.distance}
+      location={item.location}
+      voucher={item.voucher}
+      subCategory={item.subCategory}
+    />
+  );
   const [iconColor, setIconColor] = useState('black');
-
+  const navigation = useNavigation();
   const handleClick = () => {
     setIconColor(Colors.red);
+    navigation.navigate('Map');
   };
 
   return (
@@ -48,15 +92,68 @@ const HomeScreen = () => {
           style={{ marginVertical: '2%' }}
         />
       </View>
-      <View>
-        <CustomCard
-          storeName="My Store"
-          distance="2 km away"
-          location="123 Main Street"
-          voucher="10% off"
-          subCategory="sport"
-        />
-      </View>
+      <ScrollView style={{ marginBottom: '30%' }}>
+        <View>
+          <Text style={styles.categoryName}>Tous</Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryName}>Mode et Accessoires</Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryName}>Beauté et Bien-etre</Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryName}>Voyages et Loisirs</Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryName}>Maison et jardin </Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryName}>électronique et High-tech </Text>
+          <FlatList
+            horizontal
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -88,10 +185,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 1,
     marginVertical: '2%',
-    marginHorizontal: '8%',
+
     padding: 10,
+    paddingHorizontal: '10%',
     borderColor: Colors.darkred,
     backgroundColor: Colors.white,
     borderRadius: 7,
+  },
+  categoryName: {
+    fontSize: FontSize.medium,
+    color: Colors.black,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    fontWeight: '600',
+    fontStyle: 'italic',
   },
 });

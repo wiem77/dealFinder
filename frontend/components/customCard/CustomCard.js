@@ -46,7 +46,7 @@ const CustomCard = ({
 };
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.5;
-const cardHeight = cardWidth * 0.8;
+const cardHeight = cardWidth * 1.2;
 
 const styles = StyleSheet.create({
   container: {

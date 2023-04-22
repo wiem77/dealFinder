@@ -56,7 +56,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
+    <View style={{ backgroundColor: Colors.backgroundWhite}}>
       <View style={styles.header}>
         <Entypo
           name="location"
@@ -92,7 +92,7 @@ const HomeScreen = () => {
           style={{ marginVertical: '2%' }}
         />
       </View>
-      <ScrollView style={{ marginBottom: '30%' }}>
+      <ScrollView style={{ padding:'4%',marginBottom:'70%'}}>
         <View>
           <Text style={styles.categoryName}>Tous</Text>
           <FlatList
@@ -153,6 +153,7 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
+      
       </ScrollView>
     </View>
   );

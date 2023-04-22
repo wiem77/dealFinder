@@ -11,10 +11,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#a7001e"
     },
-
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wiem77.frontend"
     },
     "android": {
       "adaptiveIcon": {

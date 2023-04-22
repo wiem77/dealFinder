@@ -7,15 +7,15 @@ const { createnewAdminValidation } = require('../../utils/ValidationSchema');
 const generateAuthToken = require('../../utils/generateToken');
 const generateOTP = require('../../utils/generateOTP');
 const sendEmail = require('../../utils/generatEmailValidation');
-
-module.exports.register = async (req, res) => {
+module.exports.signUp = async (req, res) => {
   console.log('Register..');
+
   try {
     console.log('Register function called');
-    const { error } = await createnewAdminValidation(req.body);
-    if (error) {
-      return res.status(400).send({ message: error.details[0].message });
-    }
+    // const { error } = signUpValidation(req.body);
+    // if (error) {
+    //   return res.status(400).send({ message: error.details[0].message });
+    // }
 
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -35,6 +35,12 @@ module.exports.register = async (req, res) => {
       verified: false,
     });
 
+    if (req.body.roles) {
+      newUser.roles = req.body.roles;
+    } else {
+      newUser.roles = 'consommateur';
+    }
+
     await newUser.save();
     console.log('Register  find ', newUser);
     const otpNumber = await generateOTP();
@@ -46,11 +52,14 @@ module.exports.register = async (req, res) => {
       createdAt: Date.now(),
       expiredAt: Date.now() + 24 * 60 * 60 * 1000,
     });
-    console.log('test1', otpVerification);
+
     await otpVerification.save();
     console.log('test', otpVerification);
-    const emailText = `Bonjour ${newUser.prenom},${newUser.nom},\n\nMerci de vous être enregistré sur notre application. Veuillez saisir ce code ${otpNumber} dans le champ pour vérifier votre adresse e-mail:\n\nCordialement,\nL'équipe de l'application`;
-
+    const emailText = `Bonjour ${newUser.prenom} ${newUser.nom},
+    Nous vous remercions de vous être inscrit à notre application. Afin de vérifier votre adresse e-mail, veuillez entrer le code de vérification suivant : \x1b${otpNumber}\x1b
+    Si vous avez des questions ou des préoccupations, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.
+    Cordialement,
+    L'équipe de l'application.`;
     console.log('emailText', emailText);
     try {
       await sendEmail(
@@ -63,8 +72,8 @@ module.exports.register = async (req, res) => {
           'user created successfully, a verification email has been sent to your email address',
       });
     } catch (error) {
-      await newUser.deleteOne();
-      await otpVerification.deleteOne();
+      await newUser.delete();
+      await otpVerification.delete();
       res.status(500).send({
         message: 'error sending verification email, please try again later',
         error,
@@ -91,7 +100,7 @@ module.exports.signIn = async (req, res) => {
     const validPwd = await bcrypt.compare(req.body.password, user.password);
     if (!validPwd) {
       console.log('Invalid password');
-      return res.status(400).send({ message: 'Invalid telephone or password' });
+      return res.status(400).send({ message: 'Invalid  password' });
     }
 
     const { accessToken, refreshToken } = await generateAuthToken(user);
@@ -116,5 +125,21 @@ module.exports.signIn = async (req, res) => {
   } catch (error) {
     console.error('Server error:', error.message);
     return res.status(500).send({ message: 'Server error' });
+  }
+};
+
+module.exports.getUserIdByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    return res.send({ userId: user._id });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'server error', error });
   }
 };

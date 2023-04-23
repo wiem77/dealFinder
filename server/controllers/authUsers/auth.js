@@ -1,12 +1,15 @@
 const bcrypt = require('bcrypt');
 
-const User = require('../../models/User');
 const Otp = require('../../models/OtpVerification');
-
+const multer = require('multer');
 const { createnewAdminValidation } = require('../../utils/ValidationSchema');
 const generateAuthToken = require('../../utils/generateToken');
 const generateOTP = require('../../utils/generateOTP');
 const sendEmail = require('../../utils/generatEmailValidation');
+const User = require('../../models/User');
+const storage = require('../../config/multerConfig').storage;
+const fileFilter = require('../../config/multerConfig').fileFilter;
+const Media = require('../../models/MediaModel');
 module.exports.signUp = async (req, res) => {
   console.log('Register..');
 
@@ -27,19 +30,37 @@ module.exports.signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPwd = await bcrypt.hash(req.body.password, salt);
     const confirmhashPwd = await bcrypt.hash(req.body.confirmpassword, salt);
+    const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
+      'picture'
+    );
+    let picturePath;
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: 'Error uploading image' });
+      } else if (err) {
+        return res
+          .status(400)
+          .json({ message: 'Unknown error uploading image' });
+      }
 
+      if (req.file) {
+        const media = new Media({
+          path: req.file.path,
+          extension: req.file.filename.split('.').pop(),
+        });
+        await media.save();
+        picturePath = [media._id];
+      } else {
+        picturePath = [{ _id: '64451df21d60f6c16d318204' }];
+      }
+    });
     const newUser = new User({
       ...req.body,
       password: hashPwd,
       confirmpassword: confirmhashPwd,
       verified: false,
+      picturePath: picturePath, // Add the picturePath property to the user object
     });
-
-    if (req.body.roles) {
-      newUser.roles = req.body.roles;
-    } else {
-      newUser.roles = 'consommateur';
-    }
 
     await newUser.save();
     console.log('Register  find ', newUser);

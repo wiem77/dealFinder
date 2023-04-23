@@ -1,5 +1,6 @@
 const User = require('../../models/User');
-
+const Media = require('../../models/MediaModel');
+const path = require('path');
 function generatePhoneNumber() {
   let phoneNumber = '+1';
   for (let i = 0; i < 10; i++) {
@@ -40,7 +41,17 @@ exports.createGuest = async (req, res, next) => {
         password: '',
         roles: 'visiteur',
       });
+
+      const defaultAvatar = path.join(__dirname, '../public/image/Homme.png');
+      const media = new Media({
+        path: defaultAvatar,
+        extension: 'png',
+      });
+      await media.save();
+
+      guest.picturePath = [media._id];
       await guest.save();
+
       res.cookie('guestId', guest._id, { maxAge: 86400000 }); // 24 hours
     }
     res.status(201).json({

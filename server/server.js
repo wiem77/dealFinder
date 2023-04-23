@@ -14,9 +14,9 @@ require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 
 const app = express();
-//ConnecetDB
+
 dbConnect();
-//middlewares
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

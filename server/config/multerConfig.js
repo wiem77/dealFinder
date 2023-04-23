@@ -9,22 +9,21 @@ const storage = multer.diskStorage({
     cb(
       null,
       new Date().toISOString().replace(/:/g, '-') +
-        file.fieldname +
+        '-' +
+        Math.floor(Math.random() * 1000) +
         '.' +
         extension
     );
   },
 });
+
 const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === 'image/png' ||
-    file.mimetype === 'image/jpg' ||
-    file.mimetype === 'image/jpeg'
-  ) {
+  const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     req.fileValidationError = 'Forbidden extension';
-    return cb(null, false, req.fileValidationError);
+    cb(null, false, req.fileValidationError);
   }
 };
 

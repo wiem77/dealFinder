@@ -1,14 +1,3 @@
-// import { StyleSheet, Text, SafeAreaView, View } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import homme from '../../assets/image/Homme.png';
-import { EMAIL_REGEX, PWD_REGEX } from '../../config/config';
-import { Ionicons } from '@expo/vector-icons';
-import CustomBtn from '../../components/customBtn/CustomBtn';
-import Custominput from '../../components/customInput/Custominput';
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -16,51 +5,97 @@ import {
   Keyboard,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  Platform,
-  Image,
 } from 'react-native';
+
 import Swiper from 'react-native-swiper';
+import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
+import { EMAIL_REGEX, PWD_REGEX, baseUrl } from '../../config/config';
+
+import CustomBtn from '../../components/customBtn/CustomBtn';
+import Custominput from '../../components/customInput/Custominput';
+
+import RadioButton from '../../components/Radiobtn/RadioBtn';
+import AgeSelect from '../../components/selectItem/AgeSelect';
+import ImagePi from '../../components/imagePicker/ImagePicker';
 
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
-import RadioButton from '../../components/Radiobtn/RadioBtn';
-import AgeSelect from '../../components/selectItem/AgeSelect';
-import ImagePi from '../../components/imagePicker/ImagePicker';
 
 const SignUpScreen = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
   const navigation = useNavigation();
-  const OnSignInPressed = (data) => {
-    const email = data.email;
-    const pwd = data.pwd;
-    console.log(email, pwd);
-    navigation.navigate('SignUp');
-  };
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     watch,
   } = useForm();
+
   const pwd = watch('password');
+
   const handleOptionSelect = (value) => {
     setSelectedOption(value);
   };
+
   const handleAgeSelect = (value) => {
     setSelectedAge(value);
   };
+
   const backPressed = () => {
     navigation.navigate('WelcomeScreen');
   };
+
   const onLoginPressed = () => {
     navigation.navigate('LoginIn');
   };
+
+  const OnSignInPressed = async (data) => {
+    try {
+      const res = await axios.post(`${baseUrl}/signUp`, {
+        nom: data.nom,
+        prenom: data.prenom,
+        email: data.email,
+        telephone: data.phone,
+        password: data.password,
+        confirmpassword: data.confirmPwd,
+        sexe: selectedOption,
+        age: selectedAge,
+        roles: 'consommateur',
+      });
+      if (res.data) {
+        navigation.navigate('OtpScreen');
+      }
+    } catch (error) {
+      if (error.response) {
+        if (
+          error.response.status === 409 &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          console.log('User with given email or phone already exists');
+          showAlert('Error', ' utilisateur  déja crée');
+        } else {
+          showAlert('Error', error.response.data.message);
+        }
+      } else {
+        showAlert('Error', 'Server error. Please try again later.');
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -98,9 +133,9 @@ const SignUpScreen = () => {
                 <View style={{ marginTop: '12%' }}>
                   <Custominput
                     placeHolder=" Prénom "
-                    name={'prénom'}
+                    name={'prenom'}
                     control={control}
-                    secureTextEntry={true}
+                    secureTextEntry={false}
                     rules={{
                       required: 'prénom requis',
                     }}

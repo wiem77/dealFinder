@@ -164,3 +164,11 @@ module.exports.getUserIdByEmail = async (req, res) => {
     res.status(500).send({ message: 'server error', error });
   }
 };
+
+module.exports.test = async (req, res) => {
+  try {
+    console.log('hani jyt');
+  } catch (error) {
+    console.log(error);
+  }
+};

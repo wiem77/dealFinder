@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { customFonts } from './config/config';
 import Navigation from './navigation/Navigation';
+import { AuthProvider } from './context/AuthProvider';
 
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
@@ -10,9 +11,9 @@ export default function App() {
     return <Text>Loading...</Text>;
   }
   return (
-    <>
+    <AuthProvider>
       <StatusBar style="auto" />
       <Navigation />
-    </>
+    </AuthProvider>
   );
 }

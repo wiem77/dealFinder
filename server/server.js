@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(
   cors({
-    origin: 'exp://172.20.10.2:19000',
+    origin: 'exp://192.168.1.9:19000',
   })
 );
 

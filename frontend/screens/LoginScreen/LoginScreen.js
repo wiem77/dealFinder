@@ -1,5 +1,7 @@
-import { StyleSheet, Text, SafeAreaView, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
+import React, { useContext } from 'react';
+
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { EMAIL_REGEX } from '../../config/config';
 import {
@@ -11,19 +13,35 @@ import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthProvider';
 const LoginScreen = () => {
+  const { signIn } = useContext(AuthContext);
   const navigation = useNavigation();
-  const OnSignInPressed = (data) => {
-    const email = data.email;
-    const pwd = data.pwd;
-    console.log(email, pwd);
-    navigation.navigate('SignUp');
+  const showAlert = (title, message) => {
+    Alert.alert(
+      title,
+      message,
+      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+      { cancelable: false }
+    );
+  };
+  const OnSignInPressed = async (data) => {
+    try {
+      const email = data.email;
+      const pass = data.pwd;
+      console.log(pass, email);
+      await signIn(email, pass);
+      console.log('Sign in successful');
+    } catch (error) {
+      showAlert('Error', error.message);
+    }
   };
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -68,14 +86,14 @@ const LoginScreen = () => {
         <CustomBtn
           text={'Mot Passe Oublié'}
           type="TERTIARY"
-          onPress={OnSignInPressed}
+          onPress={() => console.log('test')}
         />
 
         <Text> ou bien</Text>
 
         <CustomBtn
           text={'crée un compte'}
-          onPress={OnSignInPressed}
+          onPress={() => console.log('test')}
           type="SECONDARY"
         />
       </View>

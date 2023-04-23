@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const response = await axios.post('http://192.168.1.9:4000/api/signIn', {
+      const response = await axios.post(`${baseUrl}/signIn`, {
         email,
         password,
       });

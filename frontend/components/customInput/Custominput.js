@@ -30,7 +30,9 @@ const Custominput = ({
           fieldState: { error },
         }) => (
           <>
-            <View style={[styles.inputContainer, error && styles.errorContainer]}>
+            <View
+              style={[styles.inputContainer, error && styles.errorContainer]}
+            >
               <TextInput
                 value={value}
                 onChangeText={onChange}
@@ -68,6 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.text,
     borderRadius: 8,
+    backgroundColor: Colors.white, // Add this line
     ...Platform.select({
       ios: {
         shadowColor: Colors.black,
@@ -91,6 +94,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
+
   input: {
     flex: 1,
     paddingHorizontal: 12,

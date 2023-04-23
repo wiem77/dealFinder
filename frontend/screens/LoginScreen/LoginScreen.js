@@ -1,19 +1,18 @@
 import { StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
 import React, { useContext } from 'react';
 
-import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { EMAIL_REGEX } from '../../config/config';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import Custominput from '../../components/customInput/Custominput';
+
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
+
+import Custominput from '../../components/customInput/Custominput';
 import CustomBtn from '../../components/customBtn/CustomBtn';
+
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthProvider';
+
 const LoginScreen = () => {
   const { signIn } = useContext(AuthContext);
   const navigation = useNavigation();
@@ -32,6 +31,7 @@ const LoginScreen = () => {
       console.log(pass, email);
       await signIn(email, pass);
       console.log('Sign in successful');
+      navigation.navigate('Home');
     } catch (error) {
       showAlert('Error', error.message);
     }
@@ -93,7 +93,7 @@ const LoginScreen = () => {
 
         <CustomBtn
           text={'crée un compte'}
-          onPress={() => console.log('test')}
+          onPress={() => navigation.navigate('SignUp')}
           type="SECONDARY"
         />
       </View>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   WelcomeContainer: {
     alignItems: 'center',
-    marginBottom: '5%', // adjust this value to control the spacing
+    marginBottom: '5%',
   },
   title: {
     fontFamily: 'poppins',

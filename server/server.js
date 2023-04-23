@@ -1,9 +1,10 @@
 const express = require('express');
 
 const cors = require('cors');
-
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes/autrh');
+const guestRoutes = require('./routes/guestRoutes/guest');
 const categoryRoutes = require('./routes/categoryRoutes/categoryRoutes');
 const subcategoryRoutes = require('./routes/subCategoryRoutes/subCategoryRoutes');
 const storeRoutes = require('./routes/storeRoutes/storeRoute');
@@ -26,7 +27,10 @@ app.use(
   })
 );
 
+app.use(cookieParser());
 app.use('/api', authRoutes);
+
+app.use('/api/guest', guestRoutes);
 
 app.use('/api/category', categoryRoutes);
 app.use('/api/store', storeRoutes);

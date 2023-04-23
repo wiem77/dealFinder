@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { geocodeAddress } = require('../utils/geocoder');
 const Location = require('./LocationModel');
 const { Schema } = mongoose;
+
 const UserSchema = new mongoose.Schema({
   nom: {
     type: String,
@@ -13,19 +14,16 @@ const UserSchema = new mongoose.Schema({
   },
   telephone: {
     type: String,
-    required: true,
     unique: true,
   },
   email: {
     type: String,
-    required: true,
     max: 50,
     unique: true,
-    lowerCase: true,
+    lowercase: true,
   },
   password: {
     type: String,
-    required: true,
   },
   confirmpassword: {
     type: String,
@@ -38,14 +36,6 @@ const UserSchema = new mongoose.Schema({
   sexe: {
     type: String,
   },
-
-  locations: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Location',
-      required: [true, 'Please add at least one location'],
-    },
-  ],
 
   roles: {
     type: String,
@@ -65,18 +55,23 @@ const UserSchema = new mongoose.Schema({
   verified: Boolean,
 });
 
-UserSchema.pre('save', async function (next) {
-  try {
-    for (let i = 0; i < this.locations.length; i++) {
-      const address = this.locations[i].address;
-      const location = await geocodeAddress(address);
-      this.locations[i].location = location;
-    }
-    next();
-  } catch (error) {
-    next(error);
+UserSchema.path('telephone').validate(function (value) {
+  if (this.roles === 'visiteur') {
+    return true;
   }
-});
+  return value.length;
+}, 'Please provide a valid phone number.');
+
+UserSchema.path('email').validate(function (value) {
+  if (this.roles === 'visiteur') {
+    return true;
+  }
+  return value.length;
+}, 'Please provide a valid email address.');
+
+UserSchema.path('password').validate(function (value) {
+  return this.roles === 'visiteur' ? !value : value.length;
+}, 'Please provide a password.');
 
 const User = mongoose.model('User', UserSchema);
 

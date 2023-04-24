@@ -7,11 +7,14 @@ const generateAuthToken = require('../../utils/generateToken');
 const generateOTP = require('../../utils/generateOTP');
 const sendEmail = require('../../utils/generatEmailValidation');
 const User = require('../../models/User');
+const Location = require('../../models/LocationModel');
 const storage = require('../../config/multerConfig').storage;
 const fileFilter = require('../../config/multerConfig').fileFilter;
 const Media = require('../../models/MediaModel');
 module.exports.signUp = async (req, res) => {
+  const { type, coordinates, formattedAddress, city, country } = req.body;
   console.log('Register..');
+  console.log(type, coordinates, formattedAddress, city, country);
   try {
     console.log('Register function called');
     const user = await User.findOne({ email: req.body.email });
@@ -48,12 +51,24 @@ module.exports.signUp = async (req, res) => {
         picturePath = [{ _id: '64451df21d60f6c16d318204' }];
       }
     });
+
+    const location = new Location({
+      type,
+      coordinates,
+      formattedAddress,
+      city,
+      country,
+    });
+    await location.save();
+    console.log(location, 'location');
+
     const newUser = new User({
       ...req.body,
       password: hashPwd,
       confirmpassword: confirmhashPwd,
       verified: false,
       picturePath: picturePath,
+      location: location._id,
     });
 
     await newUser.save();

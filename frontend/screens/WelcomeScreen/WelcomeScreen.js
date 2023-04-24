@@ -22,15 +22,11 @@ const WelcomeScreen = () => {
   const [locationRegion, setLocationRegion] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const OnLoginPressed = (data) => {
-    const telephone = data.telephone;
-    console.log(telephone);
+  const OnLoginPressed = () => {
     navigation.navigate('LoginIn');
   };
 
-  const OnSignUpPressed = (data) => {
-    const telephone = data.telephone;
-    console.log(telephone);
+  const OnSignUpPressed = () => {
     navigation.navigate('SignUp');
   };
   const guestPressed = async () => {

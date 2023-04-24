@@ -33,12 +33,14 @@ import { FontSize } from '../../constants/FontSize';
 
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
+import Loading2 from '../../components/loading2/Loading2';
 
 const SignUpScreen = () => {
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
-
+  const [locationCountry, setLocationCountry] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -54,13 +56,7 @@ const SignUpScreen = () => {
       });
       setLocationName(geocode[0].city);
       setLocationRegion(geocode[0].region);
-      // Appel de la fonction pour envoyer la localisation au serveur
-      // sendLocation(
-      //   location.coords.latitude,
-      //   location.coords.longitude,
-      //   geocode[0].city,
-      //   geocode[0].region
-      // );
+      setLocationCountry(geocode[0].country);
     })();
   }, []);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -105,20 +101,8 @@ const SignUpScreen = () => {
   };
   const OnSignInPressed = async (data) => {
     try {
-      const formData = new FormData();
-      formData.append('nom', data.nom);
-      formData.append('prenom', data.prenom);
-      formData.append('email', data.email);
-      formData.append('telephone', data.phone);
-      formData.append('password', data.password);
-      formData.append('confirmpassword', data.confirmPwd);
-      formData.append('sexe', selectedOption);
-      formData.append('age', selectedAge);
-      formData.append('roles', 'consommateur');
-      formData.append('picturePath', image);
-      console.log(formData, 'fromdata');
-      console.log('image', formData.picturePath);
-      const objectData = {
+      setLoading(true);
+      const res = await axios.post(`${baseUrl}/signUp`, {
         nom: data.nom,
         prenom: data.prenom,
         email: data.email,
@@ -128,17 +112,13 @@ const SignUpScreen = () => {
         sexe: selectedOption,
         age: selectedAge,
         roles: 'consommateur',
-      };
-      console.log(objectData, 'objectData');
 
-      const jsonString = JSON.stringify(objectData);
-
-      const res = await axios.post(`${baseUrl}/signUp`, jsonString, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        type: 'Point',
+        coordinates: [location.coords.longitude, location.coords.latitude],
+        formattedAddress: `${locationName}, ${locationRegion}`,
+        city: locationName,
+        country: locationCountry,
       });
-
       if (res.data) {
         navigation.navigate('OtpScreen', {
           email: data.email,
@@ -154,14 +134,20 @@ const SignUpScreen = () => {
           console.log('User with given email or phone already exists');
           showAlert('Error', ' utilisateur  déja crée');
         } else {
-          showAlert('Error', error);
+          showAlert('Error', error.response.data.message);
         }
       } else {
-        showAlert('Error', error);
+        showAlert('Error', 'Server error. Please try again later.');
         console.log(error);
       }
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading2 />;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

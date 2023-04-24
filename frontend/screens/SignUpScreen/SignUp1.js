@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,11 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 import Swiper from 'react-native-swiper';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import {
   widthPercentageToDP as wp,
@@ -32,11 +34,31 @@ import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 
-import { handleChooseImage } from '../../components/imagePicker/ImagePicker';
 const SignUpScreen = () => {
+  const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState(null);
+  const [locationRegion, setLocationRegion] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      let geocode = await Location.reverseGeocodeAsync({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      setLocationName(geocode[0].city);
+      setLocationRegion(geocode[0].region);
+    })();
+  }, []);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
-  const [image, setImage] = useState(null);
+
   const navigation = useNavigation();
   const showAlert = (title, message) => {
     Alert.alert(
@@ -54,6 +76,7 @@ const SignUpScreen = () => {
   } = useForm();
 
   const pwd = watch('password');
+  const [image, setImage] = useState(null);
 
   const handleOptionSelect = (value) => {
     setSelectedOption(value);
@@ -70,6 +93,9 @@ const SignUpScreen = () => {
   const onLoginPressed = () => {
     navigation.navigate('LoginIn');
   };
+  const handleImageSelected = (selectedImage) => {
+    setImage(selectedImage);
+  };
   const OnSignInPressed = async (data) => {
     try {
       const formData = new FormData();
@@ -82,12 +108,9 @@ const SignUpScreen = () => {
       formData.append('sexe', selectedOption);
       formData.append('age', selectedAge);
       formData.append('roles', 'consommateur');
-      formData.append('picturePath', {
-        uri: image,
-        name: 'image.jpg',
-        type: 'image/jpeg',
-      });
+      formData.append('picturePath', image);
       console.log(formData, 'fromdata');
+      console.log('image', formData.picturePath);
       const objectData = {
         nom: data.nom,
         prenom: data.prenom,
@@ -98,11 +121,6 @@ const SignUpScreen = () => {
         sexe: selectedOption,
         age: selectedAge,
         roles: 'consommateur',
-        picturePath: {
-          uri: image,
-          name: 'image.jpg',
-          type: 'image/jpeg',
-        },
       };
       console.log(objectData, 'objectData');
 
@@ -142,9 +160,14 @@ const SignUpScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={backPressed}>
-            <Ionicons name="chevron-back" size={35} color="black" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialIcons name="location-on" size={24} color="black" />
+            {locationName && (
+              <Text>
+                {locationName}, {locationRegion}
+              </Text>
+            )}
+          </View>
         </View>
         <View style={{ height: '50%' }}>
           <Swiper
@@ -319,7 +342,7 @@ const SignUpScreen = () => {
                 <Text style={styles.subtitle}>télecharger votre image:</Text>
               </View>
               <View style={{ marginVertical: '10%' }}>
-                <ImagePi />
+                <ImagePi onImageSelected={handleImageSelected} />
               </View>
             </View>
           </Swiper>

@@ -12,14 +12,8 @@ const fileFilter = require('../../config/multerConfig').fileFilter;
 const Media = require('../../models/MediaModel');
 module.exports.signUp = async (req, res) => {
   console.log('Register..');
-
   try {
     console.log('Register function called');
-    // const { error } = signUpValidation(req.body);
-    // if (error) {
-    //   return res.status(400).send({ message: error.details[0].message });
-    // }
-
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       return res
@@ -42,7 +36,7 @@ module.exports.signUp = async (req, res) => {
           .status(400)
           .json({ message: 'Unknown error uploading image' });
       }
-
+      console.log(req.file, 'test');
       if (req.file) {
         const media = new Media({
           path: req.file.path,
@@ -59,7 +53,7 @@ module.exports.signUp = async (req, res) => {
       password: hashPwd,
       confirmpassword: confirmhashPwd,
       verified: false,
-      picturePath: picturePath, // Add the picturePath property to the user object
+      picturePath: picturePath,
     });
 
     await newUser.save();

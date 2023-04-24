@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import CustomBtn from '../customBtn/CustomBtn';
 import { Colors } from '../../constants/Colors';
-const ImagePi = () => {
+const ImagePi = ({ onImageSelected }) => {
   const [image, setImage] = useState(null);
- 
+
   useEffect(() => {
     async function requestPermission() {
       if (Platform.OS !== 'web') {
@@ -29,6 +29,7 @@ const ImagePi = () => {
     console.log('ImagePicker result:', result);
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      onImageSelected(result.assets[0].uri); // Call the callback function with the image URI
     }
   };
   return (

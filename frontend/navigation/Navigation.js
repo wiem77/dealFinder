@@ -15,11 +15,11 @@ const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
+      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <ConsumerStack.Screen name="Test" component={Test} />
       <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
       <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />
-      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
       <ConsumerStack.Screen name="SignUp" component={SignUpScreen} />
       <ConsumerStack.Screen name="SucessScreen" component={SucessScreen} />

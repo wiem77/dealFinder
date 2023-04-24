@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
-import React from 'react';
+
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import { FontSize } from '../../constants/FontSize';
 import { Colors } from '../../constants/Colors';
@@ -8,8 +8,17 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
-import RadioButton from '../../components/Radiobtn/RadioBtn';
+import React, { useState, useEffect } from 'react';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+
 const WelcomeScreen = () => {
+  const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState(null);
+  const [locationRegion, setLocationRegion] = useState(null);
   const navigation = useNavigation();
   const OnLoginPressed = (data) => {
     const telephone = data.telephone;
@@ -22,10 +31,39 @@ const WelcomeScreen = () => {
     console.log(telephone);
     navigation.navigate('SignUp');
   };
+  const guestPressed = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied');
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    let geocode = await Location.reverseGeocodeAsync({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+    setLocationName(geocode[0].city);
+    setLocationRegion(geocode[0].region);
+
+    axios
+      .post(`${baseUrl}/guest/newGuest`, {
+        type: 'Point',
+        coordinates: [location.coords.longitude, location.coords.latitude],
+        formattedAddress: `${geocode[0].city}, ${geocode[0].region}`,
+        city: geocode[0].city,
+        country: geocode[0].country,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <>
       <View style={styles.headerContainer}>
-     
         <Image
           resizeMode="contain"
           source={require('../../assets/image/DealFinderRed.png')}
@@ -37,7 +75,7 @@ const WelcomeScreen = () => {
           <CustomBtn text={'Se Connecter '} onPress={OnLoginPressed} />
           <CustomBtn
             text={'Continuer en tant que visiteur'}
-            onPress={OnLoginPressed}
+            onPress={guestPressed}
             type="SECONDARY"
           />
           <CustomBtn
@@ -55,7 +93,7 @@ export default WelcomeScreen;
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor:Colors.backgroundWhite,
+    backgroundColor: Colors.backgroundWhite,
     width: wp('84%'),
     left: wp('7%'),
     top: hp('22.2%'),

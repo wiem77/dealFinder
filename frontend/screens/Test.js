@@ -26,7 +26,7 @@ const Test = () => {
       setLocationName(geocode[0].city);
       setLocationRegion(geocode[0].region);
 
-      // Envoi de la localisation au serveur avec Axios
+    
       axios
         .post(`${baseUrl}/location/addLocation`, {
           type: 'Point',

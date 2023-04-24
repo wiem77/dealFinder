@@ -12,12 +12,16 @@ import TabNavigation from './TabNavigtaion';
 import MapScreen from '../screens/mapScreen/MapScreen';
 import Loading from '../components/loading/Loading';
 
+import QrCodeScreen from '../screens/qrCodeScreen/QrCodeScreen';
+
 const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <ConsumerStack.Screen name="QrCode" component={QrCodeScreen} />
       <ConsumerStack.Screen name="Test" component={Test} />
+      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
       <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
       <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />

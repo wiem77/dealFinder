@@ -54,6 +54,13 @@ const SignUpScreen = () => {
       });
       setLocationName(geocode[0].city);
       setLocationRegion(geocode[0].region);
+      // Appel de la fonction pour envoyer la localisation au serveur
+      // sendLocation(
+      //   location.coords.latitude,
+      //   location.coords.longitude,
+      //   geocode[0].city,
+      //   geocode[0].region
+      // );
     })();
   }, []);
   const [selectedOption, setSelectedOption] = useState(null);

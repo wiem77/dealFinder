@@ -36,7 +36,11 @@ const UserSchema = new mongoose.Schema({
   sexe: {
     type: String,
   },
-
+  location: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Location',
+    required: true,
+  },
   roles: {
     type: String,
     enum: ['admin', 'consommateur', 'visiteur'],

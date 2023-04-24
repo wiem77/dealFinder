@@ -1,32 +1,30 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const locationSchema = new mongoose.Schema(
-  {
-    address: {
-      type: String,
-    },
-    location: {
-      type: {
-        type: String,
-      },
-      coordinates: {
-        type: [Number],
-        index: '2dsphere',
-      },
-      formattedAddress: String,
-    },
-    store: {
-      type: Schema.Types.ObjectId,
-      ref: 'Store',
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
+const locationSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true,
   },
-  { timestamps: true }
-);
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+  formattedAddress: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+});
 
 const Location = mongoose.model('Location', locationSchema);
 

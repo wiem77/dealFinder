@@ -14,11 +14,13 @@ import * as Location from 'expo-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
+import Loading from '../../components/loading/Loading';
 
 const WelcomeScreen = () => {
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const OnLoginPressed = (data) => {
     const telephone = data.telephone;
@@ -32,9 +34,11 @@ const WelcomeScreen = () => {
     navigation.navigate('SignUp');
   };
   const guestPressed = async () => {
+    setLoading(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
+      setLoading(false);
       return;
     }
     let location = await Location.getCurrentPositionAsync({});
@@ -59,8 +63,16 @@ const WelcomeScreen = () => {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
+        navigation.navigate('Home');
       });
   };
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       <View style={styles.headerContainer}>

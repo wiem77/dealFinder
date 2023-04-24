@@ -10,6 +10,7 @@ import SucessScreen from '../screens/UserVerified/SucessScreen';
 import Test from '../screens/Test';
 import TabNavigation from './TabNavigtaion';
 import MapScreen from '../screens/mapScreen/MapScreen';
+import Loading from '../components/loading/Loading';
 
 const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {

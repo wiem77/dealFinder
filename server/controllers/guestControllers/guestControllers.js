@@ -10,13 +10,11 @@ function generatePhoneNumber() {
   }
   return phoneNumber;
 }
-
 function generateEmail() {
   const baseEmail = 'user+randomstring@example.com';
   const randomString = Math.random().toString(36).substring(2, 10);
   return baseEmail.replace('randomstring', randomString);
 }
-
 exports.createGuest = async (req, res, next) => {
   const { type, coordinates, formattedAddress, city, country } = req.body;
 
@@ -29,7 +27,6 @@ exports.createGuest = async (req, res, next) => {
     }
 
     if (!guest || guest.roles !== 'visiteur') {
-      // create a new Location document first
       const location = new Location({
         type,
         coordinates,
@@ -51,7 +48,6 @@ exports.createGuest = async (req, res, next) => {
         guestName += '1';
       }
 
-      // create a new User document using the _id of the new Location document
       guest = new User({
         nom: guestName,
         prenom: 'guest',
@@ -72,7 +68,7 @@ exports.createGuest = async (req, res, next) => {
       guest.picturePath = [media._id];
       await guest.save();
 
-      res.cookie('guestId', guest._id, { maxAge: 86400000 }); // 24 hours
+      res.cookie('guestId', guest._id, { maxAge: 86400000 });
     }
 
     res.status(201).json({

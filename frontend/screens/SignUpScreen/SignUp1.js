@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 
 import Swiper from 'react-native-swiper';
@@ -31,11 +32,20 @@ import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 
+import { handleChooseImage } from '../../components/imagePicker/ImagePicker';
 const SignUpScreen = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
+  const [image, setImage] = useState(null);
   const navigation = useNavigation();
-
+  const showAlert = (title, message) => {
+    Alert.alert(
+      title,
+      message,
+      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+      { cancelable: false }
+    );
+  };
   const {
     control,
     handleSubmit,
@@ -60,10 +70,25 @@ const SignUpScreen = () => {
   const onLoginPressed = () => {
     navigation.navigate('LoginIn');
   };
-
   const OnSignInPressed = async (data) => {
     try {
-      const res = await axios.post(`${baseUrl}/signUp`, {
+      const formData = new FormData();
+      formData.append('nom', data.nom);
+      formData.append('prenom', data.prenom);
+      formData.append('email', data.email);
+      formData.append('telephone', data.phone);
+      formData.append('password', data.password);
+      formData.append('confirmpassword', data.confirmPwd);
+      formData.append('sexe', selectedOption);
+      formData.append('age', selectedAge);
+      formData.append('roles', 'consommateur');
+      formData.append('picturePath', {
+        uri: image,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
+      console.log(formData, 'fromdata');
+      const objectData = {
         nom: data.nom,
         prenom: data.prenom,
         email: data.email,
@@ -73,9 +98,26 @@ const SignUpScreen = () => {
         sexe: selectedOption,
         age: selectedAge,
         roles: 'consommateur',
+        picturePath: {
+          uri: image,
+          name: 'image.jpg',
+          type: 'image/jpeg',
+        },
+      };
+      console.log(objectData, 'objectData');
+
+      const jsonString = JSON.stringify(objectData);
+
+      const res = await axios.post(`${baseUrl}/signUp`, jsonString, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+
       if (res.data) {
-        navigation.navigate('OtpScreen');
+        navigation.navigate('OtpScreen', {
+          email: data.email,
+        });
       }
     } catch (error) {
       if (error.response) {
@@ -87,10 +129,10 @@ const SignUpScreen = () => {
           console.log('User with given email or phone already exists');
           showAlert('Error', ' utilisateur  déja crée');
         } else {
-          showAlert('Error', error.response.data.message);
+          showAlert('Error', error);
         }
       } else {
-        showAlert('Error', 'Server error. Please try again later.');
+        showAlert('Error', error);
         console.log(error);
       }
     }

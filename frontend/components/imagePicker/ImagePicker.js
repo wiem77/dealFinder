@@ -5,7 +5,7 @@ import CustomBtn from '../customBtn/CustomBtn';
 import { Colors } from '../../constants/Colors';
 const ImagePi = () => {
   const [image, setImage] = useState(null);
-
+ 
   useEffect(() => {
     async function requestPermission() {
       if (Platform.OS !== 'web') {
@@ -28,7 +28,6 @@ const ImagePi = () => {
     });
     console.log('ImagePicker result:', result);
     if (!result.canceled) {
-      // <-- Change 'cancelled' to 'canceled'
       setImage(result.assets[0].uri);
     }
   };

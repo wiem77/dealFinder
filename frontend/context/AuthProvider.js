@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       const response = await axios.post(`${baseUrl}/signIn`, {
-        email,
+        email: email.toLowerCase(),
         password,
       });
       console.log('response:', response.data.role);
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
+
 
   const signOut = () => {
     setUser(null);

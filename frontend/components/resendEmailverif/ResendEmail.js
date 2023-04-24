@@ -25,9 +25,9 @@ const ResendVerification = ({ email }) => {
   const handleResend = async () => {
     setSecondsLeft(60);
     setIsTimerActive(true);
-    // await axios.post(`${baseUrl}/resendEmail`, {
-    //   email,
-    // });
+    await axios.post(`${baseUrl}/resendEmail`, {
+      email,
+    });
     console.log(email, 'test');
   };
 

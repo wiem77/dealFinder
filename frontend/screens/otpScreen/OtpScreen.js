@@ -8,9 +8,11 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
-
+import axios from 'axios';
 import React, { useState, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   widthPercentageToDP as wp,
@@ -19,17 +21,18 @@ import {
 
 import { FontSize } from '../../constants/FontSize';
 import { Colors } from '../../constants/Colors';
+import { baseUrl } from '../../config/config';
 
-import { useNavigation } from '@react-navigation/native';
 import FourDigitInput from '../../components/otpCard/FourDigitInput';
 import CustomBtn from '../../components/customBtn';
+
 import ResendVerification from '../../components/resendEmailverif/ResendEmail';
 
-const OtpScreen = () => {
+const OtpScreen = ({ route }) => {
   const [showTimer, setShowTimer] = useState(false);
   const [otp, setotp] = useState('');
+  const { email } = route.params;
 
-  const email = 'email@email.com';
   const navigation = useNavigation();
 
   const handleResendVerification = async (email) => {
@@ -39,40 +42,46 @@ const OtpScreen = () => {
   const handleCodeComplete = (value) => {
     setotp(value);
   };
+  const getUserId = async (email) => {
+    try {
+      const response = await axios.get(`${baseUrl}/idUser/${email}`);
 
-  //   const verificationPressed = async () => {
-  //     const userId = await getUserId(email);
-
-  //     if (!userId) {
-  //       Alert.alert('Attention', 'Email invalide.');
-  //       return;
-  //     }
-
-  //     console.log(userId, otp);
-
-  //     try {
-  //       const response = await axios.post(`${baseUrl}/verifyEmail/${userId}`, {
-  //         otp,
-  //       });
-
-  //       if (response.data) {
-  //         console.log('success');
-  //         navigation.navigate('EmailVerified');
-  //       } else {
-  //         Alert.alert('Attention', 'Code de vérification invalide.');
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       Alert.alert(
-  //         'Erreur',
-  //         "Une erreur s'est produite lors de la vérification du code. Veuillez réessayer plus tard."
-  //       );
-  //     }
-  //   };
-  const verificationPressed = () => {
-    navigation.navigate('SucessScreen');
-    console.log('test');
+      return response.data.userId;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   };
+  const verificationPressed = async () => {
+    const userId = await getUserId(email);
+
+    if (!userId) {
+      Alert.alert('Attention', 'Email invalide.');
+      return;
+    }
+
+    console.log(userId, otp);
+
+    try {
+      const response = await axios.post(`${baseUrl}/verifyEmail/${userId}`, {
+        otp,
+      });
+
+      if (response.data) {
+        console.log('success');
+        navigation.navigate('SucessScreen');
+      } else {
+        Alert.alert('Attention', 'Code de vérification invalide.');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        'Erreur',
+        "Une erreur s'est produite lors de la vérification du code. Veuillez réessayer plus tard."
+      );
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-
+const QrCode = require('./qrCodeModel');
+const { Schema } = mongoose;
 const voucherSchema = new mongoose.Schema(
   {
-    nameV: {
+    name_V: {
       type: String,
       required: true,
     },
@@ -16,15 +17,17 @@ const voucherSchema = new mongoose.Schema(
       required: true,
     },
 
-    available_count: {
+    available_vouchers: {
       type: Number,
       required: true,
     },
-    qrcode: {
-      type: String,
-      required: true,
-    },
-    promo: {
+    qrcodes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'QrCode',
+      },
+    ],
+    discount: {
       type: Number,
       required: true,
     },
@@ -33,7 +36,7 @@ const voucherSchema = new mongoose.Schema(
       default: true,
     },
     store: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Store',
       required: true,
     },

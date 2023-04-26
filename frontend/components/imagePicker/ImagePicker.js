@@ -29,7 +29,7 @@ const ImagePi = ({ onImageSelected }) => {
     console.log('ImagePicker result:', result);
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      onImageSelected(result.assets[0].uri); // Call the callback function with the image URI
+      onImageSelected(result.assets[0].uri); 
     }
   };
   return (

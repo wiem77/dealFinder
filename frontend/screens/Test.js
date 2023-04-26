@@ -5,64 +5,31 @@ import * as Location from 'expo-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { baseUrl } from '../config/config';
-const Test = () => {
-  const [location, setLocation] = useState(null);
-  const [locationName, setLocationName] = useState(null);
-  const [locationRegion, setLocationRegion] = useState(null);
+import QRCode from 'qrcode';
+import { useNavigation } from '@react-navigation/native';
+import CustomBtn from '../components/customBtn/CustomBtn';
+const Test = ({ navigation }) => {
+  const [qrCodeValue, setQRCodeValue] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      let geocode = await Location.reverseGeocodeAsync({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-      setLocationName(geocode[0].city);
-      setLocationRegion(geocode[0].region);
+  const generateQRCode = (name, phone, promotion, storeName) => {
+    const text = `Name: ${name}\nPhone: ${phone}\nPromotion: ${promotion}\nStore Name: ${storeName}`;
+    setQRCodeValue(text); // Update state with the value of the text to encode as QR code
+  };
 
-    
-      axios
-        .post(`${baseUrl}/location/addLocation`, {
-          type: 'Point',
-          coordinates: [location.coords.longitude, location.coords.latitude],
-          formattedAddress: `${geocode[0].city}, ${geocode[0].region}`,
-          city: geocode[0].city,
-          country: geocode[0].country,
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    })();
-  }, []);
+  const handleGenerate = () => {
+    generateQRCode('wiem', '55666777', '10', 'planB');
+ 
+    navigation.navigate('QrCode', { qrCodeValue }); // Pass the text to encode as QR code as a parameter
+  };
 
   return (
-    <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginVertical: '50%',
-        }}
-      >
-        <MaterialIcons name="location-on" size={24} color="black" />
-        {locationName && (
-          <Text styel={{ fontSize: 50, color: 'black' }}>
-            {locationName}, {locationRegion} ,test
-          </Text>
-        )}
-      </View>
+    <View style={{ marginTop: 40 }}>
+      <CustomBtn text={'Generate QR-code'} onPress={handleGenerate} />
     </View>
   );
 };
+
+
 
 export default Test;
 

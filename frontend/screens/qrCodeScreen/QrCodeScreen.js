@@ -14,7 +14,9 @@ import { Dimensions } from 'react-native';
 const qrCardHeight = Dimensions.get('window').height * 0.8;
 const qrCodeSize = qrCardHeight * 0.5;
 const windowHeight = Dimensions.get('window').height;
-const QrCodeScreen = () => {
+const QrCodeScreen = ({ route }) => {
+  const { qrCodeValue } = route.params;
+  console.log(qrCodeValue);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -27,10 +29,7 @@ const QrCodeScreen = () => {
       </View>
       <ScrollView style={styles.qrCard}>
         <View style={styles.qrWarpper}>
-          <QRCode
-            value="https://chat.openai.com/c/ad5ba842-0878-43c3-883a-2dd99d1d1f6b"
-            size={qrCodeSize}
-          />
+      
         </View>
         <View style={styles.textWarrper}>
           <View style={styles.row}>

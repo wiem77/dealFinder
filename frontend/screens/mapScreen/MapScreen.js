@@ -19,6 +19,7 @@ const MapScreen = () => {
   }, []);
 
   return (
+    
     <MapView
       style={{ flex: 1 }}
       initialRegion={{

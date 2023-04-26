@@ -100,54 +100,87 @@ const SignUpScreen = () => {
     setImage(selectedImage);
   };
   const OnSignInPressed = async (data) => {
-    try {
-      setLoading(true);
-      const res = await axios.post(`${baseUrl}/signUp`, {
-        nom: data.nom,
-        prenom: data.prenom,
-        email: data.email,
-        telephone: data.phone,
-        password: data.password,
-        confirmpassword: data.confirmPwd,
-        sexe: selectedOption,
-        age: selectedAge,
-        roles: 'consommateur',
+    // try {
+    setLoading(true);
+    let formData = new FormData();
+    formData.append('nom', data.nom);
+    formData.append('prenom', data.prenom);
+    formData.append('email', data.email);
+    formData.append('telephone', data.phone);
+    formData.append('password', data.password);
+    formData.append('confirmpassword', data.confirmPwd);
+    formData.append('sexe', selectedOption);
+    formData.append('age', selectedAge);
+    formData.append('roles', 'consommateur');
+    formData.append('type', 'Point');
+    formData.append('coordinates', [
+      location.coords.longitude,
+      location.coords.latitude,
+    ]);
+    formData.append('formattedAddress', `${locationName}, ${locationRegion}`);
+    formData.append('city', locationName);
+    formData.append('country', locationCountry);
+    formData.append('picture', image);
+    console.log(formData);
 
-        type: 'Point',
-        coordinates: [location.coords.longitude, location.coords.latitude],
-        formattedAddress: `${locationName}, ${locationRegion}`,
-        city: locationName,
-        country: locationCountry,
+    // const res =
+    await axios
+      .post(`${baseUrl}/signUp`, JSON.stringify(formData),{headers:{"Content-Type":"application/json"}})
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        } 
+      })
+      .catch((err) => {
+        console.log(err);
       });
-      if (res.data) {
-        navigation.navigate('OtpScreen', {
-          email: data.email,
-        });
-      }
-    } catch (error) {
-      if (error.response) {
-        if (
-          error.response.status === 409 &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          console.log('User with given email or phone already exists');
-          showAlert('Error', ' utilisateur  déja crée');
-        } else {
-          showAlert('Error', error.response.data.message);
-        }
-      } else {
-        showAlert('Error', 'Server error. Please try again later.');
-        console.log(error);
-      }
-    } finally {
-      setLoading(false);
-    }
+    // {
+    //   nom: data.nom,
+    //   prenom: data.prenom,
+    //   email: data.email,
+    //   telephone: data.phone,
+    //   password: data.password,
+    //   confirmpassword: data.confirmPwd,
+    //   sexe: selectedOption,
+    //   age: selectedAge,
+    //   roles: 'consommateur',
+
+    //   type: 'Point',
+    //   coordinates: [location.coords.longitude, location.coords.latitude],
+    //   formattedAddress: `${locationName}, ${locationRegion}`,
+    //   city: locationName,
+    //   country: locationCountry,
+    // }
+    //   );
+    //   if (res.data) {
+    //     navigation.navigate('OtpScreen', {
+    //       email: data.email,
+    //     });
+    //   }
+    // } catch (error) {
+    //   if (error.response) {
+    //     if (
+    //       error.response.status === 409 &&
+    //       error.response.data &&
+    //       error.response.data.message
+    //     ) {
+    //       console.log('User with given email or phone already exists');
+    //       showAlert('Error', ' utilisateur  déja crée');
+    //     } else {
+    //       showAlert('Error', error.response.data.message);
+    //     }
+    //   } else {
+    //     showAlert('Error', 'Server error. Please try again later.');
+    //     console.log(error);
+    //   }
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
-  if (loading) {
-    return <Loading2 />;
-  }
+  // if (loading) {
+  //   return <Loading2 />;
+  // }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

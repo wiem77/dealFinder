@@ -27,7 +27,7 @@ const storeSchema = new mongoose.Schema({
   ],
   vouchers: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Voucher',
     },
   ],

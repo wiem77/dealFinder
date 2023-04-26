@@ -5,12 +5,19 @@ const {
 } = require('../../controllers/emailController/emailController');
 const { auth } = require('../../middleWare/auth');
 const { roleCheck } = require('../../middleWare/roleCheck');
-const { signUp,signIn,getUserIdByEmail,test } = require('../../controllers/authUsers/auth');
+const {
+  signUp,
+  signIn,
+  getUserIdByEmail,
+  test,
+} = require('../../controllers/authUsers/auth');
 const router = express.Router();
+const uploader = require('../../config/multerConfig');
+
 //root:http://localhost:4000/api/signUp
 router.get('/test', test);
 //root:http://localhost:4000/api/signUp
-router.post('/signUp', signUp);
+router.post('/signUp', uploader.single('picture'), signUp);
 //root:http://localhost:4000/api/signIn
 router.post('/SignIn', signIn);
 //http://localhost:4000/api/idUser/:email

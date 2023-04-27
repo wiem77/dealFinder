@@ -1,5 +1,5 @@
 const express = require('express');
-
+const multer = require('multer');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -8,28 +8,27 @@ const guestRoutes = require('./routes/guestRoutes/guest');
 const categoryRoutes = require('./routes/categoryRoutes/categoryRoutes');
 const subcategoryRoutes = require('./routes/subCategoryRoutes/subCategoryRoutes');
 const storeRoutes = require('./routes/storeRoutes/storeRoute');
-
+const uploadRoutes = require('./routes/imageRoutes/image');
 const locationRoutes = require('./routes/locationRoutes/location');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 
 const app = express();
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 dbConnect();
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
-app.use(express.json());
+
 app.use(
   cors({
-    origin: 'exp://192.168.8.100:19000',
+    origin: 'exp://192.168.8.125:19000',
   })
 );
 
 app.use(cookieParser());
 app.use('/api', authRoutes);
-
+app.use('/api', uploadRoutes);
 app.use('/api/guest', guestRoutes);
 
 app.use('/api/category', categoryRoutes);

@@ -12,7 +12,7 @@ const ImagePi = ({ onImageSelected }) => {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
-          Alert.alert(
+            Alert.alert(
             "La permission d'accès à la bibliothèque multimédia est requise pour utiliser cette fonctionnalité."
           );
         }

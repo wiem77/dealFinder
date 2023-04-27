@@ -18,8 +18,9 @@ const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <ConsumerStack.Screen name="Test" component={Test} />
+      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
       <ConsumerStack.Screen name="QrCode" component={QrCodeScreen} />
 
       <ConsumerStack.Screen name="LoginIn" component={LoginScreen} />

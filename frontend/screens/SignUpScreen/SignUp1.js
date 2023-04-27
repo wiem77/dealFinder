@@ -121,7 +121,7 @@ const SignUpScreen = () => {
     formData.append('city', locationName);
     formData.append('country', locationCountry);
     formData.append('picture', image);
-    console.log(formData);
+    console.log(JSON.stringify(formData));
 
     // const res =
     await axios

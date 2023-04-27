@@ -1,16 +1,18 @@
 const bcrypt = require('bcrypt');
 
 const Otp = require('../../models/OtpVerification');
-const multer = require('multer');
+
 const { createnewAdminValidation } = require('../../utils/ValidationSchema');
 const generateAuthToken = require('../../utils/generateToken');
 const generateOTP = require('../../utils/generateOTP');
 const sendEmail = require('../../utils/generatEmailValidation');
 const User = require('../../models/User');
 const Location = require('../../models/LocationModel');
-const storage = require('../../config/multerConfig').storage;
+
 const fileFilter = require('../../config/multerConfig').fileFilter;
 const Media = require('../../models/MediaModel');
+const storage = require('../../config/multerConfig').storage;
+const multer = require('multer');
 module.exports.signUp = async (req, res) => {
   console.log(req.body);
   const type = req.body._parts[9][1];
@@ -44,7 +46,7 @@ console.log("PICTURE",pic);
     // const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
     //   'picture'
     // );
-    
+
     let picturePath;
     // upload(req, res, async function (err) {
     //   if (err instanceof multer.MulterError) {
@@ -60,7 +62,9 @@ console.log("PICTURE",pic);
         path: req.files[0].path,
         extension: req.files[0].filename.split('.').pop(),
       });
+      console.log("file1");
       await media.save();
+      console.log("file2");
       picturePath = media._id;
     } else {
       picturePath = [{ _id: '64451df21d60f6c16d318204' }];

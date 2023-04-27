@@ -8,28 +8,56 @@ import { baseUrl } from '../config/config';
 import QRCode from 'qrcode';
 import { useNavigation } from '@react-navigation/native';
 import CustomBtn from '../components/customBtn/CustomBtn';
-const Test = ({ navigation }) => {
-  const [qrCodeValue, setQRCodeValue] = useState('');
+import ImagePi from '../components/imagePicker/ImagePicker';
+import mime from 'mime';
 
-  const generateQRCode = (name, phone, promotion, storeName) => {
-    const text = `Name: ${name}\nPhone: ${phone}\nPromotion: ${promotion}\nStore Name: ${storeName}`;
-    setQRCodeValue(text); // Update state with the value of the text to encode as QR code
+const Test = () => {
+  const handleImageSelected = (selectedImage) => {
+    setImage(selectedImage);
+    console.log('beforesplit', image);
+    console.log('aftersplit', image.split('/'));
+  };
+  const testfnct = async () => {
+    const formData = new FormData();
+    if (image) {
+      formData.append('image', {
+        uri: image,
+        type: mime.getType(image),
+        name: image.split('/').pop(),
+      });
+      console.log('FormData object:', formData);
+
+      const jsonObject = {};
+      for (const [key, value] of formData._parts) {
+        jsonObject[key] = value;
+      }
+      const jsonString = JSON.stringify(jsonObject);
+      console.log('JSON object:', jsonString);
+      await axios
+        .post(`${baseUrl}/upload`, jsonString,{headers:{"Content-Type":"application/json"}})
+        .then((res) => {
+          if (res) {
+            console.log(res);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      console.log('No image selected');
+    }
   };
 
-  const handleGenerate = () => {
-    generateQRCode('wiem', '55666777', '10', 'planB');
- 
-    navigation.navigate('QrCode', { qrCodeValue }); // Pass the text to encode as QR code as a parameter
-  };
-
+  const [image, setImage] = useState(null);
   return (
     <View style={{ marginTop: 40 }}>
-      <CustomBtn text={'Generate QR-code'} onPress={handleGenerate} />
+      <View style={{ marginVertical: '30%' }}>
+        <ImagePi onImageSelected={handleImageSelected} />
+      </View>
+      <CustomBtn text={'Soumettre'} type="PRIMARY" onPress={testfnct} />
     </View>
   );
 };
-
-
 
 export default Test;
 

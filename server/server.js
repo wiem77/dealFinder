@@ -18,16 +18,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 dbConnect();
 
-
-
 app.use(
   cors({
-    origin: 'exp://192.168.8.125:19000',
+    origin: 'exp://192.168.8.101:19000',
   })
 );
 
 app.use(cookieParser());
 app.use('/api', authRoutes);
+app.use('/api', uploadRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api/guest', guestRoutes);
 

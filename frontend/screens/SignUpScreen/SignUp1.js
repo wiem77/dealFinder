@@ -101,7 +101,7 @@ const SignUpScreen = () => {
   };
   const OnSignInPressed2 = async (data) => {
     try {
-      ress = {
+      const ress = {
         nom: data.nom,
         prenom: data.prenom,
         email: data.email,
@@ -118,40 +118,48 @@ const SignUpScreen = () => {
         country: locationCountry,
       };
       console.log(ress);
-      const newImageUri = 'file:///' + image.split('file:/').join('');
-      let formData = new FormData();
-      formData.append('image', {
-        uri: newImageUri,
-        type: mime.getType(newImageUri),
-        name: newImageUri.split('/').pop(),
-      });
-      console.log('res', ress);
-      console.log('formData', formData);
-      await axios.post(`${baseUrl}/signUp`, ress, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
 
-      // if (res.data) {
-      //   navigation.navigate('OtpScreen');
-      // }
-    } catch (error) {
-      if (error.response) {
-        if (
-          error.response.status === 409 &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          console.log('User with given email or phone already exists');
-          showAlert('Error', ' utilisateur  déja crée');
-        } else {
-          showAlert('Error', error.response.data.message);
-        }
+      let formData = new FormData();
+      if (image) {
+        const newImageUri = 'file:///' + image.split('file:/').join('');
+        formData.append('image', {
+          uri: newImageUri,
+          type: mime.getType(newImageUri),
+          name: newImageUri.split('/').pop(),
+        });
       } else {
-        showAlert('Error', 'Server error. Please try again later.');
-        console.log(error);
+        console.log('No image selected');
       }
+
+      formData.append('userData', JSON.stringify(ress));
+
+      console.log('FormData object:', formData);
+
+      await axios.post(`${baseUrl}/signUp`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        data: {
+          nom: data.nom,
+          prenom: data.prenom,
+          email: data.email,
+          telephone: data.phone,
+          password: data.password,
+          confirmpassword: data.confirmPwd,
+          sexe: selectedOption,
+          age: selectedAge,
+          roles: 'consommateur',
+          type: 'Point',
+          coordinates: [location.coords.longitude, location.coords.latitude],
+          formattedAddress: `${locationName}, ${locationRegion}`,
+          city: locationName,
+          country: locationCountry,
+        },
+      });
+      console.log(formData);
+    } catch (error) {
+      console.error(error);
     }
   };
+
   const OnSignInPressed = async (data) => {
     // try {
 

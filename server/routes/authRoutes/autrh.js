@@ -17,7 +17,7 @@ const uploader = require('../../config/multerConfig');
 //root:http://localhost:4000/api/signUp
 router.get('/test', test);
 //root:http://localhost:4000/api/signUp
-router.post('/signUp', uploader.single('picture'), signUp);
+router.post('/signUp', uploader.single('image'), signUp);
 //root:http://localhost:4000/api/signIn
 router.post('/SignIn', signIn);
 //http://localhost:4000/api/idUser/:email

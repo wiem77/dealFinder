@@ -13,9 +13,14 @@ const fileFilter = require('../../config/multerConfig').fileFilter;
 const Media = require('../../models/MediaModel');
 const storage = require('../../config/multerConfig').storage;
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 module.exports.signUp = async (req, res) => {
-  console.log(req.body);
-
+  const data = JSON.parse(req.body.userData);
+  const imageUri = req.file.path;
+  const imageType = req.file.mimetype;
+  const fileName = req.file.originalname;
+  const filePath = path.join(__dirname, '..', 'public', 'image', fileName);
   const {
     nom,
     prenom,
@@ -31,7 +36,7 @@ module.exports.signUp = async (req, res) => {
     type,
     city,
     country,
-  } = req.body;
+  } = data;
   console.log('Register..');
 
   try {
@@ -47,24 +52,20 @@ module.exports.signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPwd = await bcrypt.hash(password, salt);
     const confirmhashPwd = await bcrypt.hash(confirmpassword, salt);
+    console.log('media2');
+    const imageUri = req.file;
 
-    let picturePath;
-
-    console.log(req.file, 'test');
-    // if (req.files) {
-    //   const media = new Media({
-    //     path: req.files[0].path,
-    //     extension: req.files[0].filename.split('.').pop(),
-    //   });
-    //   console.log('file1');
-    //   await media.save();
-    //   console.log('file2');
-    //   picturePath = media._id;
-    // } else {
-    //   picturePath = [{ _id: '64451df21d60f6c16d318204' }];
-    // }
-    // console.log(picturePath);
-    // });
+    if (req.file) {
+      const media = new Media({
+        path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
+        extension: fileName.split('.').pop(),
+      });
+      await media.save();
+      picturePath = [media._id];
+      console.log('media', media);
+    } else {
+      picturePath = [{ _id: '64451df21d60f6c16d318204' }];
+    }
 
     const location = new Location({
       type: type,

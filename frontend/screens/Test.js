@@ -12,6 +12,7 @@ import ImagePi from '../components/imagePicker/ImagePicker';
 import mime from 'mime';
 
 const Test = () => {
+  console.log(baseUrl);
   const handleImageSelected = (selectedImage) => {
     setImage(selectedImage);
     console.log('beforesplit', image);
@@ -37,18 +38,10 @@ const Test = () => {
       }
       const jsonString = JSON.stringify(jsonObject);
       console.log('JSON object:', jsonString);
-      await axios
-        .post(`${baseUrl}/upload`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then((res) => {
-          if (res) {
-            console.log('RESS', res);
-          }
-        })
-        .catch((err) => {
-          console.log('ERROR', err);
-        });
+      await axios.post(`${baseUrl}/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      console.log(formData);
     } else {
       console.log('No image selected');
     }
@@ -72,37 +65,10 @@ const Test = () => {
 
   return (
     <>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <ImagePi onImageSelected={handleImageSelected} />
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 20,
-          }}
-        >
-          <CustomBtn text={'Soumettre'} type="PRIMARY" onPress={testfnct} />
-        </View>
+      <View style={{ marginVertical: '20%' }}>
+        <ImagePi onImageSelected={handleImageSelected} />
       </View>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-      >
-        {imageData && (
-          <Image
-            source={{ uri: imageData }}
-            style={{ width: '100%', aspectRatio: 1 }}
-            resizeMode="contain"
-          />
-        )}
-      </View>
+      <CustomBtn text={'Soumettre'} type="PRIMARY" onPress={testfnct} />
     </>
   );
 };

@@ -42,11 +42,11 @@ module.exports.signUp = async (req, res) => {
   try {
     console.log('Register function called');
     const user = await User.findOne({ email: email });
-    // if (user) {
-    //   return res
-    //     .status(409)
-    //     .send({ message: 'user with given email already exists' });
-    // }
+    if (user) {
+      return res
+        .status(409)
+        .send({ message: 'user with given email already exists' });
+    }
     const confirmpass = confirmpassword;
     console.log(confirmpass);
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -54,7 +54,7 @@ module.exports.signUp = async (req, res) => {
     const confirmhashPwd = await bcrypt.hash(confirmpassword, salt);
     console.log('media2');
     const imageUri = req.file;
-
+    let picturePath;
     if (req.file) {
       const media = new Media({
         path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
@@ -89,11 +89,11 @@ module.exports.signUp = async (req, res) => {
       roles: roles,
 
       verified: false,
-      // picturePath: picturePath,
+      picturePath: picturePath,
       location: location._id,
     });
 
-    // await newUser.save();
+    await newUser.save();
     console.log('Register  find ', newUser);
     const otpNumber = await generateOTP();
     console.log('otpNumber', otpNumber);

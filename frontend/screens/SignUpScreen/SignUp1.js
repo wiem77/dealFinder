@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-
+import mime from 'mime';
 import Swiper from 'react-native-swiper';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import {
   widthPercentageToDP as wp,
@@ -99,57 +99,119 @@ const SignUpScreen = () => {
   const handleImageSelected = (selectedImage) => {
     setImage(selectedImage);
   };
+  const OnSignInPressed2 = async (data) => {
+    try {
+      ress = {
+        nom: data.nom,
+        prenom: data.prenom,
+        email: data.email,
+        telephone: data.phone,
+        password: data.password,
+        confirmpassword: data.confirmPwd,
+        sexe: selectedOption,
+        age: selectedAge,
+        roles: 'consommateur',
+        type: 'Point',
+        coordinates: [location.coords.longitude, location.coords.latitude],
+        formattedAddress: `${locationName}, ${locationRegion}`,
+        city: locationName,
+        country: locationCountry,
+      };
+      console.log(ress);
+      const newImageUri = 'file:///' + image.split('file:/').join('');
+      let formData = new FormData();
+      formData.append('image', {
+        uri: newImageUri,
+        type: mime.getType(newImageUri),
+        name: newImageUri.split('/').pop(),
+      });
+      console.log('res', ress);
+      console.log('formData', formData);
+      await axios.post(`${baseUrl}/signUp`, ress, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      // if (res.data) {
+      //   navigation.navigate('OtpScreen');
+      // }
+    } catch (error) {
+      if (error.response) {
+        if (
+          error.response.status === 409 &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          console.log('User with given email or phone already exists');
+          showAlert('Error', ' utilisateur  déja crée');
+        } else {
+          showAlert('Error', error.response.data.message);
+        }
+      } else {
+        showAlert('Error', 'Server error. Please try again later.');
+        console.log(error);
+      }
+    }
+  };
   const OnSignInPressed = async (data) => {
     // try {
+
+    const newImageUri = 'file:///' + image.split('file:/').join('');
     setLoading(true);
     let formData = new FormData();
-    formData.append('nom', data.nom);
-    formData.append('prenom', data.prenom);
-    formData.append('email', data.email);
-    formData.append('telephone', data.phone);
-    formData.append('password', data.password);
-    formData.append('confirmpassword', data.confirmPwd);
-    formData.append('sexe', selectedOption);
-    formData.append('age', selectedAge);
-    formData.append('roles', 'consommateur');
-    formData.append('type', 'Point');
-    formData.append('coordinates', [
-      location.coords.longitude,
-      location.coords.latitude,
-    ]);
-    formData.append('formattedAddress', `${locationName}, ${locationRegion}`);
-    formData.append('city', locationName);
-    formData.append('country', locationCountry);
-    formData.append('picture', image);
-    console.log(JSON.stringify(formData));
+    formData.append('image', {
+      uri: newImageUri,
+      type: mime.getType(newImageUri),
+      name: newImageUri.split('/').pop(),
+    });
+
+    console.log('FormData object:', formData);
+    // formData.append('nom', data.nom);
+    // formData.append('prenom', data.prenom);
+    // formData.append('email', data.email);
+    // formData.append('telephone', data.phone);
+    // formData.append('password', data.password);
+    // formData.append('confirmpassword', data.confirmPwd);
+    // formData.append('sexe', selectedOption);
+    // formData.append('age', selectedAge);
+    // formData.append('roles', 'consommateur');
+    // formData.append('type', 'Point');
+    // formData.append('coordinates', [
+    //   location.coords.longitude,
+    //   location.coords.latitude,
+    // ]);
+    // formData.append('formattedAddress', `${locationName}, ${locationRegion}`);
+    // formData.append('city', locationName);
+    // formData.append('country', locationCountry);
 
     // const res =
     await axios
-      .post(`${baseUrl}/signUp`, JSON.stringify(formData),{headers:{"Content-Type":"application/json"}})
+      .post(`${baseUrl}/signUp`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
       .then((res) => {
         if (res) {
-          console.log(res);
-        } 
+          console.log(res.request);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
     // {
-    //   nom: data.nom,
-    //   prenom: data.prenom,
-    //   email: data.email,
-    //   telephone: data.phone,
-    //   password: data.password,
-    //   confirmpassword: data.confirmPwd,
-    //   sexe: selectedOption,
-    //   age: selectedAge,
-    //   roles: 'consommateur',
+    // nom: data.nom,
+    // prenom: data.prenom,
+    // email: data.email,
+    // telephone: data.phone,
+    // password: data.password,
+    // confirmpassword: data.confirmPwd,
+    // sexe: selectedOption,
+    // age: selectedAge,
+    // roles: 'consommateur',
 
-    //   type: 'Point',
-    //   coordinates: [location.coords.longitude, location.coords.latitude],
-    //   formattedAddress: `${locationName}, ${locationRegion}`,
-    //   city: locationName,
-    //   country: locationCountry,
+    // type: 'Point',
+    // coordinates: [location.coords.longitude, location.coords.latitude],
+    // formattedAddress: `${locationName}, ${locationRegion}`,
+    // city: locationName,
+    // country: locationCountry,
     // }
     //   );
     //   if (res.data) {
@@ -377,7 +439,7 @@ const SignUpScreen = () => {
           <CustomBtn
             text={'Soumettre'}
             type="PRIMARY"
-            onPress={handleSubmit(OnSignInPressed)}
+            onPress={handleSubmit(OnSignInPressed2)}
           />
         </View>
         <View style={styles.textbtnContainer}>

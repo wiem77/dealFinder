@@ -15,86 +15,80 @@ const storage = require('../../config/multerConfig').storage;
 const multer = require('multer');
 module.exports.signUp = async (req, res) => {
   console.log(req.body);
-  const type = req.body._parts[9][1];
-  const coordinates = req.body._parts[10][1];
-  const formattedAddress = req.body._parts[11][1];
-  const city = req.body._parts[12][1];
-  const country = req.body._parts[13][1];
-  console.log(type);
-  console.log(coordinates);
-  console.log(formattedAddress);
-  console.log(city);
-  console.log(country);
-const pic= req.body._parts[14];
-console.log("PICTURE",pic);
-  // const { type, coordinates, formattedAddress, city, country } = body
+
+  const {
+    nom,
+    prenom,
+    telephone,
+    email,
+    password,
+    confirmpassword,
+    age,
+    sexe,
+    roles,
+    coordinates,
+    formattedAddress,
+    type,
+    city,
+    country,
+  } = req.body;
   console.log('Register..');
-  // console.log(type, coordinates, formattedAddress, city, country);
+
   try {
     console.log('Register function called');
-    const user = await User.findOne({ email: req.body._parts[2][1] });
+    const user = await User.findOne({ email: email });
     // if (user) {
     //   return res
     //     .status(409)
     //     .send({ message: 'user with given email already exists' });
     // }
-    const confirmpass = req.body._parts[5][1];
+    const confirmpass = confirmpassword;
     console.log(confirmpass);
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
-    const hashPwd = await bcrypt.hash(confirmpass, salt);
-    const confirmhashPwd = await bcrypt.hash(req.body._parts[5][1], salt);
-    // const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
-    //   'picture'
-    // );
+    const hashPwd = await bcrypt.hash(password, salt);
+    const confirmhashPwd = await bcrypt.hash(confirmpassword, salt);
 
     let picturePath;
-    // upload(req, res, async function (err) {
-    //   if (err instanceof multer.MulterError) {
-    //     return res.status(400).json({ message: 'Error uploading image' });
-    //   } else if (err) {
-    //     return res
-    //       .status(400)
-    //       .json({ message: 'Unknown error uploading image' });
-    //   }
+
     console.log(req.file, 'test');
-    if (req.files) {
-      const media = new Media({
-        path: req.files[0].path,
-        extension: req.files[0].filename.split('.').pop(),
-      });
-      console.log("file1");
-      await media.save();
-      console.log("file2");
-      picturePath = media._id;
-    } else {
-      picturePath = [{ _id: '64451df21d60f6c16d318204' }];
-    }
-    console.log(picturePath);
+    // if (req.files) {
+    //   const media = new Media({
+    //     path: req.files[0].path,
+    //     extension: req.files[0].filename.split('.').pop(),
+    //   });
+    //   console.log('file1');
+    //   await media.save();
+    //   console.log('file2');
+    //   picturePath = media._id;
+    // } else {
+    //   picturePath = [{ _id: '64451df21d60f6c16d318204' }];
+    // }
+    // console.log(picturePath);
     // });
 
     const location = new Location({
-      type,
-      coordinates,
-      formattedAddress,
-      city,
-      country,
+      type: type,
+      coordinates: coordinates,
+      formattedAddress: formattedAddress,
+      city: city,
+      country: country,
     });
     await location.save();
     console.log(location, 'location');
 
     const newUser = new User({
-      nom: req.body._parts[0][1],
-      prenom: req.body._parts[1][1],
-      email: req.body._parts[2][1],
-      telephone: req.body._parts[3][1],
+      nom: nom,
+      prenom: prenom,
+      email: email,
+      telephone: telephone,
       password: hashPwd,
       confirmpassword: confirmhashPwd,
-      sexe: req.body._parts[6][1],
-      age: req.body._parts[7][1],
-      roles: req.body._parts[8][1],
+      sexe: sexe,
+      age: age,
+      roles: roles,
 
       verified: false,
-      picturePath: picturePath,
+      // picturePath: picturePath,
       location: location._id,
     });
 
@@ -103,7 +97,7 @@ console.log("PICTURE",pic);
     const otpNumber = await generateOTP();
     console.log('otpNumber', otpNumber);
     const otpVerification = new Otp({
-      email: req.body._parts[2][1],
+      email: email,
       userId: newUser._id,
       otp: otpNumber,
       createdAt: Date.now(),

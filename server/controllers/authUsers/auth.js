@@ -9,7 +9,6 @@ const sendEmail = require('../../utils/generatEmailValidation');
 const User = require('../../models/User');
 const Location = require('../../models/LocationModel');
 
-const fileFilter = require('../../config/multerConfig').fileFilter;
 const Media = require('../../models/MediaModel');
 const storage = require('../../config/multerConfig').storage;
 const multer = require('multer');
@@ -17,10 +16,6 @@ const fs = require('fs');
 const path = require('path');
 module.exports.signUp = async (req, res) => {
   const data = JSON.parse(req.body.userData);
-  const imageUri = req.file.path;
-  const imageType = req.file.mimetype;
-  const fileName = req.file.originalname;
-  const filePath = path.join(__dirname, '..', 'public', 'image', fileName);
   const {
     nom,
     prenom,
@@ -52,10 +47,10 @@ module.exports.signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPwd = await bcrypt.hash(password, salt);
     const confirmhashPwd = await bcrypt.hash(confirmpassword, salt);
-    console.log('media2');
-    const imageUri = req.file;
+
     let picturePath;
     if (req.file) {
+      const fileName = req.file.filename;
       const media = new Media({
         path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
         extension: fileName.split('.').pop(),

@@ -101,6 +101,7 @@ const SignUpScreen = () => {
   };
   const OnSignInPressed2 = async (data) => {
     try {
+      setLoading(true);
       const ress = {
         nom: data.nom,
         prenom: data.prenom,
@@ -154,103 +155,15 @@ const SignUpScreen = () => {
           country: locationCountry,
         },
       });
+      navigation.navigate('OtpScreen', { email: data.email });
       console.log(formData);
     } catch (error) {
       console.error(error);
     }
+    if (loading) {
+      return <Loading2 />;
+    }
   };
-
-  const OnSignInPressed = async (data) => {
-    // try {
-
-    const newImageUri = 'file:///' + image.split('file:/').join('');
-    setLoading(true);
-    let formData = new FormData();
-    formData.append('image', {
-      uri: newImageUri,
-      type: mime.getType(newImageUri),
-      name: newImageUri.split('/').pop(),
-    });
-
-    console.log('FormData object:', formData);
-    // formData.append('nom', data.nom);
-    // formData.append('prenom', data.prenom);
-    // formData.append('email', data.email);
-    // formData.append('telephone', data.phone);
-    // formData.append('password', data.password);
-    // formData.append('confirmpassword', data.confirmPwd);
-    // formData.append('sexe', selectedOption);
-    // formData.append('age', selectedAge);
-    // formData.append('roles', 'consommateur');
-    // formData.append('type', 'Point');
-    // formData.append('coordinates', [
-    //   location.coords.longitude,
-    //   location.coords.latitude,
-    // ]);
-    // formData.append('formattedAddress', `${locationName}, ${locationRegion}`);
-    // formData.append('city', locationName);
-    // formData.append('country', locationCountry);
-
-    // const res =
-    await axios
-      .post(`${baseUrl}/signUp`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      .then((res) => {
-        if (res) {
-          console.log(res.request);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    // {
-    // nom: data.nom,
-    // prenom: data.prenom,
-    // email: data.email,
-    // telephone: data.phone,
-    // password: data.password,
-    // confirmpassword: data.confirmPwd,
-    // sexe: selectedOption,
-    // age: selectedAge,
-    // roles: 'consommateur',
-
-    // type: 'Point',
-    // coordinates: [location.coords.longitude, location.coords.latitude],
-    // formattedAddress: `${locationName}, ${locationRegion}`,
-    // city: locationName,
-    // country: locationCountry,
-    // }
-    //   );
-    //   if (res.data) {
-    //     navigation.navigate('OtpScreen', {
-    //       email: data.email,
-    //     });
-    //   }
-    // } catch (error) {
-    //   if (error.response) {
-    //     if (
-    //       error.response.status === 409 &&
-    //       error.response.data &&
-    //       error.response.data.message
-    //     ) {
-    //       console.log('User with given email or phone already exists');
-    //       showAlert('Error', ' utilisateur  déja crée');
-    //     } else {
-    //       showAlert('Error', error.response.data.message);
-    //     }
-    //   } else {
-    //     showAlert('Error', 'Server error. Please try again later.');
-    //     console.log(error);
-    //   }
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
-
-  // if (loading) {
-  //   return <Loading2 />;
-  // }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

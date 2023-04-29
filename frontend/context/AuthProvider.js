@@ -2,6 +2,7 @@ import React, { useState, createContext } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../config/config';
 
+
 export const AuthContext = createContext({
   user: null,
 
@@ -35,7 +36,6 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
-
 
   const signOut = () => {
     setUser(null);

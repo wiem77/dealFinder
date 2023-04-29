@@ -19,7 +19,7 @@ router.get('/test', test);
 //root:http://localhost:4000/api/signUp
 router.post('/signUp', uploader.single('image'), signUp);
 //root:http://localhost:4000/api/signIn
-router.post('/SignIn', signIn);
+router.post('/SignIn', auth,signIn);
 //http://localhost:4000/api/idUser/:email
 router.get('/idUser/:email', getUserIdByEmail);
 

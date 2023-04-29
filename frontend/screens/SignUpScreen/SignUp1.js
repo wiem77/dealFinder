@@ -187,7 +187,6 @@ const SignUpScreen = () => {
             <View>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>
-                  {' '}
                   Crée un Compte et devenez membre de DealFinder dès maintenant
                 </Text>
                 <Text style={styles.subtitle}>

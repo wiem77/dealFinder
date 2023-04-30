@@ -1,13 +1,43 @@
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  SafeAreaView,
+  FlatList,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import StoreCard2 from '../../components/storeCard2/StoreCard';
 import Colors from '../../constants/Colors';
-
+import Imgtest from '../../assets/image/Store1.png';
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.9;
 
 const Favorite = () => {
+  const [favoriteStores, setFavoriteStores] = useState([
+    {
+      id: 1,
+      name: 'Store1',
+      distance: '10 min away',
+      discount: '15%',
+      image: Imgtest,
+    },
+    {
+      id: 2,
+      name: 'Store2',
+      distance: '5 min away',
+      discount: '10%',
+      image: Imgtest,
+    },
+  ]);
+
+  const handleRemoveFavorite = (storeId) => {
+    setFavoriteStores((prevStores) =>
+      prevStores.filter((store) => store.id !== storeId)
+    );
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView>
@@ -24,7 +54,21 @@ const Favorite = () => {
       </SafeAreaView>
 
       <View style={styles.contentContainer}>
-        <StoreCard2 />
+        {favoriteStores.length === 0 ? (
+          <Text style={styles.noFavoritesText}>Pas de favoris</Text>
+        ) : (
+          <FlatList
+            data={favoriteStores}
+            renderItem={({ item }) => (
+              <StoreCard2
+                store={item}
+                onRemoveFavorite={handleRemoveFavorite}
+              />
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        )}
       </View>
     </View>
   );
@@ -66,6 +110,11 @@ const styles = StyleSheet.create({
     fontSize: width * 0.045,
     fontWeight: 'bold',
     color: '#000',
+    textAlign: 'center',
+  },
+  noFavoritesText: {
+    fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

@@ -15,12 +15,16 @@ import Loading from '../components/loading/Loading';
 import QrCodeScreen from '../screens/qrCodeScreen/QrCodeScreen';
 import StoreScreen from '../screens/storeScreen/StoreScreen';
 import VoucherScreen from '../screens/voucherScreen/VoucherScreen';
+import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
+import Favorite from '../screens/favoriteScreen/Favorite';
 
 const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
+      <ConsumerStack.Screen name="Favorite" component={Favorite} />
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
+      <ConsumerStack.Screen name="Profile" component={ProfileScreen} />
       <ConsumerStack.Screen name="Map" component={MapScreen} />
       <ConsumerStack.Screen name="Voucher" component={VoucherScreen} />
       <ConsumerStack.Screen name="Store" component={StoreScreen} />

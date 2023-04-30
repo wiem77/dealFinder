@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Colors } from '../constants/Colors';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome,FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import Search from '../screens/searchScreen/Search';
 import Favorite from '../screens/favoriteScreen/Favorite';
 import CartScreen from '../screens/cartScreen/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
+import MapScreen from '../screens/mapScreen/MapScreen';
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
   return (
@@ -68,17 +69,17 @@ const TabNavigation = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Map"
+        component={MapScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <FontAwesome
-              name={focused ? 'user' : 'user-o'}
+            <FontAwesome5
+              name={focused ? 'map-marked' : 'map-marked-alt'}
               size={20}
               color={focused ? Colors.darkred : 'grey'}
             />
           ),
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Map',
         }}
       />
     </Tab.Navigator>

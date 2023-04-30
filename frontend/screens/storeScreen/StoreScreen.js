@@ -394,6 +394,9 @@ const StoreScreen = () => {
   const [emailVisible, setEmailVisible] = useState(false);
   const [websiteVisible, setWebsiteVisible] = useState(false);
 
+ const handelVoirPlus=()=>{
+navigation.navigate('Voucher')
+ }
   const toggleEmailVisible = () => {
     setEmailVisible(!emailVisible);
   };
@@ -597,7 +600,7 @@ const StoreScreen = () => {
             <Text style={styles.voucherTitle}>{item.title}</Text>
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.voucherDescription}>{item.description}</Text>
-              <TouchableOpacity onPress={() => console.log('voucher')}>
+              <TouchableOpacity onPress={handelVoirPlus}>
                 <Text
                   style={{
                     fontFamily: 'inter',

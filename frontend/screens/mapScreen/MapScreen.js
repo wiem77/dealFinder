@@ -6,9 +6,11 @@ import {
   Platform,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator,
+  ImageBackground,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 const { width, height } = Dimensions.get('window');
 import TabNavigation from '../../navigation/TabNavigtaion';
@@ -16,9 +18,12 @@ import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 const MapScreen = () => {
   const navigation = useNavigation();
+  const [circleRadius, setCircleRadius] = useState(500);
   const [location, setLocation] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -28,20 +33,41 @@ const MapScreen = () => {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+      try {
+        let position = await Location.getCurrentPositionAsync({});
+        if (position && position.coords) {
+          setLocation(position);
+          console.log(position);
+        } else {
+          console.log('Failed to get location');
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     })();
   }, []);
 
   const handelBackPressed = () => {
     navigation.navigate('Home');
   };
+  const handleIncreaseCircle = () => {
+    setCircleRadius(circleRadius + 100);
+  };
+
+  const handleDecreaseCircle = () => {
+    if (circleRadius > 100) {
+      setCircleRadius(circleRadius - 100);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <SafeAreaView>
         <TouchableOpacity>
-          <AntDesign style={{marginTop:'5%'}}
+          <AntDesign
+            style={{ marginTop: '5%' }}
             name="arrowleft"
             size={30}
             color="black"
@@ -55,28 +81,60 @@ const MapScreen = () => {
       </SafeAreaView>
 
       <View style={styles.contentContainer}>
-        <MapView
-          style={{ flex: 1 }}
-          initialRegion={{
-            latitude: location?.coords.latitude ?? 37.78825,
-            longitude: location?.coords.longitude ?? -122.4324,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
-        >
-          {location && (
-            <Marker
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-              title="My Location"
-              description={`Latitude: ${location.coords.latitude.toFixed(
-                6
-              )}, Longitude: ${location.coords.longitude.toFixed(6)}`}
-            />
-          )}
-        </MapView>
+        {isLoading ? (
+          // Use BlurView component to create a blurred loading screen
+          <BlurView intensity={100} tint="dark" style={styles.loadingIndicator}>
+            <ActivityIndicator size="large" color="gray" />
+          </BlurView>
+        ) : (
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: location?.coords.latitude ?? 35.8288,
+              longitude: location?.coords.longitude ?? 10.6407,
+              latitudeDelta: 0.015,
+              longitudeDelta: 0.0121,
+            }}
+          >
+            {location && (
+              <>
+                <Marker
+                  coordinate={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
+                  title="My Location"
+                  description={`Latitude: ${location.coords.latitude.toFixed(
+                    6
+                  )}, Longitude: ${location.coords.longitude.toFixed(6)}`}
+                />
+                <Circle
+                  center={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
+                  radius={circleRadius}
+                  strokeColor="rgba(0, 0, 255, 0.3)"
+                  fillColor="rgba(0, 0, 255, 0.05)"
+                />
+              </>
+            )}
+          </MapView>
+        )}
+        <View style={styles.circleButtonsContainer}>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={handleIncreaseCircle}
+          >
+            <AntDesign name="plus" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={handleDecreaseCircle}
+          >
+            <AntDesign name="minus" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -108,7 +166,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  
+
   backButton: {
     position: 'absolute',
     top: 40,
@@ -134,6 +192,28 @@ const styles = StyleSheet.create({
     fontSize: width * 0.05,
     fontWeight: 'bold',
     color: Colors.black,
+  },
+  circleButtonsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 80,
+    height: 50,
+    backgroundColor: '#0008',
+    borderRadius: 25,
+    paddingHorizontal: 10,
+  },
+
+  circleButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -11,24 +11,72 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+
 import { useNavigation } from '@react-navigation/native';
-import {
-  MaterialCommunityIcons,
-  AntDesign,
-  MaterialIcons,
-  FontAwesome,
-} from '@expo/vector-icons';
+import ViewMoreText from 'react-native-view-more-text';
+
+
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
-import ViewMoreText from 'react-native-view-more-text';
-import CustomBtn from '../../components/customBtn/CustomBtn';
-const { width, height } = Dimensions.get('window');
 
+import CustomBtn from '../../components/customBtn/CustomBtn';
+import CustomCard from '../../components/customCard/CustomCard';
+
+const { width, height } = Dimensions.get('window');
+// const DATA = [
+//   {
+//     id: '1',
+//     storeName: 'My Store 1',
+//     distance: '2 km away',
+//     location: '123 Main Street',
+//     voucher: '10% off',
+//     subCategory: 'sport',
+//   },
+//   {
+//     id: '2',
+//     storeName: 'My Store 2',
+//     distance: '3 km away',
+//     location: '456 Main Street',
+//     voucher: '20% off',
+//     subCategory: 'food',
+//   },
+//   {
+//     id: '3',
+//     storeName: 'My Store 3',
+//     distance: '4 km away',
+//     location: '789 Main Street',
+//     voucher: '30% off',
+//     subCategory: 'clothing',
+//   },
+// ];
 const VoucherScreen = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigation = useNavigation();
+
+  const renderItem = ({ item }) => (
+    <CustomCard
+      storeName={item.storeName}
+      distance={item.distance}
+      location={item.location}
+      voucher={item.voucher}
+      subCategory={item.subCategory}
+    />
+  );
+  
+  const handelBackPressed = () => {
+    navigation.navigate('Store');
+  };
+
+  const handelAddCartPressed = () => {
+    console.log('added to cart');
+  };
+
   const toggleIsExpanded = () => {
     setIsExpanded(!isExpanded);
   };
+
   const renderViewMore = (onPress) => (
     <Text style={styles.seeMoreText} onPress={onPress}>
       Voir plus
@@ -44,7 +92,7 @@ const VoucherScreen = () => {
     <View style={styles.container}>
       <SafeAreaView>
         <TouchableOpacity>
-          <AntDesign name="arrowleft" size={30} color="black" />
+          <AntDesign name="arrowleft" size={30} color="black" onPress={handelBackPressed} />
         </TouchableOpacity>
       </SafeAreaView>
       <View style={styles.imageContainer}>
@@ -59,13 +107,12 @@ const VoucherScreen = () => {
           <Text style={styles.voucherName}>Promo shoses</Text>
           <Text style={styles.discountName}>PDiscount 15%</Text>
         </View>
-        <View
-         
-        >
+        <View>
           <Text style={styles.detailles}>Détailles</Text>
         </View>
         <ViewMoreText
-          numberOfLines={1}
+          style={{ marginTop: '6%', marginBottom: '6%' }}
+          numberOfLines={2}
           renderViewMore={renderViewMore}
           renderViewLess={renderViewLess}
           onAfterCollapse={toggleIsExpanded}
@@ -80,6 +127,41 @@ const VoucherScreen = () => {
             velit velit sit amet metus.
           </Text>
         </ViewMoreText>
+        <View style={{ marginTop: '8%', marginBottom: '6%' }}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.nbVoucher}> Nombre de Coupons restant</Text>
+            <MaterialCommunityIcons
+              name="tag-text"
+              size={25}
+              color="black"
+              style={{ paddingHorizontal: 10 }}
+            />
+          </View>
+
+          <Text> Nombre de Coupons restant</Text>
+        </View>
+        <View style={{ marginTop: '8%', marginBottom: '6%' }}>
+          <CustomBtn
+            style={{ marginTop: '6%' }}
+            text={'Reserver votre coupon'}
+            onPress={handelAddCartPressed}
+            nameIcon={'cart-outline'}
+            sizeIcon={24}
+            colorIcon={Colors.white}
+          />
+        </View>
+
+        {/* <View style={styles.similareOffres}>
+          <View style={{marginBottom:'6%',marginTop:'6%'}}>
+            <FlatList
+              horizontal
+              data={DATA}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        </View> */}
       </View>
     </View>
   );
@@ -128,6 +210,7 @@ const styles = StyleSheet.create({
     }),
   },
   voucherName: {
+    marginVertical: '6%',
     color: Colors.black,
     fontSize: width * 0.06,
     marginHorizontal: -10,
@@ -151,6 +234,27 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginTop: height * 0.0,
     fontFamily: 'poppins',
-    marginVertical: '2%'
+    marginBottom: '3%',
+    marginTop: '6%',
+  },
+  seeMoreText: {
+    color: Colors.lightRed2,
+    fontFamily: 'poppins',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  description: {
+    fontSize: 14,
+    marginBottom: 10,
+    letterSpacing: 1,
+    fontFamily: 'inter',
+  },
+  nbVoucher: {
+    color: Colors.red,
+    fontSize: width * 0.04,
+
+    fontWeight: '400',
+    marginTop: height * 0.0,
+    fontFamily: 'poppins',
   },
 });

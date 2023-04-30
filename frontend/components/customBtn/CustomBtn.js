@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
     height: wp('13%'),
     padding: 15,
     marginVertical: 6,
-
+    flexDirection: 'row',
+  justifyContent:'center',
     alignItems: 'center',
 
     ...Platform.select({
@@ -120,6 +121,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.medium,
     fontWeight: '500',
     lineHeight: 19,
+    padding:5,
   },
   text_SECONDARY: {
     color: Colors.black,

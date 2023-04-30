@@ -256,16 +256,16 @@
 //     height: width,
 //   },
 
-//   contentContainer: {
-//     borderTopLeftRadius: 35,
-//     borderTopRightRadius: 35,
+  // contentContainer: {
+  //   borderTopLeftRadius: 35,
+  //   borderTopRightRadius: 35,
 
-//     backgroundColor: '#FBF5F5',
-//     paddingHorizontal: '5%',
-//     paddingVertical: height * 0.05,
-//     marginTop: -width * 0.34,
-//     flex: 1,
-//   },
+  //   backgroundColor: '#FBF5F5',
+  //   paddingHorizontal: '5%',
+  //   paddingVertical: height * 0.05,
+  //   marginTop: -width * 0.34,
+  //   flex: 1,
+  // },
 //   storeName: {
 // color: Colors.black,
 // fontSize: width * 0.09,

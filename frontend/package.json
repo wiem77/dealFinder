@@ -42,6 +42,7 @@
     "react-native-svg": "13.4.0",
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.2.0",
+    "react-native-view-more-text": "^2.2.0",
     "react-native-web": "~0.18.10"
   },
   "devDependencies": {

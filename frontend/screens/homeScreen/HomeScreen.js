@@ -48,8 +48,9 @@ const HomeScreen = () => {
       subCategory={item.subCategory}
     />
   );
-  const [iconColor, setIconColor] = useState('black');
+  
   const navigation = useNavigation();
+  const [iconColor, setIconColor] = useState('black');
   const handleClick = () => {
     setIconColor(Colors.red);
     navigation.navigate('Map');

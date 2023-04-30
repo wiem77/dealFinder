@@ -5,13 +5,16 @@ import {
   TextInput,
   FlatList,
   ScrollView,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CustomCard from '../../components/customCard/CustomCard';
 import { Colors } from '../../constants/Colors';
-import { Ionicons, Entypo } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 const DATA = [
   {
     id: '1',
@@ -38,7 +41,39 @@ const DATA = [
     subCategory: 'clothing',
   },
 ];
+
 const HomeScreen = () => {
+  const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState(null);
+  const [locationRegion, setLocationRegion] = useState(null);
+  const [locationCountry, setLocationCountry] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      let geocode = await Location.reverseGeocodeAsync({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      setLocationName(geocode[0].city);
+      setLocationRegion(geocode[0].region);
+      setLocationCountry(geocode[0].country);
+    })();
+  }, []);
+  const showAlert = (title, message) => {
+    Alert.alert(
+      title,
+      message,
+      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+      { cancelable: false }
+    );
+  };
   const renderItem = ({ item }) => (
     <CustomCard
       storeName={item.storeName}
@@ -48,31 +83,26 @@ const HomeScreen = () => {
       subCategory={item.subCategory}
     />
   );
-  
+
   const navigation = useNavigation();
   const [iconColor, setIconColor] = useState('black');
   const handleClick = () => {
     setIconColor(Colors.red);
-    navigation.navigate('Map');
   };
-
+  const handleNAvigateProfilePressed = () => {
+    navigation.navigate('Profile');
+    console.log('profile Pressed');
+  };
   return (
-    <View style={{ backgroundColor: Colors.backgroundWhite}}>
+    <View style={{ backgroundColor: Colors.backgroundWhite }}>
       <View style={styles.header}>
-        <Entypo
-          name="location"
-          size={24}
-          color={iconColor}
-          onPress={handleClick}
-        />
-        <Text style={styles.textLocation}>Sousse,Tunisia</Text>
-
-        <Ionicons
-          name="notifications-outline"
-          size={24}
-          color={iconColor}
-          onPress={handleClick}
-        />
+        <MaterialIcons name="my-location" size={24} color={iconColor} />
+        <Text style={styles.textLocation}>
+          {locationName}, {locationRegion}
+        </Text>
+        <TouchableOpacity onPress={handleNAvigateProfilePressed}>
+          <FontAwesome5 name="house-user" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
         <View style={styles.search}>
@@ -83,17 +113,16 @@ const HomeScreen = () => {
             }}
             placeholder="Recherchez des offres de folie!"
           />
-
-          <Ionicons name="search-sharp" size={24} color={Colors.red} />
+          <MaterialIcons name="search" size={24} color={Colors.red} />
         </View>
-        <Ionicons
-          name="list"
+        <MaterialIcons
+          name="menu-book"
           size={45}
           color={Colors.red}
           style={{ marginVertical: '2%' }}
         />
       </View>
-      <ScrollView style={{ padding:'4%',marginBottom:'70%'}}>
+      <ScrollView style={{ padding: '4%', marginBottom: '70%' }}>
         <View>
           <Text style={styles.categoryName}>Tous</Text>
           <FlatList
@@ -154,7 +183,6 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
-      
       </ScrollView>
     </View>
   );

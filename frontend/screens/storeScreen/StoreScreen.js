@@ -14,8 +14,8 @@ import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
-
 import { Colors } from '../../constants/Colors';
+import { FontSize } from '../../constants/FontSize'
 const StoreScreen = () => {
   const navigation = useNavigation();
 
@@ -75,7 +75,7 @@ const StoreScreen = () => {
               shadowRadius: 25,
               shadowOffset: { width: 0, height: 15 },
               shadowOpacity: 0.5,
-              borderRadius: 20,
+              
               paddingVertical: 10,
               paddingHorizontal: 30,
             }}

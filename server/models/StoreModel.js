@@ -18,6 +18,10 @@ const storeSchema = new mongoose.Schema({
   email: {
     type: String,
   },
+  webSite: {
+    type: String,
+  },
+
   locations: [
     {
       type: Schema.Types.ObjectId,
@@ -39,18 +43,18 @@ const storeSchema = new mongoose.Schema({
   },
 });
 
-storeSchema.pre('save', async function (next) {
-  try {
-    for (let i = 0; i < this.locations.length; i++) {
-      const address = this.locations[i].address;
-      const location = await geocodeAddress(address);
-      this.locations[i].location = location;
-    }
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+// storeSchema.pre('save', async function (next) {
+//   try {
+//     for (let i = 0; i < this.locations.length; i++) {
+//       const address = this.locations[i].address;
+//       const location = await geocodeAddress(address);
+//       this.locations[i].location = location;
+//     }
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 const Store = mongoose.model('Store', storeSchema);
 

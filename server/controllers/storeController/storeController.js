@@ -7,34 +7,38 @@ const { storeValidation } = require('../../utils/ValidationSchema');
 const { geocodeAddress } = require('../../utils/geocoder');
 const generateOTP = require('../../utils/generateOTP');
 const sendEmail = require('../../utils/generatEmailValidation');
-exports.addStore = async (req, res, next) => {
-  const address = req.body?.address;
-  const { error } = storeValidation(req.body);
+const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 
-  if (error) {
-    return res.status(400).send({ message: error.details[0].message });
-  }
+exports.addStore = async (req, res, next) => {
+  console.log('latitude :', req.body.coordinates[1]);
+  console.log('lon :', req.body.coordinates[0]);
+
+  // const { error } = storeValidation(req.body);
+
+  // if (error) {
+  //   return res.status(400).send({ message: error.details[0].message });
+  // }
 
   try {
-    const existingUser = await Store.findOne({
+    const existingStore = await Store.findOne({
       store_name: req.body.store_name,
       email: req.body.email,
     });
-    if (existingUser) {
+    if (existingStore) {
       throw new Error('A store with the same name and email already exists');
     }
+    const locationDetails = await getLocationAdrs(req.body.coordinates);
 
-    const location = await geocodeAddress(address);
-    const newLocation = new Location({
-      address,
-      location: {
-        type: location.formattedAddress,
-        coordinates: location.coordinates,
-        formattedAddress: location.formattedAddress,
-      },
+    const location = new Location({
+      type: 'Point',
+      coordinates: locationDetails.coordinates,
+      formattedAddress: locationDetails.formattedAddress,
+      city: locationDetails.city,
+      country: locationDetails.country,
       store: Store._id,
     });
-    const savedLocation = await newLocation.save();
+
+    const savedLocation = await location.save();
 
     const store = new Store({
       store_name: req.body.store_name,

@@ -116,7 +116,7 @@ import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import uri from '../../assets/image/Sport.png';
 import { Dimensions } from 'react-native';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function VerticalStoreCard({
   storeName,
@@ -124,14 +124,19 @@ export default function VerticalStoreCard({
   distance,
   imageUri,
   voucher,
-  isFavorite,
   onPressFavorite,
 }) {
-  const [favorite, setFavorite] = useState(isFavorite);
+  const [favorite, setFavorite] = useState(false);
 
   const handlePressFavorite = () => {
     setFavorite(!favorite);
-    onPressFavorite();
+    onPressFavorite({
+      storeName,
+      subCategory,
+      distance,
+      imageUri,
+      voucher,
+    });
   };
 
   return (
@@ -152,8 +157,16 @@ export default function VerticalStoreCard({
               </TouchableOpacity>
             </View>
             <Text style={styles.subCategory}>{subCategory}</Text>
+            <View style={styles.voucherContainer}>
+              <MaterialCommunityIcons name="sale" size={24} color="white" />
+              <Text style={styles.voucherText}>{voucher}</Text>
+            </View>
             <View style={styles.cardFooter}>
-              <Ionicons name="location-outline" size={16} color={Colors.grey} />
+              <Ionicons
+                name="location-outline"
+                size={16}
+                color={Colors.white}
+              />
 
               <Text style={styles.distance}>{distance}</Text>
             </View>
@@ -202,13 +215,13 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 25,
+    marginTop: 5,
   },
   distance: {
     marginLeft: 5,
-    color: Colors.text,
+    color: Colors.white,
     fontFamily: 'poppins',
-    fontSize: FontSize.meduim,
+    fontSize: FontSize.xxsmall,
   },
   cardHeader: {
     padding: 10,
@@ -224,5 +237,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'flex-start',
     marginBottom: 10,
+  },
+  voucherContainer: {
+    flexDirection: 'row',
+  },
+  voucherText: {
+    color: Colors.white,
+    fontFamily: 'poppins',
+    fontSize: FontSize.xsmall,
+    marginLeft: 5,
   },
 });

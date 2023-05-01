@@ -67,6 +67,12 @@ const HomeScreen = () => {
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
   const [locationCountry, setLocationCountry] = useState(null);
+  const [favoriteStores, setFavoriteStores] = useState([]);
+  const addFavoriteStore = (storeData) => {
+    setFavoriteStores([...favoriteStores, storeData]);
+    console.log('storeData', storeData);
+    navigation.navigate('Favorite', { storeData });
+  };
 
   useEffect(() => {
     (async () => {
@@ -162,13 +168,13 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <VerticalStoreCard
-              isFavorite={false}
               storeName={item.storeName}
               distance={item.distance}
               location={item.location}
               voucher={item.voucher}
               subCategory={item.subCategory}
               onPress={() => showAlert('Store Pressed', item.storeName)}
+              onPressFavorite={() => addFavoriteStore(item)}
             />
           )}
         />

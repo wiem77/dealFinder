@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,24 +19,18 @@ import Imgtest from '../../assets/image/Store1.png';
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.9;
 
-const Favorite = () => {
-  const [favoriteStores, setFavoriteStores] = useState([
-    {
-      id: 1,
-      name: 'Store1',
-      distance: '10 min away',
-      discount: '15%',
-      image: Imgtest,
-    },
-    {
-      id: 2,
-      name: 'Store2',
-      distance: '5 min away',
-      discount: '10%',
-      image: Imgtest,
-    },
-  ]);
+const Favorite = ({ route }) => {
+  const [favoriteStores, setFavoriteStores] = useState([]);
 
+  // handle adding the store passed through navigation to the favorites list
+  useEffect(() => {
+    const storeData = route.params?.storeData;
+    if (storeData) {
+      setFavoriteStores([...favoriteStores, storeData]);
+    }
+  }, [route.params?.storeData]);
+
+  // handle removing a store from favorites
   const handleRemoveFavorite = (storeId) => {
     setFavoriteStores((prevStores) =>
       prevStores.filter((store) => store.id !== storeId)

@@ -21,7 +21,7 @@ export default StoreCard2 = ({ store, onRemoveFavorite }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const navigation = useNavigation();
-  
+
   const handleFavoritePress = () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {

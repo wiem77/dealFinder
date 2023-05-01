@@ -21,8 +21,12 @@ const locationSchema = new mongoose.Schema({
     type: String,
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
+  },
+  store: {
+    type: Schema.Types.ObjectId,
+    ref: 'Store',
   },
 });
 

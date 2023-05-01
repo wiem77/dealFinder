@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,24 +7,27 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
-import { Colors } from '../../constants/Colors';
+
 import { MaterialIcons } from '@expo/vector-icons';
+
+import { Colors } from '../../constants/Colors';
+
 const { width } = Dimensions.get('screen');
 const cardWidth = width / 2;
+
 import { useNavigation } from '@react-navigation/native';
-import Imgtest from '../../assets/image/Store1.png';
+
 export default StoreCard2 = ({ store, onRemoveFavorite }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
+  const navigation = useNavigation();
+  
   const handleFavoritePress = () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
       onRemoveFavorite(store.id);
     }
   };
-
-  const navigation = useNavigation();
 
   return (
     <TouchableOpacity

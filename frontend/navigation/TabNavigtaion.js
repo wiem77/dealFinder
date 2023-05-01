@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Colors } from '../constants/Colors';
-import { Ionicons, FontAwesome,FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import Search from '../screens/searchScreen/Search';
@@ -24,6 +24,7 @@ const TabNavigation = () => {
           ...styles.shadow,
         },
         tabBarShowLabel: false,
+        tabBarIconStyle: styles.tabBarIconStyle,
       }}
     >
       <Tab.Screen
@@ -86,14 +87,21 @@ const TabNavigation = () => {
   );
 };
 
-export default TabNavigation;
-
 const styles = StyleSheet.create({
   shadow: {
     elevation: 5,
     shadowColor: '#000',
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: 'transparent',
   },
+  tabBarIconStyle: {
+    flex: 1,
+    marginTop: 15,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
+
+export default TabNavigation;

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import CustomCard from '../../components/customCard/CustomCard';
@@ -15,6 +16,7 @@ import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 const DATA = [
   {
     id: '1',
@@ -39,6 +41,24 @@ const DATA = [
     location: '789 Main Street',
     voucher: '30% off',
     subCategory: 'clothing',
+  },
+];
+const RECOMMENDED_STORES = [
+  {
+    id: '4',
+    storeName: 'My Store 4',
+    distance: '5 km away',
+    location: '987 Main Street',
+    voucher: '15% off',
+    subCategory: 'electronics',
+  },
+  {
+    id: '5',
+    storeName: 'My Store 5',
+    distance: '6 km away',
+    location: '654 Main Street',
+    voucher: '25% off',
+    subCategory: 'food',
   },
 ];
 
@@ -74,15 +94,6 @@ const HomeScreen = () => {
       { cancelable: false }
     );
   };
-  const renderItem = ({ item }) => (
-    <CustomCard
-      storeName={item.storeName}
-      distance={item.distance}
-      location={item.location}
-      voucher={item.voucher}
-      subCategory={item.subCategory}
-    />
-  );
 
   const navigation = useNavigation();
   const [iconColor, setIconColor] = useState('black');
@@ -94,26 +105,31 @@ const HomeScreen = () => {
     console.log('profile Pressed');
   };
   return (
-    <View style={{ backgroundColor: Colors.backgroundWhite }}>
-      <View style={styles.header}>
-        <MaterialIcons name="my-location" size={24} color={iconColor} />
-        <Text style={styles.textLocation}>
-          {locationName}, {locationRegion}
-        </Text>
-        <TouchableOpacity onPress={handleNAvigateProfilePressed}>
-          <FontAwesome5 name="house-user" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-        <View style={styles.search}>
-          <TextInput
-            style={{
-              fontSize: FontSize.xsmall,
-              fontWeight: '400',
-            }}
-            placeholder="Recherchez des offres de folie!"
-          />
-          <MaterialIcons name="search" size={24} color={Colors.red} />
+    <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <MaterialIcons name="my-location" size={24} color={iconColor} />
+          <Text style={styles.textLocation}>
+            {locationName}, {locationRegion}
+          </Text>
+          <TouchableOpacity onPress={handleNAvigateProfilePressed}>
+            <FontAwesome5 name="house-user" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.search}>
+            <TextInput
+              style={{
+                fontSize: FontSize.xsmall,
+                fontWeight: '400',
+              }}
+              placeholder="Recherchez des offres de folie!"
+            />
+            <MaterialIcons name="search" size={24} color={Colors.red} />
+          </View>
         </View>
         <MaterialIcons
           name="menu-book"
@@ -122,68 +138,41 @@ const HomeScreen = () => {
           style={{ marginVertical: '2%' }}
         />
       </View>
-      <ScrollView style={{ padding: '4%', marginBottom: '70%' }}>
-        <View>
-          <Text style={styles.categoryName}>Tous</Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryName}>Mode et Accessoires</Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryName}>Beauté et Bien-etre</Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryName}>Voyages et Loisirs</Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryName}>Maison et jardin </Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryName}>électronique et High-tech </Text>
-          <FlatList
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      </ScrollView>
+      <View style={{ marginVertical: '5%' }}>
+        <Text style={styles.categoryName}>Nouveauté</Text>
+        <FlatList
+          data={RECOMMENDED_STORES}
+          keyExtractor={(item) => item.id}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <CustomCard
+              storeName={item.storeName}
+              distance={item.distance}
+              location={item.location}
+              voucher={item.voucher}
+              subCategory={item.subCategory}
+              onPress={() => showAlert('Store Pressed', item.storeName)}
+            />
+          )}
+        />
+        <FlatList
+          data={DATA}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <VerticalStoreCard
+              isFavorite={false}
+              storeName={item.storeName}
+              distance={item.distance}
+              location={item.location}
+              voucher={item.voucher}
+              subCategory={item.subCategory}
+              onPress={() => showAlert('Store Pressed', item.storeName)}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -192,7 +181,6 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: '6%',
     flexDirection: 'row',
     justifyContent: 'space-around',
     elevation: 5,
@@ -200,8 +188,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: 'transparent',
-    height: '6%',
+    height: 50,
     alignItems: 'center',
+    paddingVertical: 10,
   },
   textLocation: {
     color: Colors.red,

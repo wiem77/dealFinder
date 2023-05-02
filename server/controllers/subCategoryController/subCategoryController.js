@@ -5,7 +5,7 @@ module.exports.addSubCategory = async (req, res) => {
   console.log('Add..');
   try {
     const categoryId = req.params.id;
-   
+
     let subCategoryName = req.body.subCategory_name;
 
     if (!subCategoryName) {
@@ -18,7 +18,7 @@ module.exports.addSubCategory = async (req, res) => {
 
     subCategoryName = subCategoryName.trim().toUpperCase();
     const category = await Category.findOne({
-      _id : categoryId,
+      _id: categoryId,
     });
 
     if (!category) {
@@ -112,7 +112,7 @@ module.exports.getAllSubCategories = (req, res) => {
 
 module.exports.updateSubCategory = (req, res) => {
   const subCategoryId = req.params.id;
-  const subCategory_name = req.body;
+  const { subCategory_name } = req.body;
 
   SubCategory.findOneAndUpdate(
     { _id: subCategoryId },
@@ -125,7 +125,6 @@ module.exports.updateSubCategory = (req, res) => {
       }
       const promises = [];
 
-      // Execute all subcategory update promises
       Promise.all(promises)
         .then(() => {
           res.status(200).send({

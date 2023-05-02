@@ -16,7 +16,7 @@ router.get('/getAll_sub_Category', getAllSubCategories);
 router.get('/getById_sub_Category/:id', getSubCategoryById);
 //Root:http://localhost:4000/api/subCategory/getByName_sub_Category/:name
 router.get('/getByName_sub_Category/:name', getSubCategoryByName);
-//Root:http://localhost:4000/api/subCategory/getByName_sub_Category/:name
+//Root:http://localhost:4000/api/subCategory/gupdate_sub_Category/:id
 router.put('/update_sub_Category/:id', updateSubCategory);
 //Root:http://localhost:4000/api/subCategory/delete_sub_Category/:id
 router.delete('/delete_sub_Category/:id', deleteSubCategory);

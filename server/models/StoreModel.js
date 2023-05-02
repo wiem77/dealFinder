@@ -35,6 +35,12 @@ const storeSchema = new mongoose.Schema({
       ref: 'Voucher',
     },
   ],
+  sub_category: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'SubCategory',
+    },
+  ],
   rating: {
     type: Number,
     min: [0, 'Rating cannot be less than 0'],
@@ -42,19 +48,6 @@ const storeSchema = new mongoose.Schema({
     default: 0,
   },
 });
-
-// storeSchema.pre('save', async function (next) {
-//   try {
-//     for (let i = 0; i < this.locations.length; i++) {
-//       const address = this.locations[i].address;
-//       const location = await geocodeAddress(address);
-//       this.locations[i].location = location;
-//     }
-//     next();
-//   } catch (error) {
-//     next(error);
-//   }
-// });
 
 const Store = mongoose.model('Store', storeSchema);
 

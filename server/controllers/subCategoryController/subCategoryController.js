@@ -1,49 +1,46 @@
 const SubCategory = require('../../models/subCategoryModel');
 const Category = require('../../models/CategoryModel');
 module.exports.addSubCategory = async (req, res) => {
+  console.log(req.params);
   console.log('Add..');
   try {
-    const categoryName = req.body.category_name;
-    const subCategoryName = req.body.subCategory_name;
+    const categoryId = req.params.id;
+   
+    let subCategoryName = req.body.subCategory_name;
 
-    if (!categoryName || !subCategoryName) {
+    if (!subCategoryName) {
       res.status(400).send({
         success: false,
-        msg: 'Category name and subcategory name are required',
+        msg: 'subcategory name are required',
       });
       return;
     }
 
-    const lowercaseCategoryName = categoryName.toLowerCase().replace(/ /g, '');
-    const lowercaseSubCategoryName = subCategoryName
-      .toLowerCase()
-      .replace(/ /g, '');
-
+    subCategoryName = subCategoryName.trim().toUpperCase();
     const category = await Category.findOne({
-      category_name: lowercaseCategoryName,
+      _id : categoryId,
     });
 
     if (!category) {
       return res.status(400).send({
         success: false,
-        msg: `Category not found: ${req.body.category_name}`,
+        msg: `Category not found: ${categoryId}`,
       });
     }
 
     const subCategory = await SubCategory.findOne({
-      category: category._id,
-      subCategory_name: lowercaseSubCategoryName,
+      subCategory_name: subCategoryName,
     });
 
     if (subCategory) {
       return res.status(400).send({
         success: false,
-        msg: `Subcategory already exists: ${req.body.subCategory_name}`,
+        msg: `Subcategory already exists: ${subCategoryName}`,
       });
     }
 
     const newSubCategory = new SubCategory({
-      category: category._id,
+      category: categoryId,
       subCategory_name: subCategoryName,
     });
     await newSubCategory.save();

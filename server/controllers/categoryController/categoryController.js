@@ -38,9 +38,8 @@ module.exports.addCategory = async (req, res) => {
 };
 
 module.exports.deleteCategory = async (req, res) => {
-  console.log('delete..');
   const categoryId = req.params.id;
-  console.log(req.params);
+
   Category.findOne({
     _id: categoryId,
   })
@@ -51,12 +50,16 @@ module.exports.deleteCategory = async (req, res) => {
       }
       SubCategory.deleteMany({
         _id: { $in: category.subcategories },
-      }).then((sub) => {
+      }).then(() => {
         console.log('SubCategory deleted');
       });
       Category.deleteOne({ _id: category._id }).then(() => {
-        res.status(200).send({ success: true, msg: 'Category deleted' });
-        console.log('Category deleted');
+        res.status(200).send({
+          success: true,
+          msg: 'Category deleted',
+          deletedCategory: category,
+        });
+        console.log('Category deleted:', category);
       });
     })
     .catch((error) => {
@@ -67,48 +70,29 @@ module.exports.deleteCategory = async (req, res) => {
 
 module.exports.updateCategory = (req, res) => {
   const categoryId = req.params.id;
-  const { category_name, subcategories } = req.body;
+  const { category_name } = req.body;
 
   Category.findOneAndUpdate(
     { _id: categoryId },
-    { category_name, subcategories },
+    { category_name },
     { new: true }
   )
     .then((updatedCategory) => {
       if (!updatedCategory) {
         return res.status(400).send({ msg: 'Category not found' });
       }
-      const promises = [];
 
-      // Updating subcategories
-      if (subcategories && subcategories.length > 0) {
-        subcategories.forEach((subCategoryId) => {
-          const promise = SubCategory.findOneAndUpdate(
-            { _id: subCategoryId },
-            { category: updatedCategory._id },
-            { new: true }
-          ).exec();
-          promises.push(promise);
-        });
-      }
-
-      // Execute all subcategory update promises
-      Promise.all(promises)
-        .then(() => {
-          res.status(200).send({
-            success: true,
-            msg: 'Category updated',
-            updatedCategory,
-          });
-        })
-        .catch((error) => {
-          res.status(400).send({ success: false, msg: error.message });
-        });
+      res.status(200).send({
+        success: true,
+        msg: 'Category updated',
+        updatedCategory,
+      });
     })
     .catch((error) => {
       res.status(400).send({ success: false, msg: error.message });
     });
 };
+
 module.exports.getAllCategories = (req, res) => {
   Category.find({})
     .populate('subcategories')
@@ -130,6 +114,7 @@ module.exports.findCategory = (req, res) => {
   Category.findOne({
     $or: [{ _id: categoryId }, { category_name: categoryName }],
   })
+    .populate('category_image')
     .populate('subcategories')
     .then((category) => {
       if (!category) {

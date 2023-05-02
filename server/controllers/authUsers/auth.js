@@ -10,10 +10,6 @@ const User = require('../../models/User');
 const Location = require('../../models/LocationModel');
 
 const Media = require('../../models/MediaModel');
-const storage = require('../../config/multerConfig').storage;
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
 module.exports.signUp = async (req, res) => {
   const data = JSON.parse(req.body.userData);
   const {

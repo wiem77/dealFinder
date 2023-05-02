@@ -2,8 +2,8 @@ const { geocoder } = require('../config/geocoderConfig');
 module.exports.getLocationAdrs = async (coordinates) => {
   try {
     const result = await geocoder.reverse({
-      lat: coordinates[1],
-      lon: coordinates[0],
+      lat: coordinates[0],
+      lon: coordinates[1],
       no_annotations: 1,
     });
 

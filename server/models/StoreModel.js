@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const { geocodeAddress } = require('../utils/geocoder');
-const Location = require('./LocationModel');
+
 const { Schema } = mongoose;
 
 const storeSchema = new mongoose.Schema({
@@ -11,6 +10,7 @@ const storeSchema = new mongoose.Schema({
     trim: true,
     maxlength: [50, 'Name cannot be more than 50 characters'],
   },
+  store_image: [{ type: Schema.Types.ObjectId, ref: 'Media' }],
   phone: {
     type: String,
     maxlength: [8, 'Phone number cannot be longer than 8 characters'],
@@ -35,7 +35,7 @@ const storeSchema = new mongoose.Schema({
       ref: 'Voucher',
     },
   ],
-  sub_category: [
+  sub_categories: [
     {
       type: Schema.Types.ObjectId,
       ref: 'SubCategory',

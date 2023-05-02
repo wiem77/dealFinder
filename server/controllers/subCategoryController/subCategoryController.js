@@ -42,6 +42,7 @@ module.exports.addSubCategory = async (req, res) => {
     const newSubCategory = new SubCategory({
       category: categoryId,
       subCategory_name: subCategoryName,
+      stores: [],
     });
     await newSubCategory.save();
 

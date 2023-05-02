@@ -2,54 +2,38 @@ const Category = require('../../models/CategoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Media = require('../../models/MediaModel');
 module.exports.addCategory = async (req, res) => {
-  console.log('Add..');
   try {
     const file = req.file;
-    let avatar = '';
+
     if (!file) {
-      avatar = new Media({
-        path: './public/image/logo.png',
-        extension: '.png',
-      });
-      avatar.save();
-    } else {
-      const extension = file.originalname.split('.').pop();
-
-      avatar = new Media({
-        path: `${file.destination}/${file.filename}`,
-        extension: extension,z
-      });
-      avatar.save();
+      return res.status(422).send({ error: 'Icon is required' });
     }
-    const categoryName = (req.body.category_name || '')
-      .toLowerCase()
-      .replace(/ /g, '')
-      .trim();
+    const fileName = req.file.filename;
 
+    const media = new Media({
+      path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
+      extension: fileName.split('.').pop(),
+    });
+
+    await media.save();
+
+    const categoryName = req.body.category_name.trim().toUpperCase();
     const existingCategory = await Category.findOne({
-      category_name: { $regex: new RegExp(categoryName, 'i') },
+      category_name: categoryName,
     });
     if (existingCategory) {
-
-      console.log('categoryName:', categoryName);
-      console.log('regex:', new RegExp(categoryName, 'i'));
-      return res.status(400).send({ msg: 'Category Already Exists' });
+      return res.status(409).send({ error: 'Category already exists' });
     }
-
     const newCategory = new Category({
-      category_name: req.body.category_name,
+      category_name: categoryName,
       subcategories: [],
-      category_image: avatar._id,
+      category_image: media._id,
     });
-
     await newCategory.save();
-
-    res
-      .status(200)
-      .send({ success: true, msg: 'Category Added', data: newCategory });
-    console.log(newCategory, 'newCategory');
+    res.status(200).send({ success: true, data: newCategory });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    console.error(error);
+    res.status(500).send({ error: 'Server error' });
   }
 };
 

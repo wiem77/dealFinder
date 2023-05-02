@@ -8,8 +8,8 @@ const {
   deleteSubCategory,
 } = require('../../controllers/subCategoryController/subCategoryController');
 const router = express.Router();
-//Root:http://localhost:4000/api/subCategory/add_sub_Category
-router.post('/add_sub_Category', addSubCategory);
+//Root:http://localhost:4000/api/subCategory/add_sub_Category/id
+router.post('/add_sub_Category/:id', addSubCategory);
 //Root:http://localhost:4000/api/subCategory/getAll_sub_Category
 router.get('/getAll_sub_Category', getAllSubCategories);
 //Root:http://localhost:4000/api/subCategory/getById_sub_Category/:id

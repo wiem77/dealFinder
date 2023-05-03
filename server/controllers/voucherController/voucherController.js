@@ -123,3 +123,52 @@ module.exports.deleteVoucher = async (req, res) => {
       res.status(400).send({ success: false, msg: error.message });
     });
 };
+module.exports.findVouchers = async (req, res) => {
+  try {
+    const { search, limit = 10, page = 1 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = search
+      ? {
+          $or: [
+            { name_V: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const [vouchers, total] = await Promise.all([
+      Voucher.find(query)
+        .populate('store', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean(),
+      Voucher.countDocuments(query),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({ vouchers, total, totalPages });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: 'An error occurred while finding vouchers' });
+  }
+};
+module.exports.findVouchersByStoreId = async (req, res) => {
+  try {
+    const { storeId } = req.params.id;
+    const vouchers = await Voucher.find({ store: storeId })
+      .populate('store', 'store_name')
+      .lean();
+
+    res.status(200).json({ vouchers });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'An error occurred while finding vouchers by store ID',
+    });
+  }
+};

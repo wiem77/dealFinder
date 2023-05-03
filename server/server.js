@@ -1,5 +1,5 @@
 const express = require('express');
-const multer = require('multer');
+
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -10,6 +10,7 @@ const subcategoryRoutes = require('./routes/subCategoryRoutes/subCategoryRoutes'
 const storeRoutes = require('./routes/storeRoutes/storeRoute');
 const uploadRoutes = require('./routes/imageRoutes/image');
 const locationRoutes = require('./routes/locationRoutes/location');
+const voucherRoutes = require('./routes/voucherRoutes/voucherRoutes');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 
@@ -21,7 +22,7 @@ dbConnect();
 
 app.use(
   cors({
-    origin: 'exp://192.168.8.101:19000',
+    origin: 'exp://192.168.8.100:19000',
   })
 );
 
@@ -35,6 +36,7 @@ app.use('/api/category', categoryRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/api/subCategory', subcategoryRoutes);
 app.use('/api/location', locationRoutes);
+app.use('/api/vouchers', voucherRoutes);
 //setPORT
 const PORT = 4000;
 app.listen(PORT, (err) =>

@@ -8,13 +8,13 @@ import {
   Input,
   FormHelperText,
 } from '@mui/material';
-
+import axios from 'axios';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
 import { useState, useEffect } from 'react';
-
+import { baseUrl } from '../../config/config';
 const StoreForm = () => {
   const [storeData, setStoreData] = useState({});
 
@@ -43,9 +43,18 @@ const StoreForm = () => {
   console.log('test');
 
   const isNonMobile = useMediaQuery('(min-width:600px)');
-  const handleFormSubmit = (values) => {
-    setStoreData(values);
-    console.log('storeData', storeData);
+  // const handleFormSubmit = (values) => {
+  //   setStoreData(values);
+  //   console.log('storeData', storeData);
+  // };
+  const handleFormSubmit = async (values) => {
+    try {
+      const response = await axios.post(`${baseUrl}store/addStore`, values);
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

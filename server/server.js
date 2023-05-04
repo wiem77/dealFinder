@@ -22,7 +22,7 @@ dbConnect();
 
 app.use(
   cors({
-    origin: 'exp://192.168.8.100:19000',
+    origin: 'exp://192.168.8.133:19000',
   })
 );
 

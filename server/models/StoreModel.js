@@ -15,6 +15,7 @@ const storeSchema = new mongoose.Schema({
     type: String,
     maxlength: [8, 'Phone number cannot be longer than 8 characters'],
   },
+  description: { type: String },
   email: {
     type: String,
   },

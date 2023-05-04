@@ -4,7 +4,6 @@ import {
   View,
   TextInput,
   FlatList,
-  ScrollView,
   Alert,
   TouchableOpacity,
   SafeAreaView,

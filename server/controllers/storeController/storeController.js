@@ -10,10 +10,17 @@ const sendEmail = require('../../utils/generatEmailValidation');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 exports.addStore = async (req, res, next) => {
   console.log(req.body);
-  const { email, store_name, sub_categories, coordinates, phone, webSite } =
-    req.body;
+  const {
+    email,
+    store_name,
+    sub_categories,
+    coordinates,
+    phone,
+    webSite,
+    description,
+  } = req.body;
   console.log(req.body);
-  console.log(req.file);
+  // console.log(req.file);
   const store_image = req.file;
   try {
     const existingStore = await Store.findOne({
@@ -52,6 +59,7 @@ exports.addStore = async (req, res, next) => {
       phone: phone,
       email: email,
       webSite: webSite,
+      description: description,
       locations: [savedLocation._id],
       sub_categories: [],
       vouchers: [],
@@ -95,19 +103,59 @@ exports.addStore = async (req, res, next) => {
   }
 };
 
-exports.getAllStores = (req, res) => {
-  Store.find({})
-    .populate('locations')
-    .populate('sub_categories')
-    .then((stores) => {
-      res.status(200).json(stores);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: 'Error getting all stores.' });
+exports.getAllStores = async (req, res) => {
+  try {
+    const stores = await Store.find({})
+      .populate('locations', 'formattedAddress')
+      .populate('sub_categories', 'subCategory_name')
+      .populate('vouchers', 'name_V');
+
+    const formattedStores = stores.map((store) => {
+      const formattedLocations = store.locations.map(
+        (location) => location.formattedAddress
+      );
+      const subCategoryNames = store.sub_categories.map(
+        (subCategory) => subCategory.subCategory_name
+      );
+      const voucherNames = store.vouchers.map((voucher) => voucher.name_V);
+
+      return {
+        ...store.toObject(),
+        locations: formattedLocations,
+        sub_categories: subCategoryNames,
+        vouchers: voucherNames,
+      };
     });
+
+    res.status(200).json(formattedStores);
+    console.log(formattedStores);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Error getting all stores.' });
+  }
 };
 
+module.exports.getOneStore = (req, res) => {
+  console.log('store..');
+  const storeId = req.params.id;
+  const store_name = req.params.name;
+  console.log(storeId);
+  Store.findOne({
+    $or: [{ _id: storeId }, { store_name: store_name }],
+  })
+    .populate('locations')
+    .populate('vouchers')
+    .then((store) => {
+      if (!store) {
+        return res.status(400).send({ success: false, msg: 'store not found' });
+      }
+      res.status(200).send({ success: true, store });
+      console.log(store);
+    })
+    .catch((error) => {
+      res.status(400).send({ success: false, msg: error.message });
+    });
+};
 exports.getAllStoresWithLocations = (req, res) => {
   Store.find({})
     .populate('locations')

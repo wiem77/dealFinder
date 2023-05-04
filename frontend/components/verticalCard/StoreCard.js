@@ -1,109 +1,4 @@
-// import React, { useState } from 'react';
-// import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-// import { Ionicons } from '@expo/vector-icons';
-// import { Colors } from '../../constants/Colors';
-// import { FontSize } from '../../constants/FontSize';
-// const VerticalStoreCard = ({
-//   storeName,
-//   subCategory,
-//   distance,
-//   imageUri,
-//   isFavorite,
-//   onPressFavorite,
-// }) => {
-//   const [favorite, setFavorite] = useState(isFavorite);
 
-//   const handleFavoritePress = () => {
-//     setFavorite(!favorite);
-//     onPressFavorite();
-//   };
-
-//   return (
-//     <TouchableOpacity activeOpacity={0.7}>
-//       <View style={styles.card}>
-//         <View style={styles.storeLogo}>
-//           <Image
-//             source={{ uri: imageUri }}
-//             style={styles.logoImage}
-//             resizeMode="cover"
-//           />
-//         </View>
-//         <View style={styles.storeText}>
-//           <Text style={styles.storeName}>{storeName}</Text>
-//           <Text style={styles.storeSubCategory}>{subCategory}</Text>
-//           <View style={styles.storeLocation}>
-//             <Ionicons name="location" size={15} color={Colors.grey} />
-//             <Text style={styles.storeDistance}>{distance}</Text>
-//           </View>
-//         </View>
-//         <TouchableOpacity activeOpacity={0.7} onPress={handleFavoritePress}>
-//           <Ionicons
-//             name={favorite ? 'heart' : 'heart-outline'}
-//             size={24}
-//             color={favorite ? Colors.red : Colors.grey}
-//           />
-//         </TouchableOpacity>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//     card: {
-//       backgroundColor: Colors.white,
-//       borderRadius: 8,
-//       shadowColor: Colors.black,
-//       shadowOffset: {
-//         width: 0,
-//         height: 2,
-//       },
-//       shadowOpacity: 0.1,
-//       shadowRadius: 2,
-//       elevation: 3,
-//       marginVertical: 10,
-//       marginHorizontal: 15,
-//       padding: 15,
-//       flexDirection: 'row',
-//       alignItems: 'center',
-//       justifyContent: 'space-between',
-//       flexDirection: 'column',
-//     },
-//     storeLogo: {
-//       marginBottom: 12,
-//     },
-//     logoImage: {
-//       width: 60,
-//       height: 60,
-//       borderRadius: 30,
-//     },
-//     storeText: {
-//       alignItems: 'center',
-//     },
-//     storeName: {
-//       fontSize: FontSize.medium,
-//       fontWeight: 'bold',
-//       color: Colors.black,
-//       marginBottom: 4,
-//     },
-//     storeSubCategory: {
-//       fontSize: FontSize.xsmall,
-//       color: Colors.text,
-//       marginBottom: 4,
-//       fontFamily: 'inter',
-//       fontWeight: 'bold',
-//     },
-//     storeLocation: {
-//       flexDirection: 'row',
-//       alignItems: 'center',
-//     },
-//     storeDistance: {
-//       fontSize: FontSize.xsmall,
-//       color: Colors.grey,
-//       marginLeft: 8,
-//     },
-//   });
-
-// export default VerticalStoreCard;
 import React, { useState } from 'react';
 import {
   View,
@@ -125,6 +20,7 @@ export default function VerticalStoreCard({
   imageUri,
   voucher,
   onPressFavorite,
+  onPressStore
 }) {
   const [favorite, setFavorite] = useState(false);
 
@@ -136,11 +32,12 @@ export default function VerticalStoreCard({
       distance,
       imageUri,
       voucher,
+   
     });
   };
 
   return (
-    <TouchableOpacity onPress={() => console.log('Card pressed!')}>
+    <TouchableOpacity onPress={onPressStore}>
       <View style={styles.container}>
         <ImageBackground source={uri} style={styles.imageBackground}>
           <View style={styles.overlay}>

@@ -11,23 +11,27 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { baseUrl } from '../../config/config';
+import { useNavigation } from '@react-navigation/native';
+
 import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
 } from '@expo/vector-icons';
-import axios from 'axios';
+
 import ViewMoreText from 'react-native-view-more-text';
-import { useNavigation } from '@react-navigation/native';
+
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+
 import Loading from '../../components/loading/Loading';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 
 const { width, height } = Dimensions.get('window');
-const StoreScreen = () => {
-  // const { store } = route.params;
-
+const StoreScreen = ({ route }) => {
+  const { store_id } = route.params;
+  console.log(store_id);
   const [iconColor, setIconColor] = useState();
   const [stores, setStores] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
@@ -84,7 +88,7 @@ const StoreScreen = () => {
   async function getStores() {
     try {
       const response = await axios.get(
-        `${baseUrl}/store/findOneStoreById/645399f2c246c646ace05c5a`
+        `${baseUrl}/store/findOneStoreById/${store_id}`
       );
       console.log(response.data);
       return response.data;

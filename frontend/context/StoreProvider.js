@@ -23,22 +23,26 @@ export const StoresProvider = ({ children }) => {
       }
     };
 
-    getStores()
-      .then((data) => {
-        if (isMounted) {
-          setStores(data);
+    if (!stores) {
+      getStores()
+        .then((data) => {
+          if (isMounted) {
+            setStores(data);
+            setIsLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
           setIsLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-      });
+        });
+    } else {
+      setIsLoading(false);
+    }
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [stores]);
 
   return (
     <StoresContext.Provider value={{ stores, isLoading }}>

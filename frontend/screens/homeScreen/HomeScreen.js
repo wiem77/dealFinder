@@ -8,115 +8,30 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import React, { useState, useContext,useEffect,  } from 'react';
+
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+import * as Location from 'expo-location';
+
+import { StoresContext } from '../../context/StoreProvider';
+
+import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 import CustomCard from '../../components/customCard/CustomCard';
+
+import Loading from '../../components/loading/Loading';
+
 import { Colors } from '../../constants/Colors';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
-import { useNavigation } from '@react-navigation/native';
-import * as Location from 'expo-location';
-import VerticalStoreCard from '../../components/verticalCard/StoreCard';
-import { StoresContext } from '../../context/StoreProvider';
-import Loading2 from '../../components/loading2/Loading2';
-import Loading from '../../components/loading/Loading';
-const DATA = [
-  {
-    id: '1',
-    storeName: 'My Store 1',
-    distance: '2 km away',
-    location: '123 Main Street',
-    voucher: '10% off',
-    subCategory: 'sport',
-  },
-  {
-    id: '2',
-    storeName: 'My Store 2',
-    distance: '3 km away',
-    location: '456 Main Street',
-    voucher: '20% off',
-    subCategory: 'food',
-  },
-  {
-    id: '3',
-    storeName: 'My Store 3',
-    distance: '4 km away',
-    location: '789 Main Street',
-    voucher: '30% off',
-    subCategory: 'clothing',
-  },
-];
-const RECOMMENDED_STORES = [
-  {
-    id: '4',
-    storeName: 'My Store 4',
-    distance: '5 km away',
-    location: '987 Main Street',
-    voucher: '15% off',
-    subCategory: 'electronics',
-  },
-  {
-    id: '5',
-    storeName: 'My Store 5',
-    distance: '6 km away',
-    location: '654 Main Street',
-    voucher: '25% off',
-    subCategory: 'food',
-  },
-];
 
 const HomeScreen = () => {
-  // const { stores, isLoading, error, getStores } = useContext(StoresContext);
-  const { stores, isLoading } = useContext(StoresContext);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-  console.log(stores);
-  // async function getAllStores() {
-  //   try {
-  //     const response = await axios.get(
-  //       `${baseUrl}/store/findOneStoreById/645399f2c246c646ace05c5a`
-  //     );
-  //     console.log(response.data);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   getAllStores()
-  //     .then((data) => {
-  //       if (isMounted) {
-  //         setStores(data);
-  //         setIsLoading(false);
-
-  //         if (data.store) {
-  //           const formattedAddress = data.store.locations[0]?.formattedAddress;
-  //           console.log('formattedAddress', formattedAddress);
-  //         }
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       setIsLoading(false);
-  //     });
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
   const [locationCountry, setLocationCountry] = useState(null);
   const [favoriteStores, setFavoriteStores] = useState([]);
-  const addFavoriteStore = (storeData) => {
-    setFavoriteStores([...favoriteStores, storeData]);
-    console.log('storeData', storeData);
-    navigation.navigate('Favorite', { storeData });
-  };
-
+  const [iconColor, setIconColor] = useState('black');
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -143,16 +58,27 @@ const HomeScreen = () => {
       { cancelable: false }
     );
   };
-
-  const navigation = useNavigation();
-  const [iconColor, setIconColor] = useState('black');
-  const handleClick = () => {
-    setIconColor(Colors.red);
+  const { stores, isLoading } = useContext(StoresContext);
+  const addFavoriteStore = (storeData) => {
+    setFavoriteStores([...favoriteStores, storeData]);
+    console.log('storeData', storeData);
+    navigation.navigate('Favorite', { storeData });
   };
+  const navigation = useNavigation();
+
+  const handelStoreSelected = (store_id) => {
+    navigation.navigate('Store', { store_id });
+    console.log('store_id', store_id);
+  };
+
   const handleNAvigateProfilePressed = () => {
     navigation.navigate('Profile');
     console.log('profile Pressed');
   };
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
       <SafeAreaView>
@@ -190,18 +116,18 @@ const HomeScreen = () => {
       <View style={{ marginVertical: '5%' }}>
         <Text style={styles.categoryName}>Nouveauté</Text>
         <FlatList
-          data={RECOMMENDED_STORES}
+          data={stores}
           keyExtractor={(item) => item.id}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CustomCard
-              storeName={item.storeName}
+              storeName={item.store_name}
               distance={item.distance}
-              location={item.location}
-              voucher={item.voucher}
-              subCategory={item.subCategory}
-              onPress={() => showAlert('Store Pressed', item.storeName)}
+              location={item.locations[0]}
+              voucher={item.vouchers[0]}
+              subCategory={item.sub_categories[0]}
+              onPress={() => showAlert('Store Pressed', item.store_name)}
             />
           )}
         />
@@ -211,12 +137,13 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <VerticalStoreCard
+              key={item._id}
               storeName={item.store_name}
               distance={item.distance}
               location={item.locations[0]}
               voucher={item.vouchers[0]}
               subCategory={item.sub_categories[0]}
-              onPress={() => showAlert('Store Pressed', item.store_name)}
+              onPressStore={() => handelStoreSelected(item._id)}
               onPressFavorite={() => addFavoriteStore(item)}
             />
           )}

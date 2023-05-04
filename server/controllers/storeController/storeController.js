@@ -105,6 +105,7 @@ exports.addStore = async (req, res, next) => {
 
 exports.getAllStores = async (req, res) => {
   try {
+    console.log('stores');
     const stores = await Store.find({})
       .populate('locations', 'formattedAddress')
       .populate('sub_categories', 'subCategory_name')
@@ -128,7 +129,6 @@ exports.getAllStores = async (req, res) => {
     });
 
     res.status(200).json(formattedStores);
-    console.log(formattedStores);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Error getting all stores.' });

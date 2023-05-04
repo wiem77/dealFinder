@@ -18,6 +18,7 @@ import { baseUrl } from '../../config/config';
 const StoreForm = () => {
   const [storeData, setStoreData] = useState({});
 
+  const isNonMobile = useMediaQuery('(min-width:600px)');
   const phoneRegExp =
     /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
@@ -31,6 +32,7 @@ const StoreForm = () => {
       .required('required'),
     laltitude: yup.number().required('required'),
     longitude: yup.number().required('required'),
+    description: yup.string().required('required'),
   });
   const initialValues = {
     StoreName: '',
@@ -39,14 +41,27 @@ const StoreForm = () => {
     phone: '',
     laltitude: '',
     longitude: '',
+    description: '',
+    sub_categories: '',
   };
   console.log('test');
+  const [subCategories, setSubCategories] = useState([]);
 
-  const isNonMobile = useMediaQuery('(min-width:600px)');
-  // const handleFormSubmit = (values) => {
-  //   setStoreData(values);
-  //   console.log('storeData', storeData);
-  // };
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}category/getAllCategory`);
+        setSubCategories(response.data.categories);
+        console.log(response.data.categories);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSubCategories();
+  }, []);
+  useEffect(() => {
+    console.log('Subcategories12345:', subCategories);
+  }, [subCategories]);
   const handleFormSubmit = async (values) => {
     try {
       const response = await axios.post(`${baseUrl}store/addStore`, values);
@@ -161,6 +176,39 @@ const StoreForm = () => {
                 helperText={touched.longitude && errors.longitude}
                 sx={{ gridColumn: 'span 4' }}
               />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="description "
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.address2}
+                name="description"
+                error={!!touched.description && !!errors.description}
+                helperText={touched.description && errors.description}
+                sx={{ gridColumn: 'span 4' }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Subcategories"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.sub_categories}
+                name="sub_categories"
+                error={!!touched.sub_categories && !!errors.sub_categories}
+                helperText={touched.sub_categories && errors.sub_categories}
+                select
+                sx={{ gridColumn: 'span 4' }}
+              >
+                {subCategories?.map((subcategory) => (
+                  <MenuItem key={subcategory._id} value={subcategory._id}>
+                    {subcategory.category_name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

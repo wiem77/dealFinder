@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext,useEffect,  } from 'react';
 import CustomCard from '../../components/customCard/CustomCard';
 import { Colors } from '../../constants/Colors';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
@@ -16,6 +16,9 @@ import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
+import { StoresContext } from '../../context/StoreProvider';
+import Loading2 from '../../components/loading2/Loading2';
+import Loading from '../../components/loading/Loading';
 const DATA = [
   {
     id: '1',
@@ -62,6 +65,47 @@ const RECOMMENDED_STORES = [
 ];
 
 const HomeScreen = () => {
+  // const { stores, isLoading, error, getStores } = useContext(StoresContext);
+  const { stores, isLoading } = useContext(StoresContext);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+  console.log(stores);
+  // async function getAllStores() {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/store/findOneStoreById/645399f2c246c646ace05c5a`
+  //     );
+  //     console.log(response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   getAllStores()
+  //     .then((data) => {
+  //       if (isMounted) {
+  //         setStores(data);
+  //         setIsLoading(false);
+
+  //         if (data.store) {
+  //           const formattedAddress = data.store.locations[0]?.formattedAddress;
+  //           console.log('formattedAddress', formattedAddress);
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       setIsLoading(false);
+  //     });
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
@@ -162,17 +206,17 @@ const HomeScreen = () => {
           )}
         />
         <FlatList
-          data={DATA}
-          keyExtractor={(item) => item.id}
+          data={stores}
+          keyExtractor={(item) => item._id.toString()}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <VerticalStoreCard
-              storeName={item.storeName}
+              storeName={item.store_name}
               distance={item.distance}
-              location={item.location}
-              voucher={item.voucher}
-              subCategory={item.subCategory}
-              onPress={() => showAlert('Store Pressed', item.storeName)}
+              location={item.locations[0]}
+              voucher={item.vouchers[0]}
+              subCategory={item.sub_categories[0]}
+              onPress={() => showAlert('Store Pressed', item.store_name)}
               onPressFavorite={() => addFavoriteStore(item)}
             />
           )}

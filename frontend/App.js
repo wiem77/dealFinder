@@ -4,16 +4,18 @@ import { useFonts } from 'expo-font';
 import { customFonts } from './config/config';
 import Navigation from './navigation/Navigation';
 import { AuthProvider } from './context/AuthProvider';
-
+import { StoresProvider } from './context/StoreProvider';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
   return (
-    <AuthProvider>
-      <StatusBar style="auto" />
-      <Navigation />
-    </AuthProvider>
+    <StoresProvider>
+      <AuthProvider>
+        <StatusBar style="auto" />
+        <Navigation />
+      </AuthProvider>
+    </StoresProvider>
   );
 }

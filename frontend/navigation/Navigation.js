@@ -22,8 +22,9 @@ const ConsumerStack = createNativeStackNavigator();
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="Store" component={StoreScreen} />
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
+      <ConsumerStack.Screen name="Store" component={StoreScreen} />
+
       <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
       <ConsumerStack.Screen name="Profile" component={ProfileScreen} />

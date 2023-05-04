@@ -108,7 +108,7 @@ exports.getAllStores = async (req, res) => {
     const stores = await Store.find({})
       .populate('locations', 'formattedAddress')
       .populate('sub_categories', 'subCategory_name')
-      .populate('vouchers', 'name_V');
+      .populate('vouchers', 'discount');
 
     const formattedStores = stores.map((store) => {
       const formattedLocations = store.locations.map(
@@ -117,13 +117,13 @@ exports.getAllStores = async (req, res) => {
       const subCategoryNames = store.sub_categories.map(
         (subCategory) => subCategory.subCategory_name
       );
-      const voucherNames = store.vouchers.map((voucher) => voucher.name_V);
+      const voucherDiscount = store.vouchers.map((voucher) => voucher.discount);
 
       return {
         ...store.toObject(),
         locations: formattedLocations,
         sub_categories: subCategoryNames,
-        vouchers: voucherNames,
+        vouchers: voucherDiscount,
       };
     });
 

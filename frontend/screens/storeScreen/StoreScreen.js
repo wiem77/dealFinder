@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -96,42 +96,35 @@ const StoreScreen = ({ route }) => {
       console.log(error);
     }
   }
-  useEffect(() => {
-    let isMounted = true;
-    getStores()
-      .then((data) => {
-        if (isMounted) {
-          setStores(data);
-          setIsLoading(false);
-
-          if (data.store) {
-            const formattedAddress = data.store.locations[0]?.formattedAddress;
-            console.log('formattedAddress', formattedAddress);
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
   // useEffect(() => {
-  //   getStores().then((data) => setStores(data));
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 10000);
+  //   let isMounted = true;
+  //   setIsLoading(true);
+
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await getStores();
+  //       if (isMounted) {
+  //         setStores(data);
+  //         if (data.store) {
+  //           const formattedAddress = data.store.locations[0]?.formattedAddress;
+  //           console.log('formattedAddress', formattedAddress);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       if (isMounted) {
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //   };
+
+  //   fetchData();
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
   // }, []);
-
-  // useEffect(() => {
-  //   if (!isLoading && stores.store) {
-  //     const formattedAddress = stores.store.locations[0]?.formattedAddress;
-  //     console.log('formattedAddress', formattedAddress);
-  //   }
-  // }, [isLoading, stores]);
 
   return (
     <>

@@ -18,12 +18,26 @@ import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
+import axios from 'axios';
 import { BlurView } from 'expo-blur';
+import { baseUrl } from '../../config/config';
 const MapScreen = () => {
   const navigation = useNavigation();
   const [circleRadius, setCircleRadius] = useState(500);
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [stores, setStores] = useState([]);
+  async function getStoresLocations() {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/store/getAllStoreWithLocations`
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -45,6 +59,15 @@ const MapScreen = () => {
         console.log(error);
       } finally {
         setIsLoading(false);
+      }
+
+      try {
+        const response = await axios.get(
+          `${baseUrl}/store/getAllStoreWithLocations`
+        );
+        setStores(response.data);
+      } catch (error) {
+        console.log(error);
       }
     })();
   }, []);
@@ -82,9 +105,8 @@ const MapScreen = () => {
 
       <View style={styles.contentContainer}>
         {isLoading ? (
-          // Use BlurView component to create a blurred loading screen
-          <BlurView intensity={100} tint="dark" style={styles.loadingIndicator}>
-            <ActivityIndicator size="large" color="gray" />
+          <BlurView intensity={500} tint="dark" style={styles.loadingIndicator}>
+            <ActivityIndicator size="100%" color="white" />
           </BlurView>
         ) : (
           <MapView
@@ -117,6 +139,17 @@ const MapScreen = () => {
                   strokeColor="rgba(0, 0, 255, 0.3)"
                   fillColor="rgba(0, 0, 255, 0.05)"
                 />
+                {stores.map((store) => (
+                  <Marker
+                    key={store._id}
+                    coordinate={{
+                      latitude: store.locations[0].coordinates[1],
+                      longitude: store.locations[0].coordinates[0],
+                    }}
+                    title={store.store_name}
+                    description={store.email}
+                  />
+                ))}
               </>
             )}
           </MapView>
@@ -195,7 +228,7 @@ const styles = StyleSheet.create({
   },
   circleButtonsContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: '15%',
     right: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -216,27 +249,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-// const styles = StyleSheet.create({
-//   contentContainer: {
-//   borderTopLeftRadius: 30,
-//   borderTopRightRadius: 30,
-
-//   paddingHorizontal: '10%',
-//   paddingVertical: height * 0.05,
-//   marginTop: 100,
-//   width: '100%',
-//   flex: 1,
-//   // alignItems: 'center',
-//   ...Platform.select({
-//     ios: {
-//       shadowColor: '#000',
-//       shadowOffset: { width: 2, height: 2 },
-//       shadowOpacity: 1,
-//       shadowRadius: 3.84,
-//     },
-//     android: {
-//       elevation: 15,
-//     },
-//   }),
-// },});

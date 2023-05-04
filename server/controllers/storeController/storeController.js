@@ -105,7 +105,7 @@ exports.addStore = async (req, res, next) => {
 
 exports.getAllStores = async (req, res) => {
   try {
-    console.log('stores');
+    console.log('stores1');
     const stores = await Store.find({})
       .populate('locations', 'formattedAddress')
       .populate('sub_categories', 'subCategory_name')
@@ -157,6 +157,7 @@ module.exports.getOneStore = (req, res) => {
     });
 };
 exports.getAllStoresWithLocations = (req, res) => {
+  console.log('sotresLocations');
   Store.find({})
     .populate('locations')
     .then((stores) => {

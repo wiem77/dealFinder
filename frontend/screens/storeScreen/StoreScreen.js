@@ -93,19 +93,42 @@ const StoreScreen = () => {
     }
   }
 
-  useEffect(() => {
-    getStores().then((data) => setStores(data));
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 10000);
-  }, []);
+  // useEffect(() => {
+  //   getStores().then((data) => setStores(data));
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 10000);
+  // }, []);
 
+  // useEffect(() => {
+  //   if (!isLoading && stores.store) {
+  //     const formattedAddress = stores.store.locations[0]?.formattedAddress;
+  //     console.log('formattedAddress', formattedAddress);
+  //   }
+  // }, [isLoading, stores]);
   useEffect(() => {
-    if (!isLoading && stores.store) {
-      const formattedAddress = stores.store.locations[0]?.formattedAddress;
-      console.log('formattedAddress', formattedAddress);
-    }
-  }, [isLoading, stores]);
+    let isMounted = true;
+    getStores()
+      .then((data) => {
+        if (isMounted) {
+          setStores(data);
+          setIsLoading(false);
+
+          if (data.store) {
+            const formattedAddress = data.store.locations[0]?.formattedAddress;
+            console.log('formattedAddress', formattedAddress);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>

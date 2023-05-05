@@ -14,7 +14,8 @@ import { useTheme } from '@mui/material';
 import { baseUrl } from '../../config/config';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
+import { IconButton } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 const Store = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -45,6 +46,24 @@ const Store = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${baseUrl}store/deleteStore/${id}`);
+      setStoresData((prevData) => {
+        const newData = [...prevData];
+        const index = newData.findIndex((store) => store.id === id);
+        if (index !== -1) {
+          newData.splice(index, 1);
+        }
+        return newData;
+      });
+      alert(
+        'La suppression a été effectuée avec succès raffrechiser lapage  !'
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const columns = [
@@ -98,6 +117,16 @@ const Store = () => {
         </Box>
       ),
     },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 0.5,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleDelete(params.row._id)}>
+          <Delete />
+        </IconButton>
+      ),
+    },
   ];
   const transformStoreData = (stores) => {
     return stores.map((store) => {
@@ -126,31 +155,6 @@ const Store = () => {
       };
     });
   };
-
-  // const transformStoreData = (stores) => {
-  //   const tranformedStores = [];
-  //   console.log(stores[0].id);
-  //   stores.map((store, index) => {
-  //     console.log(store.id);
-  //     // const nameVs = store.vouchers.map((voucher) => voucher.name_V);
-  //     tranformedStores.push({
-  //       id: store.id,
-  //       _id: store._id,
-  //       store_name: store.store_name,
-  //       phone: store.phone,
-  //       email: store.email,
-  //       location: store.locations[0].formattedAddress,
-  //       city: store.locations[0].city,
-  //       zipcode: store.locations[0].zipcode,
-  //       category: store.sub_categories[0].category.category_name,
-  //       name_V:
-  //         store.vouchers.length > 0 ? store.vouchers[0].name_V : 'Undefined',
-  //     });
-  //   });
-
-  //   console.log(tranformedStores);
-  //   return tranformedStores;
-  // };
 
   const [storesData, setStoresData] = useState([]);
   useEffect(() => {

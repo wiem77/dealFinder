@@ -10,16 +10,20 @@ const {
   signIn,
   getUserIdByEmail,
   test,
+  getUsers,
 } = require('../../controllers/authUsers/auth');
 const router = express.Router();
 const uploader = require('../../config/multerConfig');
 
 //root:http://localhost:4000/api/signUp
 router.get('/test', test);
+
+//root:http://localhost:4000/api/getUsers
+router.get('/getUsers', getUsers);
 //root:http://localhost:4000/api/signUp
 router.post('/signUp', uploader.single('image'), signUp);
 //root:http://localhost:4000/api/signIn
-router.post('/SignIn', auth,signIn);
+router.post('/SignIn', auth, signIn);
 //http://localhost:4000/api/idUser/:email
 router.get('/idUser/:email', getUserIdByEmail);
 

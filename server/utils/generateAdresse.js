@@ -15,13 +15,14 @@ module.exports.getLocationAdrs = async (coordinates) => {
     const zipcode = result[0]?.zipcode;
     const streetNumber = result[0]?.streetNumber;
     const state = result[0]?.state;
-    const formattedAddress = `${streetName},${streetNumber},${state},${zipcode},${city},${country}`;
+    const formattedAddress = `${streetName},${streetNumber},${state},${city}`;
 
     return {
       coordinates: [lon, lat],
       formattedAddress,
       city,
       country,
+      zipcode,
     };
   } catch (error) {
     console.error(error.message);

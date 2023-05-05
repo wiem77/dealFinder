@@ -11,7 +11,7 @@ const Location = require('../../models/LocationModel');
 
 const Media = require('../../models/MediaModel');
 module.exports.signUp = async (req, res) => {
-  const data = JSON.parse(req.body.userData);
+  // const data = JSON.parse(req.body.userData);
   const {
     nom,
     prenom,
@@ -27,7 +27,7 @@ module.exports.signUp = async (req, res) => {
     type,
     city,
     country,
-  } = data;
+  } = req.body;
   console.log('Register..');
 
   try {
@@ -192,5 +192,16 @@ module.exports.test = async (req, res) => {
     console.log('hani jyt');
   } catch (error) {
     console.log(error);
+  }
+};
+module.exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+      .populate('location', 'city zipcode')
+      .select('-password -confirmpassword -cart -favorite_stores');
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
   }
 };

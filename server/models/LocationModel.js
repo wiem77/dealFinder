@@ -17,6 +17,9 @@ const locationSchema = new mongoose.Schema({
   city: {
     type: String,
   },
+  zipcode: {
+    type: String,
+  },
   country: {
     type: String,
   },

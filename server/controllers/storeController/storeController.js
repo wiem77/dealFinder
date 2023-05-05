@@ -9,6 +9,7 @@ const { storeValidation } = require('../../utils/ValidationSchema');
 const sendEmail = require('../../utils/generatEmailValidation');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 exports.addStore = async (req, res, next) => {
+  console.log('add2...');
   console.log(req.body);
   const {
     email,
@@ -49,6 +50,7 @@ exports.addStore = async (req, res, next) => {
       formattedAddress: locationDetails.formattedAddress,
       city: locationDetails.city,
       country: locationDetails.country,
+      zipcode: locationDetails.zipcode,
       store: Store._id,
     });
 
@@ -103,32 +105,36 @@ exports.addStore = async (req, res, next) => {
   }
 };
 
+// exports.getAllStores = async (req, res) => {
+//   try {
+//     const stores = await Store.find({})
+//       .populate('locations', 'formattedAddress city zipcode')
+//       .populate('sub_categories', 'subCategory_name category')
+//       .populate('vouchers', 'discount name_V')
+//       .lean();
+
+//     res.status(200).json(stores);
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ error: 'Error getting all stores.' });
+//   }
+// };
 exports.getAllStores = async (req, res) => {
   try {
-    console.log('stores1');
     const stores = await Store.find({})
-      .populate('locations', 'formattedAddress')
-      .populate('sub_categories', 'subCategory_name')
-      .populate('vouchers', 'discount');
+      .populate('locations', 'formattedAddress city zipcode')
+      .populate({
+        path: 'sub_categories',
+        populate: {
+          path: 'category',
+          select: 'category_name',
+        },
+        select: 'subCategory_name category',
+      })
+      .populate('vouchers', 'discount name_V')
+      .lean();
 
-    const formattedStores = stores.map((store) => {
-      const formattedLocations = store.locations.map(
-        (location) => location.formattedAddress
-      );
-      const subCategoryNames = store.sub_categories.map(
-        (subCategory) => subCategory.subCategory_name
-      );
-      const voucherDiscount = store.vouchers.map((voucher) => voucher.discount);
-
-      return {
-        ...store.toObject(),
-        locations: formattedLocations,
-        sub_categories: subCategoryNames,
-        vouchers: voucherDiscount,
-      };
-    });
-
-    res.status(200).json(formattedStores);
+    res.status(200).json(stores);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Error getting all stores.' });
@@ -136,7 +142,7 @@ exports.getAllStores = async (req, res) => {
 };
 
 module.exports.getOneStore = (req, res) => {
-  console.log('store..');
+  console.log('ONE Store..');
   const storeId = req.params.id;
   const store_name = req.params.name;
   console.log(storeId);
@@ -145,6 +151,7 @@ module.exports.getOneStore = (req, res) => {
   })
     .populate('locations')
     .populate('vouchers')
+    .populate('sub_categories')
     .then((store) => {
       if (!store) {
         return res.status(400).send({ success: false, msg: 'store not found' });
@@ -186,33 +193,38 @@ exports.getStoreByName = (req, res) => {
       res.status(500).json({ error: 'Error getting store by name.' });
     });
 };
-exports.deleteStore = (req, res) => {
-  const { id } = req.params;
 
-  Store.findById(id)
+module.exports.deleteStore = async (req, res) => {
+  const storeId = req.params.id;
+  console.log('storeee', storeId);
+  Store.findOne({
+    _id: storeId,
+  })
     .populate('vouchers')
     .then((store) => {
       if (!store) {
-        return res.status(404).json({ message: 'Store not found' });
+        return res.status(400).send({ msg: 'Store does not exist' });
       }
-      return store
-        .deleteOne()
-        .then(() => {
-          if (store.vouchers.length > 0) {
-            store.vouchers.forEach((voucher) => voucher.delete());
-          }
-          res.status(200).json({ message: 'Store deleted successfully' });
-        })
-        .catch((err) => {
-          res
-            .status(500)
-            .json({ message: 'Failed to delete store', error: err });
+      Voucher.deleteMany({
+        _id: { $in: store.vouchers },
+      }).then(() => {
+        console.log('Vouchers deleted');
+      });
+      Store.deleteOne({ _id: store._id }).then(() => {
+        res.status(200).send({
+          success: true,
+          msg: 'store deleted',
+          deletedCategory: store,
         });
+        console.log('store deleted:', store);
+      });
     })
-    .catch((err) => {
-      res.status(500).json({ message: 'Failed to delete store', error: err });
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({ success: false, msg: error.message });
     });
 };
+
 exports.updateStore = (req, res) => {
   const storeId = req.params.id;
 

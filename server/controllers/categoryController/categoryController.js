@@ -94,12 +94,14 @@ module.exports.updateCategory = (req, res) => {
 };
 
 module.exports.getAllCategories = (req, res) => {
+  console.log('get all .category....');
   Category.find({})
-    .populate('subcategories')
+    .populate('subcategories', 'subCategory_name')
+
     .populate('category_image')
     .then((categories) => {
       res.status(200).send({ success: true, categories: categories });
-      console.log('All categories fetched successfully');
+      console.log(categories);
     })
     .catch((error) => {
       console.log(error);

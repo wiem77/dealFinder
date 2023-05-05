@@ -9,6 +9,7 @@ import StoreIcon from '@mui/icons-material/Store';
 import CategoryIcon from '@mui/icons-material/Category';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -136,7 +137,7 @@ const Sidebar = () => {
             <Item
               title="Utilisateurs"
               to="/team"
-              icon={<CategoryIcon />}
+              icon={<AccountCircle />}
               selected={selected}
               setSelected={setSelected}
             />

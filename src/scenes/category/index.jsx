@@ -5,32 +5,44 @@ import {
   Modal,
   Button,
   Typography,
+  useTheme,
+  IconButton,
 } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { tokens } from '../../theme';
-import { mockDataContacts } from '../../data/mockData';
-import Header from '../../components/Header';
-import { useTheme } from '@mui/material';
-import { baseUrl } from '../../config/config';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+
+import { tokens } from '../../theme';
+import Header from '../../components/Header';
+
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+
+import { useEffect, useState } from 'react';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
+
 const Category = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   const [open, setOpen] = useState(false);
   const [categoryInfo, setCategoryInfo] = useState({});
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
+  const [categoryData, setcategoryData] = useState([]);
+
+  const handleClose = () => {
+    setOpen(false);
   };
+
   const handleOpen = (categoryId) => {
     console.log('categoryData', categoryData);
     const categoryDetails = categoryData.find(
@@ -45,9 +57,6 @@ const Category = () => {
     console.log(categoryInfo);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${baseUrl}category/deletecategory/${id}`);
@@ -60,62 +69,12 @@ const Category = () => {
         return newData;
       });
       alert(
-        'La suppression a été effectuée avec succès raffrechiser lapage  !'
+        'La suppression a été effectuée avec succès raffrechiser la page  !'
       );
     } catch (error) {
       console.error(error);
     }
   };
-  const handleUpdate = (id) => {
-    // handleOpen();
-  };
-
-  const columns = [
-    { field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: '_id', headerName: 'Registrar ID' },
-    {
-      field: 'category_name',
-      headerName: 'Nom_Catégories',
-      flex: 1,
-      cellClassName: 'name-column--cell',
-    },
-
-    {
-      field: 'subCategoy',
-      headerName: 'sous_Categories',
-      flex: 1,
-    },
-    {
-      field: 'details',
-      headerName: 'Détails',
-      flex: 1,
-      renderCell: (params) => (
-        <Button color="success" onClick={() => handleOpen(params.row.id)}>
-          Voir détails
-        </Button>
-      ),
-    },
-
-    {
-      field: 'Actions',
-      headerName: 'Actions',
-      flex: 1,
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
-          <IconButton onClick={() => handleDelete(params.row._id)}>
-            <Delete />
-          </IconButton>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleUpdate(params.row._id)}
-          >
-            Update
-          </Button>
-        </Box>
-      ),
-    },
-  ];
 
   const transformStoreData = (categories) => {
     return categories.map((category) => {
@@ -137,12 +96,11 @@ const Category = () => {
     });
   };
 
-  const [categoryData, setcategoryData] = useState([]);
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         const response = await axios.get(`${baseUrl}category/getAllCategory`);
-        console.log(response.data.categories); // log the response data to the console
+        console.log(response.data.categories);
         const categoryWithId = response.data.categories.map(
           (category, index) => ({
             ...category,
@@ -159,10 +117,70 @@ const Category = () => {
     fetchCategory();
   }, []);
 
+  const columns = [
+    { field: 'id', headerName: 'ID', flex: 0.5 },
+    { field: '_id', headerName: 'Registrar ID' },
+    {
+      field: 'category_name',
+      headerName: 'Nom_Catégories',
+      flex: 1,
+      cellClassName: 'name-column--cell',
+    },
+
+    {
+      field: 'subCategoy',
+      headerName: 'sous_Categories',
+      flex: 1,
+    },
+
+    {
+      field: 'details',
+      headerName: 'Détails',
+      flex: 1,
+      renderCell: (params) => (
+        <>
+          <Button color="success" onClick={() => handleOpen(params.row.id)}>
+            Voir détails
+          </Button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Identifiant de la catégorie: {categoryInfo._id}
+              </Typography>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Nom de la Catégories: {categoryInfo.category_name}
+              </Typography>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Sous catégories : {categoryInfo.subCategoy}
+              </Typography>
+            </Box>
+          </Modal>
+        </>
+      ),
+    },
+
+    {
+      field: 'Actions',
+      headerName: 'Actions',
+      flex: 1,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex' }}>
+          <IconButton onClick={() => handleDelete(params.row._id)}>
+            <Delete />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
   return (
     <>
       <Box m="20px">
-        <Header title="Boutiques" subtitle="Liste des catégories disponible" />
+        <Header title="Catégories" subtitle="Liste des catégories disponible" />
         <Box
           m="40px 0 0 0"
           height="75vh"
@@ -203,27 +221,6 @@ const Category = () => {
           />
         </Box>
       </Box>
-      <Button color="success" onClick={handleOpen}>
-        Voir détails
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Identifiant de la catégorie: {categoryInfo._id}
-          </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Nom de la Catégories: {categoryInfo.category_name}
-          </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Sous catégories : {categoryInfo.subCategoy}
-          </Typography>
-        </Box>
-      </Modal>
     </>
   );
 };

@@ -16,11 +16,11 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-const Store = () => {
+const Category = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [open, setOpen] = useState(false);
-  const [storeInfo, setStoreInfo] = useState({});
+  const [categoryInfo, setCategoryInfo] = useState({});
   const style = {
     position: 'absolute',
     top: '50%',
@@ -31,17 +31,18 @@ const Store = () => {
     boxShadow: 24,
     p: 4,
   };
-  const handleOpen = (storeId) => {
-    console.log('storeId', storeId);
-    console.log(storesData);
-    const storeDetails = storesData.find((store) => store.id === storeId);
-    if (!storeDetails) {
-      console.error(`Could not find store with id ${storeId}`);
+  const handleOpen = (categoryId) => {
+    console.log('categoryData', categoryData);
+    const categoryDetails = categoryData.find(
+      (category) => category.id === categoryId
+    );
+    if (!categoryDetails) {
+      console.error(`Could not find Category with id ${categoryId}`);
       return;
     }
-    setStoreInfo(storeDetails);
+    setCategoryInfo(categoryDetails);
     setOpen(true);
-    console.log(storeInfo);
+    console.log(categoryInfo);
   };
 
   const handleClose = () => {
@@ -49,8 +50,8 @@ const Store = () => {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${baseUrl}store/deleteStore/${id}`);
-      setStoresData((prevData) => {
+      await axios.delete(`${baseUrl}category/deletecategory/${id}`);
+      setcategoryData((prevData) => {
         const newData = [...prevData];
         const index = newData.findIndex((store) => store.id === id);
         if (index !== -1) {
@@ -66,51 +67,38 @@ const Store = () => {
     }
   };
   const handleUpdate = (id) => {
-    handleOpen();
+    // handleOpen();
   };
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
     { field: '_id', headerName: 'Registrar ID' },
     {
-      field: 'store_name',
-      headerName: 'Nom_boutique',
+      field: 'category_name',
+      headerName: 'Nom_Catégories',
       flex: 1,
       cellClassName: 'name-column--cell',
     },
 
     {
-      field: 'phone',
-      headerName: 'N°Télephone',
+      field: 'subCategoy',
+      headerName: 'sous_Categories',
       flex: 1,
+    },
+    {
+      field: 'details',
+      headerName: 'Détails',
+      flex: 1,
+      renderCell: (params) => (
+        <Button color="success" onClick={() => handleOpen(params.row.id)}>
+          Voir détails
+        </Button>
+      ),
     },
 
     {
-      field: 'city',
-      headerName: 'City',
-      flex: 1,
-    },
-    // {
-    //   field: 'zipcode',
-    //   headerName: 'Zip Code',
-    //   flex: 1,
-    // },
-
-    {
-      field: 'category',
-      headerName: 'categoryNames',
-      flex: 1,
-    },
-    {
-      field: 'name_V',
-      headerName: 'coupons',
-      flex: 1,
-      valueGetter: (params) => params.row.name_V.split(',')[0],
-    },
-
-    {
-      field: 'showModal',
-      headerName: 'Show Modal',
+      field: 'Actions',
+      headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: 'flex' }}>
@@ -129,56 +117,52 @@ const Store = () => {
     },
   ];
 
-  const transformStoreData = (stores) => {
-    return stores.map((store) => {
-      const voucherNames = store.vouchers
-        .map((voucher) => voucher.name_V)
-        .join(', ');
-      const subCategoryNames = store.sub_categories
-        .map((subCategory) => subCategory.subCategory_name)
-        .join(', ');
-      const addresses = store.locations
-        .map((location) => location.formattedAddress)
-        .join(', ');
+  const transformStoreData = (categories) => {
+    return categories.map((category) => {
+      let subcategoriesNames = '';
+      if (category.subcategories && category.subcategories.length > 0) {
+        subcategoriesNames = category.subcategories
+          .map((subCategory) => subCategory.subCategory_name)
+          .join(', ');
+      } else {
+        subcategoriesNames = 'pas de sous souscategory';
+      }
+
       return {
-        id: store.id,
-        _id: store._id,
-        store_name: store.store_name,
-        phone: store.phone,
-        email: store.email,
-        location: addresses,
-        rating: store.rating,
-        city: store.locations[0].city,
-        zipcode: store.locations[0].zipcode,
-        category: store.sub_categories[0].category.category_name,
-        subCategoy: subCategoryNames,
-        name_V: voucherNames,
+        id: category.id,
+        _id: category._id,
+        category_name: category.category_name,
+        subCategoy: subcategoriesNames,
       };
     });
   };
 
-  const [storesData, setStoresData] = useState([]);
+  const [categoryData, setcategoryData] = useState([]);
   useEffect(() => {
-    const fetchStores = async () => {
+    const fetchCategory = async () => {
       try {
-        const response = await axios.get(`${baseUrl}store/getAllStore`);
-        const storesWithId = response.data.map((store, index) => ({
-          ...store,
-          id: index,
-        }));
-        setStoresData(transformStoreData(storesWithId));
+        const response = await axios.get(`${baseUrl}category/getAllCategory`);
+        console.log(response.data.categories); // log the response data to the console
+        const categoryWithId = response.data.categories.map(
+          (category, index) => ({
+            ...category,
+            id: index,
+          })
+        );
+
+        setcategoryData(transformStoreData(categoryWithId));
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchStores();
+    fetchCategory();
   }, []);
 
   return (
     <>
       <Box m="20px">
-        <Header title="Boutiques" subtitle="Liste des boutiques partenaires " />
+        <Header title="Boutiques" subtitle="Liste des catégories disponible" />
         <Box
           m="40px 0 0 0"
           height="75vh"
@@ -212,7 +196,7 @@ const Store = () => {
           }}
         >
           <DataGrid
-            rows={storesData}
+            rows={categoryData}
             columns={columns}
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row._id}
@@ -230,29 +214,13 @@ const Store = () => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Nom de la Boutique : {storeInfo.store_name}
+            Identifiant de la catégorie: {categoryInfo._id}
           </Typography>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Numéro de télephone : {storeInfo.phone}
+            Nom de la Catégories: {categoryInfo.category_name}
           </Typography>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Ville : {storeInfo.city}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Description : {storeInfo.description}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            location : {storeInfo.location}
-          </Typography>
-
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Nom de coupons : {storeInfo.name_V}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Sous_Categories : {storeInfo.subCategoy}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Calassification : {storeInfo.rating}
+            Sous catégories : {categoryInfo.subCategoy}
           </Typography>
         </Box>
       </Modal>
@@ -260,4 +228,4 @@ const Store = () => {
   );
 };
 
-export default Store;
+export default Category;

@@ -19,7 +19,7 @@ const Store = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [open, setOpen] = useState(false);
-  const [modalData, setModalData] = useState({});
+  const [storeInfo, setStoreInfo] = useState({});
   const style = {
     position: 'absolute',
     top: '50%',
@@ -30,8 +30,17 @@ const Store = () => {
     boxShadow: 24,
     p: 4,
   };
-  const handleOpen = () => {
+  const handleOpen = (storeId) => {
+    console.log('storeId', storeId);
+    console.log(storesData);
+    const storeDetails = storesData.find((store) => store.id === storeId);
+    if (!storeDetails) {
+      console.error(`Could not find store with id ${storeId}`);
+      return;
+    }
+    setStoreInfo(storeDetails);
     setOpen(true);
+    console.log(storeInfo);
   };
 
   const handleClose = () => {
@@ -53,16 +62,7 @@ const Store = () => {
       headerName: 'N°Télephone',
       flex: 1,
     },
-    // {
-    //   field: 'email',
-    //   headerName: 'Email',
-    //   flex: 1,
-    // },
-    // {
-    //   field: 'location',
-    //   headerName: 'Address',
-    //   flex: 1,
-    // },
+
     {
       field: 'city',
       headerName: 'City',
@@ -83,82 +83,74 @@ const Store = () => {
       field: 'name_V',
       headerName: 'coupons',
       flex: 1,
-      // renderCell: (params) => (
-      //   <Box>
-      //     <Select value={params.value}>
-      //       {name_V.map((coupon) => (
-      //         <MenuItem key={coupon.id} value={coupon.name_V}>
-      //           {coupon.name}
-      //         </MenuItem>
-      //       ))}
-      //     </Select>
-      //   </Box>
-      // ),
+      valueGetter: (params) => params.row.name_V.split(',')[0],
     },
+
     {
       field: 'showModal',
       headerName: 'Show Modal',
       flex: 1,
-      renderCell: (params) => {
-        const handleOpen = () => {
-          setOpen(true);
-          setModalData(params.row); 
-        };
-
-        const handleClose = () => {
-          setOpen(false);
-        };
-
-        return (
-          <Box sx={{ textAlign: 'center' }}>
-            <Button color="success" onClick={handleOpen}>
-              Voir plus
-            </Button>
-            <Modal
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  "_id": {modalData._id}
-                </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                  {modalData.phone} | {modalData.city} | {modalData.category}
-                </Typography>
-              </Box>
-            </Modal>
-          </Box>
-        );
-      },
+      renderCell: (params) => (
+        <Box sx={{ textAlign: 'center' }}>
+          <Button color="success" onClick={() => handleOpen(params.row.id)}>
+            Voir plus
+          </Button>
+        </Box>
+      ),
     },
   ];
-
   const transformStoreData = (stores) => {
-    const tranformedStores = [];
-    console.log(stores[0].id);
-    stores.map((store, index) => {
-      console.log(store.id);
-      // const nameVs = store.vouchers.map((voucher) => voucher.name_V);
-      tranformedStores.push({
+    return stores.map((store) => {
+      const voucherNames = store.vouchers
+        .map((voucher) => voucher.name_V)
+        .join(', ');
+      const subCategoryNames = store.sub_categories
+        .map((subCategory) => subCategory.subCategory_name)
+        .join(', ');
+      const addresses = store.locations
+        .map((location) => location.formattedAddress)
+        .join(', ');
+      return {
         id: store.id,
         _id: store._id,
         store_name: store.store_name,
         phone: store.phone,
         email: store.email,
-        location: store.locations[0].formattedAddress,
+        location: addresses,
+        rating: store.rating,
         city: store.locations[0].city,
         zipcode: store.locations[0].zipcode,
         category: store.sub_categories[0].category.category_name,
-        name_V:
-          store.vouchers.length > 0 ? store.vouchers[0].name_V : 'Undefined',
-      });
+        subCategoy: subCategoryNames,
+        name_V: voucherNames,
+      };
     });
-
-    console.log(tranformedStores);
-    return tranformedStores;
   };
+
+  // const transformStoreData = (stores) => {
+  //   const tranformedStores = [];
+  //   console.log(stores[0].id);
+  //   stores.map((store, index) => {
+  //     console.log(store.id);
+  //     // const nameVs = store.vouchers.map((voucher) => voucher.name_V);
+  //     tranformedStores.push({
+  //       id: store.id,
+  //       _id: store._id,
+  //       store_name: store.store_name,
+  //       phone: store.phone,
+  //       email: store.email,
+  //       location: store.locations[0].formattedAddress,
+  //       city: store.locations[0].city,
+  //       zipcode: store.locations[0].zipcode,
+  //       category: store.sub_categories[0].category.category_name,
+  //       name_V:
+  //         store.vouchers.length > 0 ? store.vouchers[0].name_V : 'Undefined',
+  //     });
+  //   });
+
+  //   console.log(tranformedStores);
+  //   return tranformedStores;
+  // };
 
   const [storesData, setStoresData] = useState([]);
   useEffect(() => {
@@ -233,10 +225,29 @@ const Store = () => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
+            {storeInfo.store_name}
+          </Typography>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            {storeInfo.phone}
+          </Typography>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            {storeInfo.city}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            {storeInfo.description}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {storeInfo.location}
+          </Typography>
+
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {storeInfo.name_V}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {storeInfo.subCategoy}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {storeInfo.rating}
           </Typography>
         </Box>
       </Modal>

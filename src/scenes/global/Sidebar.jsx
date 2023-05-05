@@ -134,16 +134,16 @@ const Sidebar = () => {
               Data
             </Typography>
             <Item
-              title="Boutiques"
+              title="categories"
               to="/team"
-              icon={<StoreIcon />}
+              icon={<CategoryIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Catégories"
-              to="/categories"
-              icon={<CategoryIcon />}
+              title="boutiques"
+              to="/boutiques"
+              icon={<StoreIcon />}
               selected={selected}
               setSelected={setSelected}
             />

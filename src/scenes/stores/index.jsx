@@ -1,19 +1,22 @@
-import { Box } from '@mui/material';
+import { Box, Select, MenuItem } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
 import { mockDataContacts } from '../../data/mockData';
 import Header from '../../components/Header';
 import { useTheme } from '@mui/material';
+import { baseUrl } from '../../config/config';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-const Contacts = () => {
+const Store = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: 'registrarId', headerName: 'Registrar ID' },
+    { field: '_id', headerName: 'Registrar ID' },
     {
-      field: 'name',
+      field: 'store_name',
       headerName: 'Nom_boutique',
       flex: 1,
       cellClassName: 'name-column--cell',
@@ -30,7 +33,7 @@ const Contacts = () => {
       flex: 1,
     },
     {
-      field: 'address',
+      field: 'location',
       headerName: 'Address',
       flex: 1,
     },
@@ -40,21 +43,75 @@ const Contacts = () => {
       flex: 1,
     },
     {
-      field: 'zipCode',
+      field: 'zipcode',
       headerName: 'Zip Code',
       flex: 1,
     },
     {
       field: 'category',
-      headerName: 'Sous_Catégorie',
+      headerName: 'categoryNames',
       flex: 1,
     },
     {
-      field: 'voucher',
+      field: 'name_V',
       headerName: 'coupons',
       flex: 1,
+      // renderCell: (params) => (
+      //   <Box>
+      //     <Select value={params.value}>
+      //       {name_V.map((coupon) => (
+      //         <MenuItem key={coupon.id} value={coupon.name_V}>
+      //           {coupon.name}
+      //         </MenuItem>
+      //       ))}
+      //     </Select>
+      //   </Box>
+      // ),
     },
   ];
+
+  const transformStoreData = (stores) => {
+    const tranformedStores = [];
+    console.log(stores[0].id);
+    stores.map((store, index) => {
+      console.log(store.id);
+      // const nameVs = store.vouchers.map((voucher) => voucher.name_V);
+      tranformedStores.push({
+        id: store.id,
+        _id: store._id,
+        store_name: store.store_name,
+        phone: store.phone,
+        email: store.email,
+        location: store.locations[0].formattedAddress,
+        city: store.locations[0].city,
+        zipcode: store.locations[0].zipcode,
+        category: store.sub_categories[0].category.category_name,
+        name_V:
+          store.vouchers.length > 0 ? store.vouchers[0].name_V : 'Undefined',
+      });
+    });
+
+    console.log(tranformedStores);
+    return tranformedStores;
+  };
+
+  const [storesData, setStoresData] = useState([]);
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}store/getAllStore`);
+        const storesWithId = response.data.map((store, index) => ({
+          ...store,
+          id: index,
+        }));
+        setStoresData(transformStoreData(storesWithId));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStores();
+  }, []);
 
   return (
     <Box m="20px">
@@ -92,13 +149,14 @@ const Contacts = () => {
         }}
       >
         <DataGrid
-          rows={mockDataContacts}
+          rows={storesData}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
+          getRowId={(row) => row._id}
         />
       </Box>
     </Box>
   );
 };
 
-export default Contacts;
+export default Store;

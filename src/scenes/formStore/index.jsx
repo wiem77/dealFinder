@@ -6,7 +6,13 @@ import {
   MenuItem,
   InputLabel,
   Input,
+  Checkbox,
   FormHelperText,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  ListItemText,
 } from '@mui/material';
 import axios from 'axios';
 import { Formik } from 'formik';
@@ -15,10 +21,39 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
 import { useState, useEffect } from 'react';
 import { baseUrl } from '../../config/config';
-const StoreForm = () => {
-  const [storeData, setStoreData] = useState({});
 
+const StoreForm = () => {
+  const [categories, setCategories] = useState([]);
+  const [filteredSubCategories, setFilteredSubCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+
+  const handleSubCategoryChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedSubCategories([...selectedSubCategories, value]);
+    } else {
+      setSelectedSubCategories(
+        selectedSubCategories.filter((subcat) => subcat !== value)
+      );
+    }
+  };
+  console.log('selectedCategory', selectedSubCategories);
+  const handleSelectCategory = (event, setFieldValue) => {
+    const { name, value } = event.target;
+    if (name === 'categories') {
+      setFieldValue(name, value);
+      console.log(`Selected Category ID: ${value}`);
+    } else if (typeof value === 'string') {
+      setFieldValue(name, value.trim());
+    } else {
+      setFieldValue(name, value);
+    }
+  };
+  
+  console.log('selectedCategory', selectedSubCategories);
   const isNonMobile = useMediaQuery('(min-width:600px)');
+
   const phoneRegExp =
     /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
@@ -42,16 +77,14 @@ const StoreForm = () => {
     laltitude: '',
     longitude: '',
     description: '',
-    sub_categories: '',
+    categories: '',
   };
-  console.log('test');
-  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
         const response = await axios.get(`${baseUrl}category/getAllCategory`);
-        setSubCategories(response.data.categories);
+        setCategories(response.data.categories);
         console.log(response.data.categories);
       } catch (error) {
         console.error(error);
@@ -60,8 +93,13 @@ const StoreForm = () => {
     fetchSubCategories();
   }, []);
   useEffect(() => {
-    console.log('Subcategories12345:', subCategories);
-  }, [subCategories]);
+    console.log('Subcategories:', categories);
+    categories.forEach((category) => {
+      category.subcategories.forEach((sub) => {
+        console.log(`ID: ${sub._id}, Name: ${sub.subCategory_name}`);
+      });
+    });
+  }, [categories]);
   const handleFormSubmit = async (values) => {
     try {
       const response = await axios.post(`${baseUrl}store/addStore`, values);
@@ -88,6 +126,7 @@ const StoreForm = () => {
           handleBlur,
           handleChange,
           handleSubmit,
+          setFieldValue,
         }) => (
           <form onSubmit={handleSubmit}>
             <Box
@@ -189,26 +228,72 @@ const StoreForm = () => {
                 helperText={touched.description && errors.description}
                 sx={{ gridColumn: 'span 4' }}
               />
-              <TextField
-                fullWidth
+              <FormControl
                 variant="filled"
-                type="text"
-                label="Subcategories"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.sub_categories}
-                name="sub_categories"
-                error={!!touched.sub_categories && !!errors.sub_categories}
-                helperText={touched.sub_categories && errors.sub_categories}
-                select
-                sx={{ gridColumn: 'span 4' }}
+                fullWidth
+                error={!!touched.categories && !!errors.categories}
               >
-                {subCategories?.map((subcategory) => (
-                  <MenuItem key={subcategory._id} value={subcategory._id}>
-                    {subcategory.category_name}
-                  </MenuItem>
-                ))}
-              </TextField>
+                <InputLabel id="category-select-label">Category</InputLabel>
+                <Select
+                  labelId="category-select-label"
+                  id="categories"
+                  name="categories"
+                  value={selectedCategory}
+                  onChange={(event) => {
+                    setSelectedCategory(event.target.value);
+                    setFilteredSubCategories(
+                      categories.filter(
+                        (cat) => cat.category_name === event.target.value
+                      )[0].subcategories
+                    );
+                  }}
+                >
+                  {categories.map((category) => (
+                    <MenuItem key={category._id} value={category.category_name}>
+                      {category.category_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {touched.categories && errors.categories && (
+                  <FormHelperText>{errors.categories}</FormHelperText>
+                )}
+              </FormControl>
+              <FormControl
+                variant="filled"
+                fullWidth
+                error={!!touched.subcategories && !!errors.subcategories}
+              >
+                <InputLabel id="subcategories-select-label">
+                  Sub Categories
+                </InputLabel>
+                <Select
+                  labelId="subcategories-select-label"
+                  id="subcategories"
+                  name="subcategories"
+                  multiple
+                  value={selectedSubCategories}
+                  onChange={handleSelectCategory}
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {filteredSubCategories.map((subcat) => (
+                    <MenuItem key={subcat._id} value={subcat.subCategory_name}>
+                      <Checkbox
+                        checked={
+                          selectedSubCategories.indexOf(
+                            subcat.subCategory_name
+                          ) > -1
+                        }
+                        value={subcat.subCategory_name}
+                        onChange={handleSubCategoryChange}
+                      />
+                      <ListItemText primary={subcat.subCategory_name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+                {touched.subcategories && errors.subcategories && (
+                  <FormHelperText>{errors.subcategories}</FormHelperText>
+                )}
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
@@ -221,313 +306,5 @@ const StoreForm = () => {
     </Box>
   );
 };
-//   return (
-//     <Box m="20px">
-//       <Header title="CREATE USER" subtitle="Create a New User Profile" />
-
-//       <Formik
-//         onSubmit={handleFormSubmit}
-//         initialValues={initialValues}
-//         validationSchema={checkoutSchema}
-//       >
-//         {({
-//           values,
-//           errors,
-//           touched,
-//           handleBlur,
-//           handleChange,
-//           handleSubmit,
-//         }) => (
-//           <form onSubmit={handleSubmit}>
-//             <Box
-//               display="grid"
-//               gap="30px"
-//               gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//               sx={{
-//                 '& > div': { gridColumn: isNonMobile ? undefined : 'span 4' },
-//               }}
-//             >
-//               <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="First Name"
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.firstName}
-//                 name="firstName"
-//                 error={!!touched.firstName && !!errors.firstName}
-//                 helperText={touched.firstName && errors.firstName}
-//                 sx={{ gridColumn: 'span 2' }}
-//               />
-//               {/* <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="First Name"
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.store_name}
-//                 name="Nom de la Boutique"
-//                 error={!!touched.store_name && !!errors.store_name}
-//                 helperText={touched.store_name && errors.store_name}
-//                 sx={{ gridColumn: 'span 2' }}
-//               /> */}
-
-//               {/* <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="Email"
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.email}
-//                 name="email"
-//                 error={!!touched.email && !!errors.email}
-//                 helperText={touched.email && errors.email}
-//                 sx={{ gridColumn: 'span 4' }}
-//               />
-//               <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="N° de télephone"
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.contact}
-//                 name="phone"
-//                 error={!!touched.phone && !!errors.phone}
-//                 helperText={touched.phone && errors.phone}
-//                 sx={{ gridColumn: 'span 4' }}
-//               />
-//               <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="Laltitude  1"
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.latitude1}
-//                 name="latitude1"
-//                 error={!!touched.latitude1 && !!errors.latitude1}
-//                 helperText={touched.latitude1 && errors.latitude1}
-//                 sx={{ gridColumn: 'span 4' }}
-//               />
-//               <TextField
-//                 fullWidth
-//                 variant="filled"
-//                 type="text"
-//                 label="longitude1 "
-//                 onBlur={handleBlur}
-//                 onChange={handleChange}
-//                 value={values.longitude1}
-//                 name="longitude1"
-//                 error={!!touched.longitude1 && !!errors.longitude1}
-//                 helperText={touched.longitude1 && errors.longitude1}
-//                 sx={{ gridColumn: 'span 4' }}
-//               /> */}
-//             </Box>
-//             <Box display="flex" justifyContent="end" mt="20px">
-//               <Button type="submit" color="secondary" variant="contained">
-//                 Create New User
-//               </Button>
-//             </Box>
-//           </form>
-//         )}
-//       </Formik>
-//     </Box>
-//   );
-// };
-//   return (
-//     <Box m="20px">
-//       <Header
-//         title="Ajouter une Nouvel Boutique"
-//         subtitle="Veuillez remplir les informations nécessaires ci-dessous"
-//       />
-//       <Formik
-//         onSubmit={handleFormSubmit}
-//         initialValues={initialValues}
-//         validationSchema={checkoutSchema}
-//       >
-//         {({
-//           values,
-//           errors,
-//           touched,
-//           handleBlur,
-//           handleChange,
-//           handleSubmit,
-//           setFieldValue,
-//         }) => (
-//           <form onSubmit={handleFormSubmit}>
-//             <Box
-//               component="form"
-//               onSubmit={handleSubmit}
-//               display="grid"
-//               gap="30px"
-//               gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//               sx={{
-//                 '& > div': { gridColumn: isNonMobile ? undefined : 'span 4' },
-//               }}
-//             >
-//               <Box gridColumn="span 4">
-//                 <InputLabel htmlFor="store_name">Nom de la boutique</InputLabel>
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.store_name}
-//                   name="store_name"
-//                   error={!!touched.store_name && !!errors.store_name}
-//                   helperText={touched.store_name && errors.store_name}
-//                 />
-//               </Box>
-//               <box gridColumn="span 4">
-//                 <InputLabel htmlFor="image">Image</InputLabel>
-//                 <input
-//                   id="image"
-//                   type="file"
-//                   accept="image/*"
-//                   onChange={(e) => {
-//                     const file = e.target.files[0];
-//                     // Faites quelque chose avec le fichier, par exemple :
-//                     // setFieldValue("image", file);
-//                   }}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <InputLabel htmlFor="email">Email</InputLabel>
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.email}
-//                   name="email"
-//                   error={!!touched.email && !!errors.email}
-//                   helperText={touched.email && errors.email}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <InputLabel htmlFor="phone">Numéro de téléphone</InputLabel>
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.phone}
-//                   name="phone"
-//                   error={!!touched.phone && !!errors.phone}
-//                   helperText={touched.phone && errors.phone}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <InputLabel htmlFor="coordinates">Coordonnées</InputLabel>
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   label="Laltitude 1"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.latitude1}
-//                   name="latitude1"
-//                   error={!!touched.latitude1 && !!errors.latitude1}
-//                   helperText={touched.latitude1 && errors.latitude1}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   label="Longitude 1"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.longitude1}
-//                   name="longitude1"
-//                   error={!!touched.longitude1 && !!errors.longitude1}
-//                   helperText={touched.longitude1 && errors.longitude1}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   label="Latitude 2"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.latitude2}
-//                   name="latitude2"
-//                   error={!!touched.latitude2 && !!errors.latitude2}
-//                   helperText={touched.latitude2 && errors.latitude2}
-//                 />
-//               </box>
-
-//               <box gridColumn="span 2">
-//                 <InputLabel htmlFor="longitude2">Longitude 2</InputLabel>
-//                 <textfiled
-//                   fullWidth
-//                   variant="filled"
-//                   type="text"
-//                   onBlur={handleBlur}
-//                   onChange={handleChange}
-//                   value={values.longitude2}
-//                   name="longitude2"
-//                   error={!!touched.longitude2 && !!errors.longitude2}
-//                   helperText={touched.longitude2 && errors.longitude2}
-//                 />
-//               </box>
-//               <box display="flex" justifyContent="end" mt="20px">
-//                 <Button type="submit" color="secondary" variant="contained">
-//                   Créer une nouvelle boutique
-//                 </Button>
-//               </box>
-//             </Box>
-//           </form>
-//         )}
-//       </Formik>
-//     </Box>
-//   );
-// };
-
-// const phoneRegExp =
-//   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?(?!216)[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
-// const checkoutSchema = yup.object().shape({
-//   firstName: yup.string().required('required'),
-//   store_name: yup.string().required('Nom de boutique est obligatoire'),
-//   image: yup.string().required('Image obligatoire '),
-//   email: yup.string().email('Format de mail invalide').required('Email requis'),
-//   phone: yup
-//     .string()
-//     .matches(phoneRegExp, 'Numéro de télephone invalide')
-//     .required('Numéro de téléphone requis'),
-//   latitude1: yup.number().required('La latitude est requise'),
-//   longitude1: yup.number().required('La longitude est requise'),
-//   latitude2: yup.number(),
-//   longitude2: yup.number(),
-// });
-
-// const initialValues = {
-//   firstName: '',
-//   store_name: '',
-//   phone: '',
-//   email: '',
-//   phone: '',
-//   latitude1: '',
-//   longitude1: '',
-//   latitude2: '',
-//   longitude2: '',
-// };
 
 export default StoreForm;

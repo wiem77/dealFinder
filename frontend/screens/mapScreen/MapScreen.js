@@ -27,17 +27,7 @@ const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [stores, setStores] = useState([]);
-  async function getStoresLocations() {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/store/getAllStoreWithLocations`
-      );
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+ 
 
   useEffect(() => {
     (async () => {

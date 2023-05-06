@@ -148,6 +148,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title="Sous-Catégories"
+              to="/SubCategory"
+              icon={<CategoryIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Item
               title="boutiques"

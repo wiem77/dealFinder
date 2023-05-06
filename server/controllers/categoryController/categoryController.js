@@ -11,12 +11,12 @@ module.exports.addCategory = async (req, res) => {
     const fileName = req.file.filename;
 
     const media = new Media({
-      path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
+      path: `${req.protocol}://${req.headers.host}/public/image/${fileName}`,
       extension: fileName.split('.').pop(),
     });
 
     await media.save();
-
+    console.log(req.body);
     const categoryName = req.body.category_name.trim().toUpperCase();
     const existingCategory = await Category.findOne({
       category_name: categoryName,
@@ -68,13 +68,23 @@ module.exports.deleteCategory = async (req, res) => {
     });
 };
 
-module.exports.updateCategory = (req, res) => {
+module.exports.updateCategory = async (req, res) => {
   const categoryId = req.params.id;
   const { category_name } = req.body;
-
+  console.log(req.file);
+  let _idImgae;
+  if (req.file) {
+    const fileName = req.file.filename;
+    const media = new Media({
+      path: `${req.protocol}://${req.headers.host}/public/image/${fileName}`,
+      extension: fileName.split('.').pop(),
+    });
+    await media.save();
+    _idImgae = media._id;
+  }
   Category.findOneAndUpdate(
     { _id: categoryId },
-    { category_name },
+    { category_name, category_image: _idImgae },
     { new: true }
   )
     .then((updatedCategory) => {

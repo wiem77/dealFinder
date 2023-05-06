@@ -57,23 +57,26 @@ const Category = () => {
     setOpen(true);
     console.log(categoryInfo);
   };
-
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${baseUrl}category/deletecategory/${id}`);
-      setcategoryData((prevData) => {
-        const newData = [...prevData];
-        const index = newData.findIndex((store) => store.id === id);
-        if (index !== -1) {
-          newData.splice(index, 1);
-        }
-        return newData;
-      });
-      alert(
-        'La suppression a été effectuée avec succès raffrechiser la page  !'
-      );
-    } catch (error) {
-      console.error(error);
+    const confirmMessage = `êtes-vous sûr de vouloir supprimer la Category ${id}?`;
+    const result = window.confirm(confirmMessage);
+    if (result) {
+      try {
+        await axios.delete(`${baseUrl}category/deletecategory/${id}`);
+        setcategoryData((prevData) => {
+          const newData = [...prevData];
+          const index = newData.findIndex((store) => store.id === id);
+          if (index !== -1) {
+            newData.splice(index, 1);
+          }
+          return newData;
+        });
+        alert(
+          'La suppression a été effectuée avec succès raffrechiser la page  !'
+        );
+      } catch (error) {
+        console.error('Error deleting store:', error);
+      }
     }
   };
 
@@ -172,7 +175,13 @@ const Category = () => {
       headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>

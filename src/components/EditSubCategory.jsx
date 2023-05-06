@@ -27,11 +27,16 @@ export default function EditSubCategory({ style, data, id }) {
   const handleDescriptionClick = () => {
     setEditable(true);
   };
+  console.log('data.storesName', data.storesNames);
+  const storesInfo = data.storesNames.map((store) => ({
+    _idstore: store._id,
+    store_name: store.store_name,
+  }));
 
   const initialValues = {
     _id: data._id,
     subCategory_name: data.subCategory_name,
-    stores: data.store_name,
+    stores: storesInfo,
   };
   console.log('data', data);
 
@@ -55,15 +60,25 @@ export default function EditSubCategory({ style, data, id }) {
       console.error(error);
     }
   };
+
   const handleDeleteStore = (store) => {
-    const confirmMessage = `Are you sure you want to delete store ${store}?`;
+    const storeId = store.id;
+    const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${storeId}?`;
     const result = window.confirm(confirmMessage);
     if (result) {
-      const newSelectedStores = selectedStores.filter((s) => s !== store);
-      setSelectedStores(newSelectedStores);
+      axios
+        .delete(`${baseUrl}${storeId}`)
+        .then((response) => {
+          const newSelectedStores = selectedStores.filter(
+            (s) => s.id !== store.id
+          );
+          setSelectedStores(newSelectedStores);
+        })
+        .catch((error) => {
+          console.error('Error deleting store:', error);
+        });
     }
   };
-
   return (
     <div>
       <Edit onClick={() => handleOpen(id)}></Edit>
@@ -131,9 +146,12 @@ export default function EditSubCategory({ style, data, id }) {
                     }}
                     sx={{ gridColumn: 'span 4' }}
                   >
-                    {data.store_name.map((store) => (
-                      <MenuItem key={store} value={store}>
-                        {store}
+                    {storesInfo.map((store) => (
+                      <MenuItem
+                        key={store._idstore}
+                        value={{ id: store._idstore, name: store.store_name }}
+                      >
+                        {store.store_name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -144,8 +162,8 @@ export default function EditSubCategory({ style, data, id }) {
                     sx={{ gridColumn: 'span 4', mt: 2 }}
                   >
                     {selectedStores.map((store) => (
-                      <Box key={store} display="flex" alignItems="center">
-                        <Typography variant="body1">{store}</Typography>
+                      <Box key={store.id} display="flex" alignItems="center">
+                        <Typography variant="body1">{store.name}</Typography>
                         <IconButton onClick={() => handleDeleteStore(store)}>
                           <Delete />
                         </IconButton>

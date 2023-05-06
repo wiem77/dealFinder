@@ -9,15 +9,20 @@ import { baseUrl } from '../../config/config';
 import { TextField } from '@mui/material';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { Select, MenuItem } from '@mui/material';
 import { useState } from 'react';
 
 function ModalSubCat({ style, data, id }) {
+  const storesInfo = data.storesNames.map((store) => ({
+    _idstore: store._id,
+    store_name: store.store_name,
+  }));
   const initialValues = {
     _id: data._id,
     subCategory_name: data.subCategory_name,
-    stores: data.store_name,
+    stores: storesInfo.store_name,
   };
   const [open, setOpen] = useState(false);
   const [subCatInfo, setSubCatInfo] = useState();
@@ -37,8 +42,8 @@ function ModalSubCat({ style, data, id }) {
   };
   return (
     <div>
-      <Button color="success" onClick={() => handleOpen(id)}>
-        Voir détails
+      <Button onClick={() => handleOpen(id)}>
+        <VisibilityIcon style={{ color: 'black' }} />
       </Button>
       <Modal
         open={open}
@@ -74,16 +79,12 @@ function ModalSubCat({ style, data, id }) {
                   <Select
                     fullWidth
                     label="Stores"
-                    multiple
-                    value={selectedStores}
-                    onChange={(event) => {
-                      setSelectedStores(event.target.value);
-                    }}
+                    value=""
                     sx={{ gridColumn: 'span 4' }}
                   >
-                    {data.store_name.map((store) => (
-                      <MenuItem key={store} value={store}>
-                        {store}
+                    {storesInfo.map((store) => (
+                      <MenuItem key={store._idstore} value="" disabled>
+                        {store.store_name}
                       </MenuItem>
                     ))}
                   </Select>

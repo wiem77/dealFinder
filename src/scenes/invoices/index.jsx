@@ -5,14 +5,10 @@ import {
   Modal,
   Typography,
   useTheme,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
-import { mockDataInvoices } from '../../data/mockData';
+
 import Header from '../../components/Header';
 
 import axios from 'axios';
@@ -21,6 +17,7 @@ import { baseUrl } from '../../config/config';
 import { useEffect, useState } from 'react';
 import { Delete, Edit } from '@mui/icons-material';
 import EditVoucher from '../../components/EditVoucher';
+import ModalVoucher from '../../components/showDetails/ModalShowVoucher';
 
 const Invoices = () => {
   const theme = useTheme();
@@ -72,29 +69,9 @@ const Invoices = () => {
       console.error(error);
     }
   };
-  const handleConfirmDelete = async () => {
-    const id = voucherInfo.id;
-    try {
-      await axios.delete(`${baseUrl}vouchers/deleteVoucher/${id}`);
-      setVoucherData((prevData) => {
-        const newData = [...prevData];
-        const index = newData.findIndex((voucher) => voucher.id === id);
-        if (index !== -1) {
-          newData.splice(index, 1);
-        }
-        return newData;
-      });
-      alert(
-        'La suppression a été effectuée avec succès raffrechiser la page  !'
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setOpen(false);
-    }
-  };
 
   const transformStoreData = (vouchers) => {
+    console.log('voucherscdlcbahdbachc', vouchers);
     return vouchers.map((voucher) => {
       return {
         id: voucher.id,
@@ -102,7 +79,7 @@ const Invoices = () => {
         voucher_name: voucher.name_V,
         description: voucher.description,
         discount: voucher.discount,
-        storename: voucher.store,
+        storename: voucher.store.store_name,
         available: voucher.is_available,
         creatDate: voucher.createdAt.slice(0, 10),
         nbVoucher: voucher.available_vouchers,
@@ -114,7 +91,7 @@ const Invoices = () => {
     const fetchVoucher = async () => {
       try {
         const response = await axios.get(`${baseUrl}vouchers`);
-        console.log(response.data.vouchers);
+        console.log('response.data.vouchers', response.data.vouchers);
         const voucherWithId = response.data.vouchers.map((voucher, index) => ({
           ...voucher,
           id: index,
@@ -160,47 +137,18 @@ const Invoices = () => {
     },
 
     {
-      field: 'details',
-      headerName: 'Détails',
-      flex: 1,
-      renderCell: (params) => (
-        <>
-          <Button color="success" onClick={() => handleOpen(params.row.id)}>
-            Voir détails
-          </Button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Identifiant : {voucherInfo._id}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Nom de Voucher: {voucherInfo.voucher_name}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                description: {voucherInfo.description}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Remise: {voucherInfo.discount}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Nombre de coupons disponible : {voucherInfo.nbVoucher}
-              </Typography>
-            </Box>
-          </Modal>
-        </>
-      ),
-    },
-    {
       field: 'Actions',
       headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <ModalVoucher data={params.row} id={params.row._id} style={style} />
           <EditVoucher
             style={style}
             idVoucher={params.row._id}
@@ -245,9 +193,16 @@ const Invoices = () => {
           '& .MuiCheckbox-root': {
             color: `${colors.greenAccent[200]} !important`,
           },
+          '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
+            color: `${colors.grey[100]} !important`,
+          },
         }}
       >
-        <DataGrid rows={voucherData} columns={columns} />
+        <DataGrid
+          rows={voucherData}
+          columns={columns}
+          components={{ Toolbar: GridToolbar }}
+        />
         {modal}
       </Box>
     </Box>

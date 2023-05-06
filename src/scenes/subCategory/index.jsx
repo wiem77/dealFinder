@@ -61,30 +61,34 @@ const SubCategory = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${baseUrl}subCategory/delete_sub_Category/${id}`);
-      setSubCategoryData((prevData) => {
-        const newData = [...prevData];
-        const index = newData.findIndex((store) => store.id === id);
-        if (index !== -1) {
-          newData.splice(index, 1);
-        }
-        return newData;
-      });
-      alert(
-        'La suppression a été effectuée avec succès raffrechiser la page  !'
-      );
-    } catch (error) {
-      console.error(error);
+    const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${id}?`;
+    const result = window.confirm(confirmMessage);
+    if (result) {
+      try {
+        await axios.delete(`${baseUrl}subCategory/delete_sub_Category/${id}`);
+        setSubCategoryData((prevData) => {
+          const newData = [...prevData];
+          const index = newData.findIndex((store) => store.id === id);
+          if (index !== -1) {
+            newData.splice(index, 1);
+          }
+          return newData;
+        });
+        alert(
+          'La suppression a été effectuée avec succès raffrechiser la page  !'
+        );
+      } catch (error) {
+        console.error('Error deleting store:', error);
+      }
     }
   };
 
   const transformStoreData = (subCats) => {
     return subCats.map((subCat) => {
-      let storesNames = [];
+      let storesNames;
 
       if (subCat.stores && subCat.stores.length > 0) {
-        storesNames = subCat.stores.map((store) => store.store_name);
+        storesNames = subCat.stores.map((store) => store);
       }
 
       const nbStores = storesNames.length;
@@ -96,7 +100,7 @@ const SubCategory = () => {
         _id: subCat._id,
         category_name: subCat.category.category_name,
         subCategory_name: subCat.subCategory_name,
-        store_name: storesNames,
+        storesNames: storesNames,
         nbStores,
         storesString,
       };
@@ -147,22 +151,18 @@ const SubCategory = () => {
     },
 
     {
-      field: 'details',
-      headerName: 'Détails',
-      flex: 1,
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
-          <ModalSubCat data={params.row} id={params.row._id} style={style} />
-        </Box>
-      ),
-    },
-
-    {
       field: 'Actions',
       headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <ModalSubCat data={params.row} id={params.row._id} style={style} />
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>

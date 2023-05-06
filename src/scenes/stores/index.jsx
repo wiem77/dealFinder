@@ -50,23 +50,26 @@ const Store = () => {
   const handleUpdate = (id) => {
     handleOpen();
   };
-
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${baseUrl}store/deleteStore/${id}`);
-      setStoresData((prevData) => {
-        const newData = [...prevData];
-        const index = newData.findIndex((store) => store.id === id);
-        if (index !== -1) {
-          newData.splice(index, 1);
-        }
-        return newData;
-      });
-      alert(
-        'La suppression a été effectuée avec succès raffrechiser lapage  !'
-      );
-    } catch (error) {
-      console.error(error);
+    const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${id}?`;
+    const result = window.confirm(confirmMessage);
+    if (result) {
+      try {
+        await axios.delete(`${baseUrl}store/deleteStore/${id}`);
+        setStoresData((prevData) => {
+          const newData = [...prevData];
+          const index = newData.findIndex((store) => store.id === id);
+          if (index !== -1) {
+            newData.splice(index, 1);
+          }
+          return newData;
+        });
+        alert(
+          'La suppression a été effectuée avec succès raffrechiser la page  !'
+        );
+      } catch (error) {
+        console.error('Error deleting store:', error);
+      }
     }
   };
 
@@ -158,7 +161,13 @@ const Store = () => {
       headerName: 'Show Modal',
       flex: 1,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>

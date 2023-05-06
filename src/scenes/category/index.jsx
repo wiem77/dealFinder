@@ -19,6 +19,7 @@ import axios from 'axios';
 import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
+import EditCategory from '../../components/EditCategory';
 
 const style = {
   position: 'absolute',
@@ -37,7 +38,7 @@ const Category = () => {
 
   const [open, setOpen] = useState(false);
   const [categoryInfo, setCategoryInfo] = useState({});
-  const [categoryData, setcategoryData] = useState([]);
+  const [categoryData, setcategoryData] = useState({});
 
   const handleClose = () => {
     setOpen(false);
@@ -79,6 +80,7 @@ const Category = () => {
   const transformStoreData = (categories) => {
     return categories.map((category) => {
       let subcategoriesNames = '';
+      console.log(category);
       if (category.subcategories && category.subcategories.length > 0) {
         subcategoriesNames = category.subcategories
           .map((subCategory) => subCategory.subCategory_name)
@@ -92,10 +94,11 @@ const Category = () => {
         _id: category._id,
         category_name: category.category_name,
         subCategoy: subcategoriesNames,
+        category_image: category.category_image[0].path,
       };
     });
   };
-
+  console.log(categoryData.category_image);
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -173,6 +176,11 @@ const Category = () => {
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>
+          <EditCategory
+            data={params.row}
+            categoryId={params.row._id}
+            style={style}
+          />
         </Box>
       ),
     },

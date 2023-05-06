@@ -177,6 +177,7 @@ const Category = () => {
       ),
     },
   ];
+
   return (
     <>
       <Box m="20px">

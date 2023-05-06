@@ -19,6 +19,7 @@ import axios from 'axios';
 import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
+import EditStore from '../../components/EditStore';
 
 const Store = () => {
   const theme = useTheme();
@@ -89,6 +90,8 @@ const Store = () => {
         location: addresses,
         rating: store.rating,
         city: store.locations[0].city,
+        laltitude: store.locations[0].coordinates[0],
+        longatude: store.locations[0].coordinates[1],
         zipcode: store.locations[0].zipcode,
         category: store.sub_categories[0].subCategory_name,
         subCategoy: subCategoryNames,
@@ -159,13 +162,7 @@ const Store = () => {
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleUpdate(params.row._id)}
-          >
-            Update
-          </Button>
+          <EditStore style={style} idStore={params.row._id} data={params.row} />
         </Box>
       ),
     },

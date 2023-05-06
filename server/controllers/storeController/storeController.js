@@ -20,7 +20,7 @@ exports.addStore = async (req, res, next) => {
     webSite,
     description,
   } = req.body;
-  console.log(req.body);
+  console.log(sub_categories);
   // console.log(req.file);
   const store_image = req.file;
   try {
@@ -55,6 +55,10 @@ exports.addStore = async (req, res, next) => {
     });
 
     const savedLocation = await location.save();
+    console.log(sub_categories);
+    if (!req.body.sub_categories) {
+      return res.status(400).send({ message: 'sub_categories is required' });
+    }
 
     const store = new Store({
       store_name: store_name,
@@ -66,17 +70,15 @@ exports.addStore = async (req, res, next) => {
       sub_categories: [],
       vouchers: [],
     });
-
-    console.log(sub_categories);
-    if (!req.body.sub_categories) {
-      return res.status(400).send({ message: 'sub_categories is required' });
-    }
     for (const subCategoryId of sub_categories) {
       const subCategory = await SubCategory.findById(subCategoryId);
+      console.log('FindSub', subCategory);
       if (subCategory) {
         store.sub_categories.push(subCategory._id);
         subCategory.stores.push(store._id);
         await subCategory.save();
+      } else {
+        return res.status(400).send({ message: 'sub_categories  dont exist ' });
       }
     }
 

@@ -21,6 +21,7 @@ import { baseUrl } from '../../config/config';
 import { useEffect, useState } from 'react';
 import EditCategory from '../../components/EditCategory';
 import ModalSubCat from '../../components/showDetails/ModalSubCat';
+import EditSubCategory from '../../components/EditSubCategory';
 
 const style = {
   position: 'absolute',
@@ -165,9 +166,9 @@ const SubCategory = () => {
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>
-          <EditCategory
+          <EditSubCategory
             data={params.row}
-            categoryId={params.row._id}
+            id={params.row._id}
             style={style}
           />
         </Box>

@@ -158,7 +158,7 @@ const Sidebar = () => {
             />
             <Item
               title="Coupons"
-              to="/invoices"
+              to="/coupons"
               icon={<LocalOfferIcon />}
               selected={selected}
               setSelected={setSelected}

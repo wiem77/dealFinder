@@ -6,31 +6,33 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { tokens } from '../../theme';
-import { mockDataContacts } from '../../data/mockData';
-import Header from '../../components/Header';
-import { useTheme } from '@mui/material';
-import { baseUrl } from '../../config/config';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import { useTheme } from '@mui/material';
+
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { tokens } from '../../theme';
+
+import Header from '../../components/Header';
+
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+
+import { useEffect, useState } from 'react';
+
 const Store = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   const [open, setOpen] = useState(false);
+
   const [storeInfo, setStoreInfo] = useState({});
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
+  const [storesData, setStoresData] = useState([]);
+
+  const handleClose = () => {
+    setOpen(false);
   };
+
   const handleOpen = (storeId) => {
     console.log('storeId', storeId);
     console.log(storesData);
@@ -44,9 +46,10 @@ const Store = () => {
     console.log(storeInfo);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleUpdate = (id) => {
+    handleOpen();
   };
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${baseUrl}store/deleteStore/${id}`);
@@ -65,9 +68,53 @@ const Store = () => {
       console.error(error);
     }
   };
-  const handleUpdate = (id) => {
-    handleOpen();
+
+  const transformStoreData = (stores) => {
+    return stores.map((store) => {
+      const voucherNames = store.vouchers
+        .map((voucher) => voucher.name_V)
+        .join(', ');
+      const subCategoryNames = store.sub_categories
+        .map((subCategory) => subCategory.subCategory_name)
+        .join(', ');
+      const addresses = store.locations
+        .map((location) => location.formattedAddress)
+        .join(', ');
+      return {
+        id: store.id,
+        _id: store._id,
+        store_name: store.store_name,
+        phone: store.phone,
+        email: store.email,
+        location: addresses,
+        rating: store.rating,
+        city: store.locations[0].city,
+        zipcode: store.locations[0].zipcode,
+        category: store.sub_categories[0].subCategory_name,
+        subCategoy: subCategoryNames,
+        name_V: voucherNames,
+      };
+    });
   };
+
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}store/getAllStore`);
+        console.log('response', response.data);
+        const storesWithId = response.data.map((store, index) => ({
+          ...store,
+          id: index,
+        }));
+        setStoresData(transformStoreData(storesWithId));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStores();
+  }, []);
+  console.log('storesData', storesData);
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
@@ -90,11 +137,6 @@ const Store = () => {
       headerName: 'City',
       flex: 1,
     },
-    // {
-    //   field: 'zipcode',
-    //   headerName: 'Zip Code',
-    //   flex: 1,
-    // },
 
     {
       field: 'category',
@@ -128,52 +170,6 @@ const Store = () => {
       ),
     },
   ];
-
-  const transformStoreData = (stores) => {
-    return stores.map((store) => {
-      const voucherNames = store.vouchers
-        .map((voucher) => voucher.name_V)
-        .join(', ');
-      const subCategoryNames = store.sub_categories
-        .map((subCategory) => subCategory.subCategory_name)
-        .join(', ');
-      const addresses = store.locations
-        .map((location) => location.formattedAddress)
-        .join(', ');
-      return {
-        id: store.id,
-        _id: store._id,
-        store_name: store.store_name,
-        phone: store.phone,
-        email: store.email,
-        location: addresses,
-        rating: store.rating,
-        city: store.locations[0].city,
-        zipcode: store.locations[0].zipcode,
-        category: store.sub_categories[0].category.category_name,
-        subCategoy: subCategoryNames,
-        name_V: voucherNames,
-      };
-    });
-  };
-
-  const [storesData, setStoresData] = useState([]);
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}store/getAllStore`);
-        const storesWithId = response.data.map((store, index) => ({
-          ...store,
-          id: index,
-        }));
-        setStoresData(transformStoreData(storesWithId));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchStores();
-  }, []);
 
   return (
     <>
@@ -261,3 +257,13 @@ const Store = () => {
 };
 
 export default Store;
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};

@@ -20,6 +20,7 @@ import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
 import EditCategory from '../../components/EditCategory';
+import ModalSubCat from '../../components/showDetails/ModalSubCat';
 
 const style = {
   position: 'absolute',
@@ -79,23 +80,24 @@ const SubCategory = () => {
 
   const transformStoreData = (subCats) => {
     return subCats.map((subCat) => {
-      let storessNames = '';
-      console.log('subCats', subCats);
-      if (subCat.stores && subCat.stores.length > 0) {
-        storessNames = subCat.stores
+      let storesNames = [];
 
-          .map((store) => store.store_name)
-          .join(' , ');
-      } else {
-        storessNames = 'pas de sous boutiques';
+      if (subCat.stores && subCat.stores.length > 0) {
+        storesNames = subCat.stores.map((store) => store.store_name);
       }
+
+      const nbStores = storesNames.length;
+      const storesString =
+        nbStores > 0 ? `${nbStores} ` : 'pas de sous boutiques';
 
       return {
         id: subCat.id,
         _id: subCat._id,
         category_name: subCat.category.category_name,
         subCategory_name: subCat.subCategory_name,
-        store_name: storessNames,
+        store_name: storesNames,
+        nbStores,
+        storesString,
       };
     });
   };
@@ -138,7 +140,7 @@ const SubCategory = () => {
       flex: 1,
     },
     {
-      field: 'store_name',
+      field: 'storesString',
       headerName: 'Boutiques',
       flex: 1,
     },
@@ -148,29 +150,9 @@ const SubCategory = () => {
       headerName: 'Détails',
       flex: 1,
       renderCell: (params) => (
-        <>
-          <Button color="success" onClick={() => handleOpen(params.row.id)}>
-            Voir détails
-          </Button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Identifiant de la catégorie: {categoryInfo._id}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Nom de la Catégories: {categoryInfo.category_name}
-              </Typography>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Sous catégories : {categoryInfo.subCategoryy}
-              </Typography>
-            </Box>
-          </Modal>
-        </>
+        <Box sx={{ display: 'flex' }}>
+          <ModalSubCat data={params.row} id={params.row._id} style={style} />
+        </Box>
       ),
     },
 

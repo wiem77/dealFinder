@@ -20,6 +20,7 @@ import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
 import EditStore from '../../components/EditStore';
+import ModalStore from '../../components/showDetails/ModalShowStore';
 
 const Store = () => {
   const theme = useTheme();
@@ -168,6 +169,7 @@ const Store = () => {
             justifyContent: 'flex-end',
           }}
         >
+          <ModalStore data={params.row} id={params.row._id} style={style} />
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>

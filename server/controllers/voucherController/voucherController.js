@@ -52,6 +52,7 @@ module.exports.createVoucher = async (req, res) => {
 };
 
 module.exports.updateVoucher = async (req, res) => {
+  console.log('update voucher');
   try {
     const { id } = req.params;
     const {
@@ -139,7 +140,7 @@ module.exports.findVouchers = async (req, res) => {
 
     const [vouchers, total] = await Promise.all([
       Voucher.find(query)
-        .populate('store', 'name')
+        .populate('store')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit))

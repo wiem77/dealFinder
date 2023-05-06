@@ -124,7 +124,7 @@ exports.addStore = async (req, res, next) => {
 exports.getAllStores = async (req, res) => {
   try {
     const stores = await Store.find({})
-      .populate('locations', 'formattedAddress city zipcode')
+      .populate('locations', 'formattedAddress city zipcode coordinates')
       .populate({
         path: 'sub_categories',
         populate: {

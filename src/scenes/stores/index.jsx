@@ -48,9 +48,6 @@ const Store = () => {
     console.log(storeInfo);
   };
 
-  const handleUpdate = (id) => {
-    handleOpen();
-  };
   const handleDelete = async (id) => {
     const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${id}?`;
     const result = window.confirm(confirmMessage);
@@ -75,31 +72,55 @@ const Store = () => {
   };
 
   const transformStoreData = (stores) => {
+    console.log('stores', stores);
     return stores.map((store) => {
-      const voucherNames = store.vouchers
-        .map((voucher) => voucher.name_V)
-        .join(', ');
-      const subCategoryNames = store.sub_categories
-        .map((subCategory) => subCategory.subCategory_name)
-        .join(', ');
-      const addresses = store.locations
-        .map((location) => location.formattedAddress)
-        .join(', ');
+      let voucherNames;
+      let subCategoryNames;
+      let addresses;
+
+      if (store.vouchers && store.vouchers.length > 0) {
+        voucherNames = store.vouchers.map((voucher) => voucher);
+      }
+      if (store.sub_categories && store.sub_categories.length > 0) {
+        subCategoryNames = store.sub_categories.map((subCat) => subCat);
+      }
+      console.log('subCategoryNames', subCategoryNames);
+      if (store.locations && store.locations.length > 0) {
+        addresses = store.locations.map((loc) => loc);
+      }
+      console.log('addresses', addresses);
+      const nbV = voucherNames.length;
+      const nbVoucher = nbV > 0 ? `${nbV} ` : 'pas de coupons';
+
+      // const voucherNames = store.vouchers
+      //   .map((voucher) => voucher.name_V)
+
+      // const subCategoryNames = store.sub_categories
+      //   .map((subCategory) => subCategory.subCategory_name)
+      //   ;
+      // const addresses = store.locations
+      //   .map((location) => location.formattedAddress)
+      //   ;
+      const city1 = addresses[0].city;
+      const zipcode1 = addresses[0].zipcode;
+      const location1 = addresses[0].formattedAddress;
       return {
         id: store.id,
         _id: store._id,
         store_name: store.store_name,
         phone: store.phone,
         email: store.email,
-        location: addresses,
+        location: location1,
         rating: store.rating,
-        city: store.locations[0].city,
-        laltitude: store.locations[0].coordinates[0],
-        longatude: store.locations[0].coordinates[1],
-        zipcode: store.locations[0].zipcode,
-        category: store.sub_categories[0].subCategory_name,
+        city: city1,
+        // laltitude: addresses.coordinates[0],
+        // longatude: addresses[0].coordinates[1],
+        zipcode: zipcode1,
+        category: store.sub_categories[0].category.category_name,
         subCategoy: subCategoryNames,
         name_V: voucherNames,
+        locations: addresses,
+        nbVoucher: nbVoucher,
       };
     });
   };
@@ -108,7 +129,7 @@ const Store = () => {
     const fetchStores = async () => {
       try {
         const response = await axios.get(`${baseUrl}store/getAllStore`);
-        console.log('response', response.data);
+        console.log('responsefffff', response.data);
         const storesWithId = response.data.map((store, index) => ({
           ...store,
           id: index,
@@ -134,12 +155,6 @@ const Store = () => {
     },
 
     {
-      field: 'phone',
-      headerName: 'N°Télephone',
-      flex: 1,
-    },
-
-    {
       field: 'city',
       headerName: 'City',
       flex: 1,
@@ -151,15 +166,14 @@ const Store = () => {
       flex: 1,
     },
     {
-      field: 'name_V',
+      field: 'nbVoucher',
       headerName: 'coupons',
       flex: 1,
-      valueGetter: (params) => params.row.name_V.split(',')[0],
     },
 
     {
       field: 'showModal',
-      headerName: 'Show Modal',
+      headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
         <Box

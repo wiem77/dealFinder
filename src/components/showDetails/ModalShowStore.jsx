@@ -4,35 +4,38 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
-import { TextField } from '@mui/material';
+import { InputLabel, Select, TextField } from '@mui/material';
 import { Formik } from 'formik';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { useState } from 'react';
+import { MenuItem } from 'react-pro-sidebar';
+import Header from '../Header';
 
 function ModalStore({ style, data, id }) {
-  console.log('dataVVVVVVV', data);
+  const [open, setOpen] = useState(false);
   const initialValues = {
     _id: data._id,
-
     _id: data._id,
     store_name: data.store_name,
-    location: data.location,
     phone: data.phone,
-    zipcode: data.zipcode,
     category: data.category,
-    subCategoy: data.subCategoy,
-    city: data.city,
     email: data.email,
-    laltitude: data.laltitude,
-    longatude: data.longatude,
     rating: data.rating,
-
-    subCategoy: data.subCategoy,
-    name_V: data.name_V,
   };
-  const [open, setOpen] = useState(false);
+  const storesInfo = data.subCategoy.map((subCat) => ({
+    _idSub: subCat._id,
+    sub_name: subCat.subCategory_name,
+  }));
+  const locationInfo = data.locations.map((loc) => ({
+    _idSub: loc._id,
+    adr: loc.formattedAddress,
+    laltitude: loc.coordinates[0],
+    longitude: loc.coordinates[1],
+    city: loc.city,
+    zipcode: loc.zipcode,
+  }));
 
   const handleClose = () => {
     setOpen(false);
@@ -41,6 +44,13 @@ function ModalStore({ style, data, id }) {
   const handleOpen = async (id) => {
     setOpen(true);
   };
+  const [selectedSubCat, setSelectedSubCat] = React.useState(
+    storesInfo.length > 0 ? storesInfo[0]._idSub : ''
+  );
+  const [selectedLocation, setSelectedLocation] = React.useState(
+    locationInfo.length > 0 ? locationInfo[0] : null
+  );
+
   return (
     <div>
       <Button onClick={() => handleOpen(id)}>
@@ -53,6 +63,10 @@ function ModalStore({ style, data, id }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          <Header
+            title="Boutique"
+            subtitle={data.store_name + ' - ' + data._id}
+          />
           <Formik initialValues={initialValues}>
             {({ values, handleChange }) => (
               <form>
@@ -70,97 +84,94 @@ function ModalStore({ style, data, id }) {
                     fullWidth
                     variant="filled"
                     type="text"
-                    label="Nom "
-                    onChange={handleChange}
-                    value={values.store_name}
-                    name="store_name"
+                    label="Téléphone"
+                    value={values.phone}
+                    name="phone"
                     readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
+                    sx={{ gridColumn: 'span 2' }}
                   />
                   <TextField
                     fullWidth
                     variant="filled"
                     type="text"
-                    label="location"
-                    value={values.location}
-                    name="location"
+                    label="Email"
+                    value={values.email}
+                    name="email"
                     readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
+                    sx={{ gridColumn: 'span 2' }}
                   />
-                  <Box display="flex" justifyContent={'space-around'}>
+                  <Select
+                    fullWidth
+                    value={selectedSubCat}
+                    onChange={(event) => setSelectedSubCat(event.target.value)}
+                    label="Sous-Catégorie"
+                    sx={{ gridColumn: 'span 4' }}
+                  >
+                    {storesInfo.map((cat) => (
+                      <MenuItem key={cat._idSub} value={cat._idSub}>
+                        {cat.sub_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+
+                  <Select
+                    label="Localisation"
+                    value={selectedLocation ? selectedLocation.adr : ''}
+                    onChange={(event) => {
+                      const location = locationInfo.find(
+                        (loc) => loc.adr === event.target.value
+                      );
+                      setSelectedLocation(location);
+                    }}
+                    sx={{ gridColumn: 'span 4' }}
+                  >
+                    {locationInfo.map((loc) => (
+                      <MenuItem key={loc._idSub} value={loc.adr}>
+                        {loc.adr}
+                      </MenuItem>
+                    ))}
+                  </Select>
+
+                  <Box display="flex" justifyContent={'space-between'}>
                     <TextField
                       fullWidth
                       variant="filled"
                       type="text"
-                      label="Nom de La ville"
-                      value={values.city}
-                      readOnly={false}
-                      name="city"
-                      sx={{ gridColumn: 'span 2', mx: 2 }}
-                    />
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="zipCode"
-                      value={values.zipcode}
-                      readOnly={false}
-                      name="city"
-                      sx={{ gridColumn: 'span 2', mx: 2 }}
-                    />
-                  </Box>
-                  <Box display="flex" justifyContent={'space-around'}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="Laltitude"
-                      value={values.laltitude}
-                      name="laltitude"
-                      readOnly={false}
-                      sx={{ gridColumn: 'span 2', mx: 2 }}
+                      label="Latitude"
+                      value={selectedLocation?.laltitude}
+                      readOnly
+                      sx={{ gridColumn: 'span 2', mx: 1 }}
                     />
                     <TextField
                       fullWidth
                       variant="filled"
                       type="text"
                       label="Longitude"
-                      value={values.longatude}
-                      name="longatude"
-                      readOnly={false}
-                      sx={{ gridColumn: 'span 2', mx: 2 }}
+                      value={selectedLocation?.longatude}
+                      readOnly
+                      sx={{ gridColumn: 'span 2', mx: 1 }}
                     />
                   </Box>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="phone"
-                    value={values.phone}
-                    name="phone"
-                    readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="email"
-                    value={values.email}
-                    name="email"
-                    readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="rating"
-                    value={values.rating}
-                    name="rating"
-                    readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
-                  />{' '}
+                  <Box display="flex" justifyContent={'space-between'}>
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      type="text"
+                      label="Ville"
+                      value={selectedLocation?.city}
+                      readOnly
+                      sx={{ gridColumn: 'span 2', mx: 1 }}
+                    />
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      type="text"
+                      label="Code postal"
+                      value={selectedLocation?.zipcode}
+                      readOnly
+                      sx={{ gridColumn: 'span 2', mx: 1 }}
+                    />
+                  </Box>
                 </Box>
                 <Box display="flex" justifyContent="end" mt="20px"></Box>
               </form>

@@ -21,6 +21,8 @@ import { baseUrl } from '../../config/config';
 import { useEffect, useState } from 'react';
 import EditStore from '../../components/EditStore';
 import ModalStore from '../../components/showDetails/ModalShowStore';
+import AddVoucher from '../../components/AddVoucher';
+import ShowStoreV from '../../components/ShowStoreV';
 
 const Store = () => {
   const theme = useTheme();
@@ -92,15 +94,6 @@ const Store = () => {
       const nbV = voucherNames.length;
       const nbVoucher = nbV > 0 ? `${nbV} ` : 'pas de coupons';
 
-      // const voucherNames = store.vouchers
-      //   .map((voucher) => voucher.name_V)
-
-      // const subCategoryNames = store.sub_categories
-      //   .map((subCategory) => subCategory.subCategory_name)
-      //   ;
-      // const addresses = store.locations
-      //   .map((location) => location.formattedAddress)
-      //   ;
       const city1 = addresses[0].city;
       const zipcode1 = addresses[0].zipcode;
       const location1 = addresses[0].formattedAddress;
@@ -113,8 +106,7 @@ const Store = () => {
         location: location1,
         rating: store.rating,
         city: city1,
-        // laltitude: addresses.coordinates[0],
-        // longatude: addresses[0].coordinates[1],
+
         zipcode: zipcode1,
         category: store.sub_categories[0].category.category_name,
         subCategoy: subCategoryNames,
@@ -129,7 +121,7 @@ const Store = () => {
     const fetchStores = async () => {
       try {
         const response = await axios.get(`${baseUrl}store/getAllStore`);
-        console.log('responsefffff', response.data);
+
         const storesWithId = response.data.map((store, index) => ({
           ...store,
           id: index,
@@ -145,7 +137,7 @@ const Store = () => {
   console.log('storesData', storesData);
 
   const columns = [
-    { field: 'id', headerName: 'ID', flex: 0.5 },
+    // { field: 'id', headerName: 'ID', flex: 0.5 },
     { field: '_id', headerName: 'Registrar ID' },
     {
       field: 'store_name',
@@ -162,13 +154,46 @@ const Store = () => {
 
     {
       field: 'category',
-      headerName: 'categoryNames',
+      headerName: 'Catégorie',
       flex: 1,
+    },
+
+    {
+      field: 'nbVoucher',
+      headerName: 'Coupons',
+      flex: 1,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            textAlign: 'center',
+            height: '100%',
+            padding: '0 10px',
+            boxSizing: 'border-box',
+          }}
+        >
+          <Typography>{params.row.nbVoucher}</Typography>
+          <ShowStoreV data={params.row} id={params.row._id} style={style} />
+          <AddVoucher
+            data={params.row}
+            idStore={params.row._id}
+            style={style}
+          />
+        </Box>
+      ),
     },
     {
       field: 'nbVoucher',
-      headerName: 'coupons',
+      headerName: 'Sous_Catégories',
       flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <ShowStoreV data={params.row} id={params.row._id} style={style} />
+        </Box>
+      ),
     },
 
     {

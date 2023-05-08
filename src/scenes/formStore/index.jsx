@@ -41,7 +41,6 @@ const StoreForm = () => {
   const [categories, setCategories] = useState([]);
   const [filteredSubCategories, setFilteredSubCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const isNonMobile = useMediaQuery('(min-width:600px)');
 
@@ -69,15 +68,12 @@ const StoreForm = () => {
     fetchSubCategories();
   }, []);
   useEffect(() => {
-    const subCategories = [];
-    categories.forEach((category) => {
-      category.subcategories.forEach((sub) => {
-        subCategories.push({ id: sub._id, name: sub.subCategory_name });
-        console.log(`ID: ${sub._id}, Name: ${sub.subCategory_name}`);
-      });
-    });
-    setSubCategories(subCategories);
-  }, [categories]);
+    const subCategories = categories.find(
+      (c) => c.category_name === selectedCategory
+    )?.subcategories;
+    setFilteredSubCategories(subCategories || []);
+    setSubCategories([]);
+  }, [selectedCategory, categories]);
 
   console.log('Subcategories:', subCategories);
   console.log('categories', categories);
@@ -98,11 +94,18 @@ const StoreForm = () => {
       categories.find((c) => c.category_name === selected)?.subcategories || [];
     setFilteredSubCategories(filtered);
   };
+
   const handleSubCategoryChange = (event) => {
-    const selected = event.target.value;
-    setSelectedSubCategories(selected);
+    const selectedSubCategory = event.target.value;
+    if (subCategories.includes(selectedSubCategory)) {
+      setSubCategories((prevState) =>
+        prevState.filter((subCategory) => subCategory !== selectedSubCategory)
+      );
+    } else {
+      setSubCategories((prevState) => [...prevState, selectedSubCategory]);
+    }
   };
-  console.log(filteredSubCategories);
+
   return (
     <Box m="20px">
       <Header title="CREATE USER" subtitle="Create a New User Profile" />
@@ -236,61 +239,24 @@ const StoreForm = () => {
                 </Select>
               </FormControl>
               <FormControl variant="filled" fullWidth>
-                <InputLabel id="sub-category-select-label">
-                  Sub Categories
-                </InputLabel>
-                <Select
-                  labelId="sub-category-select-label"
-                  id="sub-categories"
-                  value={selectedSubCategories}
-                  multiple
-                  onChange={handleSubCategoryChange}
-                >
-                  {filteredSubCategories.map((subCategory) => (
-                    <MenuItem
-                      key={subCategory._id}
-                      value={subCategory.subCategory_name}
-                    >
-                      {subCategory.subCategory_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {/* {touched.categories && errors.categories && (
-                  <FormHelperText>{errors.categories}</FormHelperText>
-                )} */}
-              </FormControl>
-
-              {/* <Select
-                  labelId="subcategories-select-label"
-                  id="subcategories"
-                  name="subCategories"
-                  multiple
-                  value={selectedSubCategories}
-                  onChange={handleSelectCategory}
-                  renderValue={(selected) => selected.join(', ')}
-                >
-                  {filteredSubCategories.map((subcat) => (
-                    <MenuItem key={subcat._id} value={subcat.subCategory_name}>
+                {filteredSubCategories.map((subCategory) => (
+                  <FormControlLabel
+                    key={subCategory._id}
+                    control={
                       <Checkbox
-                        checked={
-                          selectedSubCategories.indexOf(
-                            subcat.subCategory_name
-                          ) > -1
-                        }
-                        value={subcat.subCategory_name}
-                        onChange={() => handleSubCategoryChange(values.subCategories, setFieldValue)}
+                        checked={subCategories.includes(subCategory._id)}
+                        onChange={handleSubCategoryChange}
+                        value={subCategory._id}
                       />
-                      <ListItemText primary={subcat.subCategory_name} />
-                    </MenuItem>
-                  ))}
-                </Select>
-                {touched.subCategories && errors.subCategories && (
-                  <FormHelperText>{errors.subCategories}</FormHelperText>
-                )} */}
+                    }
+                    label={subCategory.subCategory_name}
+                  />
+                ))}
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                CAjouter Boutique
+                Ajouter Boutique
               </Button>
             </Box>
           </Form>

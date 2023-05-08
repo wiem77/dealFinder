@@ -107,20 +107,32 @@ exports.addStore = async (req, res, next) => {
   }
 };
 
-// exports.getAllStores = async (req, res) => {
-//   try {
-//     const stores = await Store.find({})
-//       .populate('locations', 'formattedAddress city zipcode')
-//       .populate('sub_categories', 'subCategory_name category')
-//       .populate('vouchers', 'discount name_V')
-//       .lean();
+exports.deleteLocationForStore = async (req, res, next) => {
+  const { storeId, locationId } = req.params;
 
-//     res.status(200).json(stores);
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ error: 'Error getting all stores.' });
-//   }
-// };
+  try {
+    
+    const store = await Store.findByIdAndUpdate(storeId, {
+      $pull: { locations: locationId },
+    });
+
+    if (!store) {
+      return res.status(404).json({ success: false, error: 'Store not found' });
+    }
+
+ 
+    const location = await Location.findOneAndDelete({ _id: locationId });
+
+    if (!location) {
+      return res.status(404).json({ success: false, error: 'Location not found' });
+    }
+
+    res.status(200).json({ success: true, data: location });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+};
 exports.getAllStores = async (req, res) => {
   try {
     const stores = await Store.find({})
@@ -229,7 +241,11 @@ module.exports.deleteStore = async (req, res) => {
 
 exports.updateStore = (req, res) => {
   const storeId = req.params.id;
-
+  console.log(req.body);
+  const lat = req.body.laltitude;
+  const long = req.body.longitude;
+  const coordinates = [lat, long];
+  console.log('coordinates', coordinates);
   console.log(storeId);
   Store.findById(storeId)
     .populate('locations')
@@ -253,18 +269,20 @@ exports.updateStore = (req, res) => {
         store.logo = req.body.logo;
       }
 
-      // Update store sub categories
       if (req.body.sub_categories) {
-        const subCategoryIds = req.body.sub_categories.split(',');
+        console.log('test');
+        const subCategoryIds = req.body.sub_categories;
         const subCategories = await SubCategory.find({
           _id: { $in: subCategoryIds },
-        }).exec();
+        });
+
         store.sub_categories = subCategories.map(
           (subCategory) => subCategory._id
         );
+
+        console.log('test2', store.sub_categories);
       }
 
-      // Update store vouchers
       if (req.body.vouchers) {
         const voucherIds = req.body.vouchers.split(',');
         const vouchers = await Voucher.find({
@@ -272,12 +290,8 @@ exports.updateStore = (req, res) => {
         }).exec();
         store.vouchers = vouchers.map((voucher) => voucher._id);
       }
-
-      // Update store location
-      if (req.body.locations) {
-        const locationDetails = await getLocationAdrs(
-          req.body.locations.coordinates
-        );
+      if (coordinates) {
+        const locationDetails = await getLocationAdrs(coordinates);
 
         const location = new Location({
           type: 'Point',
@@ -289,6 +303,7 @@ exports.updateStore = (req, res) => {
         });
 
         const savedLocation = await location.save();
+        console.log(savedLocation);
         store.locations.push(savedLocation._id);
       }
 

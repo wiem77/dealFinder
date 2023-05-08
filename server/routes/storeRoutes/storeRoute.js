@@ -7,6 +7,7 @@ const {
   deleteStore,
   updateStore,
   getOneStore,
+  deleteLocationForStore,
 } = require('../../controllers/storeController/storeController');
 const { validateLocations } = require('../../utils/ValidationSchema');
 const uploader = require('../../config/multerConfig');
@@ -30,4 +31,6 @@ router.get('/getAllStoreWithLocations', getAllStoresWithLocations);
 router.get('/findOneStore/:name', getStoreByName);
 //root:http://localhost:4000/api/store/findOneStoreById/:id
 router.get('/findOneStoreById/:id', getOneStore);
+//root:http://localhost:4000/api/store/stores/:storeId/locations/:locationId
+router.delete('/stores/:storeId/locations/:locationId', deleteLocationForStore);
 module.exports = router;

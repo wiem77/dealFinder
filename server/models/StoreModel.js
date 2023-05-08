@@ -3,6 +3,13 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const storeSchema = new mongoose.Schema({
+  locations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Location',
+      required: [true, 'Please add at least one location'],
+    },
+  ],
   store_name: {
     type: String,
     required: [true, 'Please add a name'],
@@ -19,6 +26,12 @@ const storeSchema = new mongoose.Schema({
   email: {
     type: String,
   },
+  sub_categories: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'SubCategory',
+    },
+  ],
   webSite: {
     type: String,
   },
@@ -36,12 +49,7 @@ const storeSchema = new mongoose.Schema({
       ref: 'Voucher',
     },
   ],
-  sub_categories: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'SubCategory',
-    },
-  ],
+
   rating: {
     type: Number,
     min: [0, 'Rating cannot be less than 0'],

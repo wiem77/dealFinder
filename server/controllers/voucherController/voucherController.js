@@ -100,7 +100,7 @@ module.exports.deleteVoucher = async (req, res) => {
       }
       const deletedVoucher = voucher;
       Voucher.deleteOne({ _id: id }).then(async () => {
-        // Perform store-related operations here
+        
         const store = await Store.findById(voucher.store._id);
         store.voucher_count = store.voucher_count - 1;
         await store.save();

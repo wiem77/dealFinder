@@ -58,16 +58,16 @@ module.exports.addSubCategory = async (req, res) => {
     res.status(400).send({ success: false, msg: error.message });
   }
 };
-module.exports.getAllSubCategories = (req, res) => {
-  Category.find({})
-    .populate('subcategories')
-    .then((categories) => {
-      res.status(200).json(categories);
-    })
-    .catch((error) => {
-      res.status(400).send({ success: false, msg: error.message });
-    });
-};
+// module.exports.getAllSubCategories = (req, res) => {
+//   SubCategory.find({})
+//     .populate('subcategories')
+//     .then((categories) => {
+//       res.status(200).json(categories);
+//     })
+//     .catch((error) => {
+//       res.status(400).send({ success: false, msg: error.message });
+//     });
+// };
 
 module.exports.getSubCategoryById = (req, res) => {
   const SubcategoryId = req.params.id;
@@ -102,7 +102,8 @@ module.exports.getSubCategoryByName = (req, res) => {
 
 module.exports.getAllSubCategories = (req, res) => {
   SubCategory.find({})
-    .populate('category')
+    .populate('category', 'category_name')
+    .populate('stores', 'store_name')
     .then((subcategories) => {
       res.status(200).json(subcategories);
     })
@@ -179,4 +180,36 @@ module.exports.deleteSubCategory = async (req, res) => {
     .catch((error) => {
       res.status(400).send({ success: false, msg: error.message, error });
     });
+};
+const removeStoreFromSubCategory = async (storeId, subCategoryId) => {
+  try {
+    const subCategory = await SubCategory.findById(subCategoryId);
+    if (!subCategory) {
+      throw new Error(
+        `La sous-catégorie avec l'ID ${subCategoryId} n'existe pas`
+      );
+    }
+    subCategory.stores = subCategory.stores.filter((id) => id !== storeId);
+    await subCategory.save();
+  } catch (error) {
+    console.error(error);
+    throw new Error(
+      `Une erreur s'est produite lors de la suppression du magasin avec l'ID ${storeId} de la sous-catégorie avec l'ID ${subCategoryId}`
+    );
+  }
+};
+
+module.exports.deleteStoreFromSubCategory = async (req, res) => {
+  const { id, subCategoryId } = req.params;
+  try {
+    await removeStoreFromSubCategory(id, subCategoryId);
+    res.status(200).json({
+      message: `Le magasin avec l'ID ${id} a été supprimé de la sous-catégorie avec l'ID ${subCategoryId}.`,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };

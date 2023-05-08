@@ -6,6 +6,7 @@ const {
   getSubCategoryByName,
   updateSubCategory,
   deleteSubCategory,
+  deleteStoreFromSubCategory,
 } = require('../../controllers/subCategoryController/subCategoryController');
 const router = express.Router();
 //Root:http://localhost:4000/api/subCategory/add_sub_Category/id
@@ -20,5 +21,10 @@ router.get('/getByName_sub_Category/:name', getSubCategoryByName);
 router.put('/update_sub_Category/:id', updateSubCategory);
 //Root:http://localhost:4000/api/subCategory/delete_sub_Category/:id
 router.delete('/delete_sub_Category/:id', deleteSubCategory);
+//Root:http://localhost:4000/api/subCategory/:subCategoryId/stores/:id
+router.delete(
+  '/:subCategoryId/stores/:id',
+  deleteStoreFromSubCategory
+);
 
 module.exports = router;

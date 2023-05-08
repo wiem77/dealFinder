@@ -12,17 +12,22 @@ import * as yup from 'yup';
 import Header from './Header';
 import { MenuItem } from 'react-pro-sidebar';
 
-const checkoutSchema = yup.object().shape({
-  store_name: yup.string().required('* Obligatoire'),
-  description: yup.string().required('* Obligatoire'),
+import * as Yup from 'yup';
 
-  phone: yup.number().required(' * Obligatoire'),
-  zipcode: yup.number().required('* Obligatoire'),
-  city: yup.string().required('* Obligatoire'),
-  email: yup.string().email('invalid email').required('* Obligatoire'),
-  laltitude: yup.number().required(' * Obligatoire'),
-  longitude: yup.number().required('* Obligatoire'),
+const checkoutSchema = Yup.object().shape({
+  store_name: Yup.string().required('Le nom de la boutique est requis'),
+  phone: Yup.string().required('Le numéro de téléphone est requis'),
+  email: Yup.string()
+    .email("L'adresse e-mail n'est pas valide")
+    .required("L'adresse e-mail est requise"),
+  laltitude: Yup.number()
+    .required('La laltitude est requise')
+    .typeError('La laltitude doit être un nombre'),
+  longitude: Yup.number()
+    .required('La longitude est requise')
+    .typeError('La longitude doit être un nombre'),
 });
+
 export default function EditStore({ style, data, idStore }) {
   const locationInfo = data.locations.map((loc) => ({
     _idSub: loc._id,
@@ -37,6 +42,14 @@ export default function EditStore({ style, data, idStore }) {
 
   const [selectedLocation, setSelectedLocation] = React.useState([]);
   const [selectAvailbeLoc, setSelectAvailbeLoc] = React.useState();
+  const [initialVal, setInitialVal] = React.useState({
+    store_name: data.store_name,
+    phone: data.phone,
+    email: data.email,
+    laltitude: 0,
+    longitude: 0,
+  });
+  console.log('initialVal', initialVal);
   const handleClose = () => {
     setOpen(false);
   };
@@ -46,11 +59,9 @@ export default function EditStore({ style, data, idStore }) {
     setEditable(true);
   };
   const initialValues = {
-    _id: data._id,
     store_name: data.store_name,
     phone: data.phone,
-    zipcode: data.zipcode,
-    city: data.city,
+
     email: data.email,
     laltitude: 0,
     longitude: 0,
@@ -102,19 +113,42 @@ export default function EditStore({ style, data, idStore }) {
     console.log('values', values);
     try {
       console.log('values', values);
-      await axios.put(`${baseUrl}store/updateStore/${idStore}`, {
-        ...values,
-        // laltitude: selectedLocation.laltitude,
-        // longitude: selectedLocation.longitude,
-      });
-
+      console.log('inisialeval', initialVal);
+      let modifiedValues = {};
+      // Vérifier si les valeurs ont été modifiées
+      if (values.store_name !== initialVal.store_name) {
+        modifiedValues.store_name = values.store_name;
+      }
+      if (values.phone !== initialVal.phone) {
+        modifiedValues.phone = values.phone;
+      }
+      if (values.email !== initialVal.email) {
+        modifiedValues.email = values.email;
+      }
+      if (values.laltitude !== initialVal.laltitude) {
+        modifiedValues.laltitude = values.laltitude;
+      }
+      if (values.longitude !== initialVal.longitude) {
+        modifiedValues.longitude = values.longitude;
+      }
+      // Si les valeurs ont été modifiées, envoyer toutes les valeurs au serveur
+      // Sinon, envoyer seulement les valeurs modifiées
+      console.log('modifiedValues', modifiedValues);
+      const body =
+        Object.keys(modifiedValues).length > 0
+          ? { ...modifiedValues }
+          : { ...values };
+      await axios.put(`${baseUrl}store/updateStore/${idStore}`, body);
       alert(
         'La  modification  a été effectuée avec succès raffrechiser la page  !'
       );
+      // Mettre à jour les valeurs d'initialisation
+      setInitialVal({ ...initialVal, ...modifiedValues });
     } catch (error) {
       console.error(error);
     }
   };
+
   const availablelocation = locationInfo.filter(
     (locId) => !selectedLocation.some((loc) => loc.id === locId._idSub)
   );
@@ -161,12 +195,15 @@ export default function EditStore({ style, data, idStore }) {
                     fullWidth
                     variant="filled"
                     type="text"
+                    defaultValue={data.store_name}
                     label=" nom de  la Boutique "
                     value={values.store_name}
                     name="store_name"
                     readOnly={false}
                     onBlur={handleBlur}
                     onChange={handleChange}
+                    // error={!!touched.store_name && !!errors.store_name}
+                    // helperText={touched.store_name && errors.store_name}
                     sx={{ gridColumn: 'span 2' }}
                   />
                   <Box display="flex" justifyContent={'space-between'}>
@@ -175,11 +212,14 @@ export default function EditStore({ style, data, idStore }) {
                       variant="filled"
                       type="text"
                       label="Téléphone"
+                      defaultValue={data.phone}
                       value={values.phone}
                       name="phone"
                       readOnly={false}
                       onBlur={handleBlur}
                       onChange={handleChange}
+                      // error={!!touched.phone && !!errors.phone}
+                      // helperText={touched.phone && errors.phone}
                       sx={{ gridColumn: 'span 2', mx: 1 }}
                     />
                     <TextField
@@ -187,15 +227,21 @@ export default function EditStore({ style, data, idStore }) {
                       variant="filled"
                       type="text"
                       label="Email"
+                      defaultValue={data.email}
                       value={values.email}
                       name="email"
                       readOnly={false}
                       onBlur={handleBlur}
                       onChange={handleChange}
+                      // error={!!touched.email && !!errors.email}
+                      // helperText={touched.email && errors.email}
                       sx={{ gridColumn: 'span 2', mx: 1 }}
                     />
                   </Box>
-
+                  <Button type="submit" color="secondary" variant="contained">
+                    Modifier
+                  </Button>
+                  <p>Ajout nouvel localisation</p>
                   <Box
                     display="flex"
                     justifyContent={'space-between'}
@@ -205,7 +251,7 @@ export default function EditStore({ style, data, idStore }) {
                       fullWidth
                       variant="filled"
                       type="text"
-                      value={values.Laltitude}
+                      value={values.laltitude}
                       label="Laltitude"
                       name="laltitude"
                       onBlur={handleBlur}
@@ -292,11 +338,7 @@ export default function EditStore({ style, data, idStore }) {
 
                   <Box display="flex" justifyContent={'space-around'}></Box>
                 </Box>
-                <Box display="flex" justifyContent="end" mt="20px">
-                  <Button type="submit" color="secondary" variant="contained">
-                    Modifier
-                  </Button>
-                </Box>
+                <Box display="flex" justifyContent="end" mt="20px"></Box>
               </form>
             )}
           </Formik>

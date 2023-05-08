@@ -22,57 +22,29 @@ import Header from '../../components/Header';
 import { useState, useEffect } from 'react';
 import { baseUrl } from '../../config/config';
 import { CheckBox } from '@mui/icons-material';
-
+const phoneRegExp =
+  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+const checkoutSchema = yup.object().shape({
+  StoreName: yup.string().required('required'),
+  webSite: yup.string(),
+  email: yup.string().email('invalid email').required('required'),
+  phone: yup
+    .string()
+    .matches(phoneRegExp, 'Phone number is not valid')
+    .required('required'),
+  laltitude: yup.number().required('required'),
+  longitude: yup.number().required('required'),
+  description: yup.string().required('required'),
+  subCategories: yup.string().required('required'),
+});
 const StoreForm = () => {
   const [categories, setCategories] = useState([]);
   const [filteredSubCategories, setFilteredSubCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
-
-  const handleSubCategoryChange = (event) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setSelectedSubCategories([...selectedSubCategories, value]);
-    } else {
-      setSelectedSubCategories(
-        selectedSubCategories.filter((subcat) => subcat !== value)
-      );
-    }
-  };
-
-  console.log('selectedCategory', selectedSubCategories);
-
-  const handleSelectCategory = (event, setFieldValue) => {
-    const { name, value } = event.target;
-    if (name === 'categories') {
-      setFieldValue(name, value);
-      console.log(`Selected Category ID: ${value}`);
-    } else if (typeof value === 'string') {
-      setFieldValue(name, value.trim());
-    } else {
-      setFieldValue(name, value);
-    }
-  };
-
-  console.log('selectedSubCategory', selectedSubCategories);
+  const [subCategories, setSubCategories] = useState([]);
   const isNonMobile = useMediaQuery('(min-width:600px)');
 
-  const phoneRegExp =
-    /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
-  // const checkoutSchema = yup.object().shape({
-  //   StoreName: yup.string().required('required'),
-  //   webSite: yup.string(),
-  //   email: yup.string().email('invalid email').required('required'),
-  //   phone: yup
-  //     .string()
-  //     .matches(phoneRegExp, 'Phone number is not valid')
-  //     .required('required'),
-  //   laltitude: yup.number().required('required'),
-  //   longitude: yup.number().required('required'),
-  //   description: yup.string().required('required'),
-  //   subCategories: yup.string().required('required'),
-  // });
   const initialValues = {
     StoreName: '',
     webSite: '',
@@ -97,13 +69,18 @@ const StoreForm = () => {
     fetchSubCategories();
   }, []);
   useEffect(() => {
-    console.log('Subcategories:', categories);
+    const subCategories = [];
     categories.forEach((category) => {
       category.subcategories.forEach((sub) => {
+        subCategories.push({ id: sub._id, name: sub.subCategory_name });
         console.log(`ID: ${sub._id}, Name: ${sub.subCategory_name}`);
       });
     });
+    setSubCategories(subCategories);
   }, [categories]);
+
+  console.log('Subcategories:', subCategories);
+  console.log('categories', categories);
   const handleFormSubmit = async (values) => {
     console.log(values);
     // try {
@@ -114,7 +91,18 @@ const StoreForm = () => {
     //   console.error(error);
     // }
   };
-
+  const handleCategoryChange = (event) => {
+    const selected = event.target.value;
+    setSelectedCategory(selected);
+    const filtered =
+      categories.find((c) => c.category_name === selected)?.subcategories || [];
+    setFilteredSubCategories(filtered);
+  };
+  const handleSubCategoryChange = (event) => {
+    const selected = event.target.value;
+    setSelectedSubCategories(selected);
+  };
+  console.log(filteredSubCategories);
   return (
     <Box m="20px">
       <Header title="CREATE USER" subtitle="Create a New User Profile" />
@@ -122,7 +110,7 @@ const StoreForm = () => {
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
-        // validationSchema={checkoutSchema}
+        validationSchema={checkoutSchema}
       >
         {({
           values,
@@ -131,17 +119,8 @@ const StoreForm = () => {
           handleBlur,
           handleChange,
           handleSubmit,
-          setFieldValue,
         }) => (
           <Form>
-            <Field
-              fullWidth
-              id="email"
-              name="email"
-              label="Email"
-              as={TextField}
-              // value={values.email}
-            />
             <Box
               display="grid"
               gap="30px"
@@ -222,7 +201,7 @@ const StoreForm = () => {
                 label="longitude "
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.address2}
+                value={values.longitude}
                 name="longitude"
                 error={!!touched.longitude && !!errors.longitude}
                 helperText={touched.longitude && errors.longitude}
@@ -235,30 +214,19 @@ const StoreForm = () => {
                 label="description "
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.address2}
+                value={values.description}
                 name="description"
                 error={!!touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
                 sx={{ gridColumn: 'span 4' }}
               />
-              <FormControl
-                variant="filled"
-                fullWidth
-                error={!!touched.categories && !!errors.categories}
-              >
+              <FormControl variant="filled" fullWidth>
                 <InputLabel id="category-select-label">Category</InputLabel>
                 <Select
                   labelId="category-select-label"
                   id="categories"
                   value={selectedCategory}
-                  onChange={(event) => {
-                    setSelectedCategory(event.target.value);
-                    setFilteredSubCategories(
-                      categories.filter(
-                        (cat) => cat.category_name === event.target.value
-                      )[0].subcategories
-                    );
-                  }}
+                  onChange={handleCategoryChange}
                 >
                   {categories.map((category) => (
                     <MenuItem key={category._id} value={category.category_name}>
@@ -266,60 +234,33 @@ const StoreForm = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                {touched.categories && errors.categories && (
-                  <FormHelperText>{errors.categories}</FormHelperText>
-                )}
               </FormControl>
-              <FormControl
-                variant="filled"
-                fullWidth
-                error={!!touched.subCategories && !!errors.subCategories}
-              >
-                <InputLabel id="subcategories-select-label">
+              <FormControl variant="filled" fullWidth>
+                <InputLabel id="sub-category-select-label">
                   Sub Categories
                 </InputLabel>
-
-                <div
-                  role="group"
-                  aria-labelledby="checkbox-group"
-                  value={values.subCategories}
+                <Select
+                  labelId="sub-category-select-label"
+                  id="sub-categories"
+                  value={selectedSubCategories}
+                  multiple
+                  onChange={handleSubCategoryChange}
                 >
-                  <Box>
-                    {filteredSubCategories.map((subcat) => (
-                      <Field
-                        key={subcat._id}
-                        type="checkbox"
-                        name="subCategories"
-                        // value={filteredSubCategories[0].subCategory_name}
-                        render={({ field }) => {
-                          <CheckBox {...field}>
-                            {subcat.subCategory_name}
-                          </CheckBox>;
-                        }}
-                        value={subcat.subCategory_name}
-                      />
-                    ))}
-                  </Box>
+                  {filteredSubCategories.map((subCategory) => (
+                    <MenuItem
+                      key={subCategory._id}
+                      value={subCategory.subCategory_name}
+                    >
+                      {subCategory.subCategory_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {/* {touched.categories && errors.categories && (
+                  <FormHelperText>{errors.categories}</FormHelperText>
+                )} */}
+              </FormControl>
 
-                  {/* <label>
-                    <Field
-                      type="checkbox"
-                      name="subCategories"
-                      // value={filteredSubCategories[0].subCategory_name}
-                      value="One"
-                    />
-                    One
-                  </label>
-                  <label>
-                    <Field type="checkbox" name="subCategories" value="Two" />
-                    Two
-                  </label>
-                  <label>
-                    <Field type="checkbox" name="subCategories" value="Three" />
-                    Three
-                  </label> */}
-                </div>
-                {/* <Select
+              {/* <Select
                   labelId="subcategories-select-label"
                   id="subcategories"
                   name="subCategories"
@@ -346,11 +287,10 @@ const StoreForm = () => {
                 {touched.subCategories && errors.subCategories && (
                   <FormHelperText>{errors.subCategories}</FormHelperText>
                 )} */}
-              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Create New User
+                CAjouter Boutique
               </Button>
             </Box>
           </Form>

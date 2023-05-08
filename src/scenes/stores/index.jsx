@@ -23,6 +23,7 @@ import EditStore from '../../components/EditStore';
 import ModalStore from '../../components/showDetails/ModalShowStore';
 import AddVoucher from '../../components/AddVoucher';
 import ShowStoreV from '../../components/ShowStoreV';
+import DeleteVfromStore from '../../components/deleteModels/deleteVfromStore';
 
 const Store = () => {
   const theme = useTheme();
@@ -182,19 +183,24 @@ const Store = () => {
             idStore={params.row._id}
             style={style}
           />
+          <DeleteVfromStore
+            data={params.row}
+            id={params.row._id}
+            style={style}
+          />
         </Box>
       ),
     },
-    {
-      field: 'nbVoucher',
-      headerName: 'Sous_Catégories',
-      flex: 1,
-      renderCell: (params) => (
-        <Box>
-          <ShowStoreV data={params.row} id={params.row._id} style={style} />
-        </Box>
-      ),
-    },
+    // {
+    //   field: 'nbVoucher',
+    //   headerName: 'Sous_Catégories',
+    //   flex: 1,
+    //   renderCell: (params) => (
+    //     <Box>
+    //       <ShowStoreV data={params.row} id={params.row._id} style={style} />
+    //     </Box>
+    //   ),
+    // },
 
     {
       field: 'showModal',

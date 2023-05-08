@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 
 import Modal from '@mui/material/Modal';
@@ -25,6 +25,8 @@ function ShowStoreV({ style, data, id }) {
   console.log(voucherInfo.name_V);
   const [open, setOpen] = useState(false);
   const [subCatInfo, setSubCatInfo] = useState();
+
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
   const handleClose = () => {
     setOpen(false);
   };
@@ -71,6 +73,13 @@ function ShowStoreV({ style, data, id }) {
                     fullWidth
                     label="vouchers"
                     defaultValue={voucherInfo[0].name_V}
+                    onChange={(e) => {
+                      const selectedVoucher = voucherInfo.find(
+                        (voucher) => voucher.name_V === e.target.value
+                      );
+                      setSelectedCoupon(selectedVoucher);
+                      handleChange(e);
+                    }}
                     sx={{ gridColumn: 'span 4' }}
                   >
                     {voucherInfo.map((voucher) => (
@@ -79,6 +88,53 @@ function ShowStoreV({ style, data, id }) {
                       </MenuItem>
                     ))}
                   </Select>
+
+                  {selectedCoupon && (
+                    <>
+                      <p
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          margin: 0,
+                          textDecoration: 'underline',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Coupon sélectionner
+                      </p>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          backgroundColor: 'grey',
+                          padding: '10px',
+                          borderRadius: '5px',
+                          gridColumn: 'span 4',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: '1em',
+                            fontWeight: 'bold',
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          {selectedCoupon.name_V}
+                        </span>
+                        <br />
+                        <span>
+                          <span style={{ fontWeight: 'bold' }}>
+                            Nom_Coupon:
+                          </span>{' '}
+                          {selectedCoupon.name_V}
+                        </span>
+                        <br />
+                        <span>
+                          <span style={{ fontWeight: 'bold' }}>Id:</span>{' '}
+                          {selectedCoupon._idVoucher}
+                        </span>
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Box display="flex" justifyContent="end" mt="20px"></Box>
               </form>

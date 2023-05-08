@@ -3,7 +3,7 @@ import { Box, Select, MenuItem, IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Add, Edit, Delete } from '@mui/icons-material';
+import { Add, Edit, Delete, Remove } from '@mui/icons-material';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { TextField } from '@mui/material';
@@ -57,7 +57,7 @@ export default function DeleteVfromStore({ style, data, id }) {
   return (
     <div>
       <Button onClick={() => handleOpen(id)}>
-        <Delete style={{ color: 'black' }} />
+        <Remove style={{ color: 'black' }} />
       </Button>
       <Modal
         open={open}

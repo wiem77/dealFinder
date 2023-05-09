@@ -23,7 +23,7 @@ router.get('/getUsers', getUsers);
 //root:http://localhost:4000/api/signUp
 router.post('/signUp', uploader.single('image'), signUp);
 //root:http://localhost:4000/api/signIn
-router.post('/SignIn', auth, signIn);
+router.post('/SignIn', signIn);
 //http://localhost:4000/api/idUser/:email
 router.get('/idUser/:email', getUserIdByEmail);
 

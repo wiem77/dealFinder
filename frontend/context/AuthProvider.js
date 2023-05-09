@@ -2,7 +2,6 @@ import React, { useState, createContext } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../config/config';
 
-
 export const AuthContext = createContext({
   user: null,
 
@@ -15,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
 
   const signIn = async (email, password) => {
+    console.log('email', email, password);
     try {
       const response = await axios.post(`${baseUrl}/signIn`, {
         email: email.toLowerCase(),

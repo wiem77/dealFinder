@@ -11,6 +11,7 @@ const storeRoutes = require('./routes/storeRoutes/storeRoute');
 const uploadRoutes = require('./routes/imageRoutes/image');
 const locationRoutes = require('./routes/locationRoutes/location');
 const voucherRoutes = require('./routes/voucherRoutes/voucherRoutes');
+const reservationRoutes = require('./routes/reservationRoute/reservationRoute');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 
@@ -38,6 +39,7 @@ app.use('/api/store', storeRoutes);
 app.use('/api/subCategory', subcategoryRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/vouchers', voucherRoutes);
+app.use('/api/reservation', reservationRoutes);
 //setPORT
 const PORT = 4000;
 app.listen(PORT, (err) =>

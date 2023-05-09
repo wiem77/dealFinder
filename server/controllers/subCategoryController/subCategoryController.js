@@ -5,7 +5,7 @@ module.exports.addSubCategory = async (req, res) => {
   console.log('Add..');
   try {
     const categoryId = req.params.id;
-
+    console.log(req.body);
     let subCategoryName = req.body.subCategory_name;
 
     if (!subCategoryName) {
@@ -51,23 +51,14 @@ module.exports.addSubCategory = async (req, res) => {
 
     res.status(200).send({
       success: true,
-      msg: 'Subcategory added successfully',
+      msg: 'Sous_Catégorie ajouter ',
       newSubCategory,
     });
+    console.log(newSubCategory);
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(400).send({ message: error.message });
   }
 };
-// module.exports.getAllSubCategories = (req, res) => {
-//   SubCategory.find({})
-//     .populate('subcategories')
-//     .then((categories) => {
-//       res.status(200).json(categories);
-//     })
-//     .catch((error) => {
-//       res.status(400).send({ success: false, msg: error.message });
-//     });
-// };
 
 module.exports.getSubCategoryById = (req, res) => {
   const SubcategoryId = req.params.id;

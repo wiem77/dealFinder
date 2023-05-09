@@ -103,8 +103,12 @@ exports.addStore = async (req, res, next) => {
       store: populatedStore,
     });
   } catch (error) {
-    next(error);
+    console.error(error);
+
+    console.error(error);
+    res.status(400).send({ message: error.message });
   }
+  // next(error);
 };
 
 exports.deleteLocationForStore = async (req, res, next) => {

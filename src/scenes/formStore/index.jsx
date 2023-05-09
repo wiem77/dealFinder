@@ -12,6 +12,7 @@ import {
 
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { Input } from '@mui/material';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
@@ -73,20 +74,36 @@ const StoreForm = () => {
   }, [selectedCategory, categories]);
 
   console.log('categories', categories);
-
   const handleFormSubmit = async (values) => {
-    console.log(values);
-    console.log('Subcategorierrrrrsdcdcce:', subCategories);
     try {
-      const data = { ...values, subCategories };
-      console.log('dataaa', data);
-      const response = await axios.post(`${baseUrl}store/addStore`, data);
+      const formData = new FormData();
+      formData.append('StoreName', values.StoreName);
+      formData.append('webSite', values.webSite);
+      formData.append('email', values.email);
+      formData.append('phone', values.phone);
+      formData.append('laltitude', values.laltitude);
+      formData.append('longitude', values.longitude);
+      formData.append('description', values.description);
+      formData.append('image', values.image);
 
-      console.log(response.data);
+      subCategories.forEach((subCategory) => {
+        formData.append('subCategories[]', subCategory);
+      });
+
+      const response = await axios.post(`${baseUrl}store/addStore`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      window.alert(
+        `Boutique ajoutée avec succès et affiche le nom de la boutique: ${response.data.storeName}`
+      );
     } catch (error) {
       console.error(error);
+      window.alert(`Error: ${error.response.data.message}`);
     }
   };
+
   const handleCategoryChange = (event) => {
     const selected = event.target.value;
     setSelectedCategory(selected);
@@ -108,7 +125,10 @@ const StoreForm = () => {
 
   return (
     <Box m="20px">
-      <Header title="CREATE USER" subtitle="Create a New User Profile" />
+      <Header
+        title="Crée une Nouvel Boutique"
+        subtitle="Veuiller Remplire tous  les champs"
+      />
 
       <Formik
         onSubmit={handleFormSubmit}
@@ -122,6 +142,7 @@ const StoreForm = () => {
           handleBlur,
           handleChange,
           handleSubmit,
+          setFieldValue,
         }) => (
           <form onSubmit={handleSubmit}>
             <Box
@@ -182,6 +203,17 @@ const StoreForm = () => {
                 name="phone"
                 error={!!touched.phone && !!errors.phone}
                 helperText={touched.phone && errors.phone}
+                sx={{ gridColumn: 'span 4' }}
+              />
+              <Input
+                fullWidth
+                type="file"
+                label="Store Image"
+                onBlur={handleBlur}
+                onChange={(e) => {
+                  setFieldValue('image', e.currentTarget.files[0]);
+                }}
+                name="image"
                 sx={{ gridColumn: 'span 4' }}
               />
               <TextField
@@ -256,7 +288,7 @@ const StoreForm = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Ajouter Boutique
+                Ajouter
               </Button>
             </Box>
           </form>

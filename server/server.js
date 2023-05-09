@@ -1,5 +1,8 @@
 const express = require('express');
-
+const {
+  deleteExpiredReservations,
+  updateExpiredReservations,
+} = require('./utils/deleteExpiredRservation');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -14,6 +17,7 @@ const voucherRoutes = require('./routes/voucherRoutes/voucherRoutes');
 const reservationRoutes = require('./routes/reservationRoute/reservationRoute');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
+const Reservation = require('./models/ReservationModel');
 
 const app = express();
 
@@ -22,12 +26,15 @@ app.use(bodyParser.json());
 dbConnect();
 
 app.use(
-  cors({
-    origin: ['http://localhost:3000', 'exp://192.168.8.133:19000'],
-    optionsSuccessStatus: 200,
-  })
+  cors('exp://192.168.8.101:19000')
+  // cors({
+  //   origin: ['http://localhost:3000', 'exp://192.168.8.101:19000'],
+  //   optionsSuccessStatus: 200,
+  // })
 );
 
+// deleteExpiredReservations();
+updateExpiredReservations();
 app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', uploadRoutes);

@@ -13,10 +13,18 @@ import { useState } from 'react';
 import Header from './Header';
 
 function ShowStoreV({ style, data, id }) {
-  const voucherInfo = data.name_V.map((voucher) => ({
-    _idVoucher: voucher._id,
-    name_V: voucher.name_V,
-  }));
+  // const voucherInfo = data.name_V.map((voucher) => ({
+  //   _idVoucher: voucher._id,
+  //   name_V: voucher.name_V,
+  // }));
+  const voucherInfo =
+    data.name_V && data.name_V.length > 0
+      ? data.name_V.map((voucher) => ({
+          _idVoucher: voucher._id,
+          name_V: voucher.name_V,
+        }))
+      : [];
+
   console.log('voucherInfo', voucherInfo);
   const initialValues = {
     _id: data._id,
@@ -72,7 +80,6 @@ function ShowStoreV({ style, data, id }) {
                   <Select
                     fullWidth
                     label="vouchers"
-                    defaultValue={voucherInfo[0].name_V}
                     onChange={(e) => {
                       const selectedVoucher = voucherInfo.find(
                         (voucher) => voucher.name_V === e.target.value

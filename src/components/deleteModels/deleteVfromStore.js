@@ -12,10 +12,15 @@ import * as yup from 'yup';
 import Header from '../Header';
 export default function DeleteVfromStore({ style, data, id }) {
   console.log('dataV', data);
-  const voucherInfo = data.name_V.map((voucher) => ({
-    _idVoucher: voucher._id,
-    name_V: voucher.name_V,
-  }));
+
+  const voucherInfo =
+    data.name_V && data.name_V.length > 0
+      ? data.name_V.map((voucher) => ({
+          _idVoucher: voucher._id,
+          name_V: voucher.name_V,
+        }))
+      : [];
+
   console.log('rffrefrefrf', voucherInfo);
   const [open, setOpen] = useState(false);
   const [vInfo, setVInfo] = useState();

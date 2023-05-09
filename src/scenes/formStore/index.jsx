@@ -5,23 +5,21 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  Input,
   Checkbox,
-  FormHelperText,
   FormControl,
-  FormLabel,
-  FormGroup,
   FormControlLabel,
-  ListItemText,
 } from '@mui/material';
-import axios from 'axios';
-import { Formik, Form, Field } from 'formik';
+
+import { Formik } from 'formik';
 import * as yup from 'yup';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
+
 import { useState, useEffect } from 'react';
 import { baseUrl } from '../../config/config';
-import { CheckBox } from '@mui/icons-material';
+import axios from 'axios';
+
 const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 const checkoutSchema = yup.object().shape({
@@ -35,7 +33,6 @@ const checkoutSchema = yup.object().shape({
   laltitude: yup.number().required('required'),
   longitude: yup.number().required('required'),
   description: yup.string().required('required'),
-  subCategories: yup.string().required('required'),
 });
 const StoreForm = () => {
   const [categories, setCategories] = useState([]);
@@ -52,7 +49,7 @@ const StoreForm = () => {
     laltitude: '',
     longitude: '',
     description: '',
-    subCategories: [],
+    image: null,
   };
 
   useEffect(() => {
@@ -75,17 +72,20 @@ const StoreForm = () => {
     setSubCategories([]);
   }, [selectedCategory, categories]);
 
-  console.log('Subcategories:', subCategories);
   console.log('categories', categories);
+
   const handleFormSubmit = async (values) => {
     console.log(values);
-    // try {
-    //   const response = await axios.post(`${baseUrl}store/addStore`, values);
+    console.log('Subcategorierrrrrsdcdcce:', subCategories);
+    try {
+      const data = { ...values, subCategories };
+      console.log('dataaa', data);
+      const response = await axios.post(`${baseUrl}store/addStore`, data);
 
-    //   console.log(response.data);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleCategoryChange = (event) => {
     const selected = event.target.value;
@@ -123,7 +123,7 @@ const StoreForm = () => {
           handleChange,
           handleSubmit,
         }) => (
-          <Form>
+          <form onSubmit={handleSubmit}>
             <Box
               display="grid"
               gap="30px"
@@ -219,8 +219,6 @@ const StoreForm = () => {
                 onChange={handleChange}
                 value={values.description}
                 name="description"
-                error={!!touched.description && !!errors.description}
-                helperText={touched.description && errors.description}
                 sx={{ gridColumn: 'span 4' }}
               />
               <FormControl variant="filled" fullWidth>
@@ -230,6 +228,8 @@ const StoreForm = () => {
                   id="categories"
                   value={selectedCategory}
                   onChange={handleCategoryChange}
+                  error={!!touched.subCategories && !!errors.subCategories}
+                  helperText={touched.subCategories && errors.subCategories}
                 >
                   {categories.map((category) => (
                     <MenuItem key={category._id} value={category.category_name}>
@@ -259,7 +259,7 @@ const StoreForm = () => {
                 Ajouter Boutique
               </Button>
             </Box>
-          </Form>
+          </form>
         )}
       </Formik>
     </Box>

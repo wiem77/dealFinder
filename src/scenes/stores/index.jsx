@@ -92,8 +92,9 @@ const Store = () => {
         addresses = store.locations.map((loc) => loc);
       }
       console.log('addresses', addresses);
-      const nbV = voucherNames.length;
-      const nbVoucher = nbV > 0 ? `${nbV} ` : 'pas de coupons';
+      const nbV =
+        voucherNames && voucherNames.length > 0 ? voucherNames.length : 0;
+      const nbVoucher = nbV > 0 ? `${nbV} ` : 0;
 
       const city1 = addresses[0].city;
       const zipcode1 = addresses[0].zipcode;
@@ -172,20 +173,24 @@ const Store = () => {
             width: '100%',
             textAlign: 'center',
             height: '100%',
-            padding: '0 10px',
+            // padding: '1px',
             boxSizing: 'border-box',
           }}
         >
           <Typography>{params.row.nbVoucher}</Typography>
-          <ShowStoreV data={params.row} id={params.row._id} style={style} />
+          {params.row.nbVoucher > 0 && (
+            <>
+              <ShowStoreV data={params.row} id={params.row._id} style={style} />
+              <DeleteVfromStore
+                data={params.row}
+                id={params.row._id}
+                style={style}
+              />
+            </>
+          )}
           <AddVoucher
             data={params.row}
             idStore={params.row._id}
-            style={style}
-          />
-          <DeleteVfromStore
-            data={params.row}
-            id={params.row._id}
             style={style}
           />
         </Box>

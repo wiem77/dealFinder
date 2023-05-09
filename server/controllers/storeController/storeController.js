@@ -11,15 +11,8 @@ const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 exports.addStore = async (req, res, next) => {
   console.log('add2...');
   console.log(req.body);
-  const {
-    email,
-    StoreName,
-    subCategories,
-
-    phone,
-    webSite,
-    description,
-  } = req.body;
+  const { email, StoreName, subCategories, phone, webSite, description } =
+    req.body;
   const lat = parseFloat(req.body.laltitude);
   const long = parseFloat(req.body.longitude);
   const coordinates = [lat, long];
@@ -28,6 +21,7 @@ exports.addStore = async (req, res, next) => {
 
   // console.log(req.file);
   const store_image = req.file;
+  console.log(req.file);
   try {
     const existingStore = await Store.findOne({
       store_name: StoreName,
@@ -36,17 +30,17 @@ exports.addStore = async (req, res, next) => {
     if (existingStore) {
       throw new Error('A store with the same name and email already exists');
     }
-    // if (!store_image) {
-    //   throw new Error('Logo required');
-    // }
-    // const fileName = req.file.filename;
+    if (!store_image) {
+      throw new Error('Logo required');
+    }
+    const fileName = req.file.filename;
 
-    // const media = new Media({
-    //   path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
-    //   extension: fileName.split('.').pop(),
-    // });
+    const media = new Media({
+      path: `${req.protocol}://${req.headers.host}/public/image/${fileName}`,
+      extension: fileName.split('.').pop(),
+    });
 
-    // await media.save();
+    await media.save();
     const locationDetails = await getLocationAdrs(coordinates);
     console.log('coordinates', locationDetails);
     const location = new Location({
@@ -74,6 +68,7 @@ exports.addStore = async (req, res, next) => {
       locations: [savedLocation._id],
       subCategories: [subCategories],
       vouchers: [],
+      store_image: [media._id],
     });
     for (const subCategoryId of subCategories) {
       const subCategory = await SubCategory.findById(subCategoryId);

@@ -18,6 +18,7 @@ import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import PieChartOutlineOutlinedIcon from '@mui/icons-material/PieChartOutlineOutlined';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import { Category } from '@mui/icons-material';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -189,6 +190,13 @@ const Sidebar = () => {
               title="Ajout Boutique"
               to="/AjoutBoutique"
               icon={<AddCircleOutlineIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Ajout d'une Catégorie"
+              to="/Addcategory"
+              icon={<Category />}
               selected={selected}
               setSelected={setSelected}
             />

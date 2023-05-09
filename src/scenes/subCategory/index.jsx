@@ -42,24 +42,6 @@ const SubCategory = () => {
   const [categoryInfo, setCategoryInfo] = useState({});
   const [subCategoryData, setSubCategoryData] = useState({});
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = (subcategoryId) => {
-    console.log('categoryData', subCategoryData);
-    const subcategoryDetails = subCategoryData.find(
-      (subcategory) => subcategory.id === subcategoryId
-    );
-    if (!subcategoryDetails) {
-      console.error(`Could not find Category with id ${subcategoryId}`);
-      return;
-    }
-    setCategoryInfo(subcategoryDetails);
-    setOpen(true);
-    console.log(categoryInfo);
-  };
-
   const handleDelete = async (id) => {
     const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${id}?`;
     const result = window.confirm(confirmMessage);
@@ -89,11 +71,12 @@ const SubCategory = () => {
 
       if (subCat.stores && subCat.stores.length > 0) {
         storesNames = subCat.stores.map((store) => store);
+      } else {
+        storesNames = [];
       }
 
       const nbStores = storesNames.length;
-      const storesString =
-        nbStores > 0 ? `${nbStores} ` : 'pas de sous boutiques';
+      const storesString = nbStores > 0 ? `${nbStores} ` : 'pas de  boutiques';
 
       return {
         id: subCat.id,

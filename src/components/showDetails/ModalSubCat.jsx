@@ -29,12 +29,7 @@ function ModalSubCat({ style, data, id }) {
   const handleClose = () => {
     setOpen(false);
   };
-  const [editable, setEditable] = useState(false);
-  const [selectedStores, setSelectedStores] = useState([]);
 
-  const handleDescriptionClick = () => {
-    setEditable(true);
-  };
   const handleOpen = async (id) => {
     setSubCatInfo(id);
     setOpen(true);

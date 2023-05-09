@@ -19,6 +19,7 @@ import StoreForm from './scenes/formStore';
 import Category from './scenes/category';
 import { Login } from './Login';
 import SubCategory from './scenes/subCategory';
+import CategoryForm from './scenes/catForm';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -39,6 +40,7 @@ function App() {
               <Route path="/SubCategory" element={<SubCategory />} />
               <Route path="/boutiques" element={<Store />} />
               <Route path="/category" element={<Category />} />
+              <Route path="/Addcategory" element={<CategoryForm />} />
               <Route path="/coupons" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />

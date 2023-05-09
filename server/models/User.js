@@ -48,14 +48,20 @@ const UserSchema = new mongoose.Schema({
   },
   favorite_stores: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Store',
     },
   ],
   cart: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Cart',
   },
+  reservedVouchers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Reservation',
+    },
+  ],
   verified: Boolean,
 });
 

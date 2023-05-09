@@ -2,6 +2,7 @@ const Store = require('../../models/StoreModel');
 const Voucher = require('../../models/VoucherModel');
 const User = require('../../models/User');
 const Reservation = require('../../models/ReservationModel');
+
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
 
@@ -41,23 +42,34 @@ module.exports.createReservation = async (req, res) => {
         .status(400)
         .json({ message: 'Voucher already reserved by this user.' });
     }
+
     const isAlreadyReserved = await Reservation.exists({
       user: userId,
       voucher: voucherId,
     });
+
     if (isAlreadyReserved) {
       return res
         .status(400)
         .json({ message: 'You have already reserved this voucher.' });
     }
+
     const reservation = new Reservation({
       user: userId,
       voucher: voucherId,
     });
+
     await reservation.save();
+
     await Voucher.updateOne(
       { _id: voucherId },
       { $inc: { available_vouchers: -1 } }
+    ).exec();
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { reservedVouchers: reservation._id },
+      { new: true }
     ).exec();
 
     return res.status(201).json({

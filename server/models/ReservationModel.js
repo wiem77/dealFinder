@@ -6,24 +6,33 @@ const ReservationSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: 'Voucher',
       required: true,
-      unique: true,
     },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      unique: true,
     },
     used: {
       type: Boolean,
       default: false,
     },
+    // expiry: {
+    //   type: Date,
+    //   default: function () {
+    //     return new Date(+new Date() + 48 * 60 * 60 * 1000);
+    //   },
+    // },
     expiry: {
       type: Date,
       default: function () {
-        return new Date(+new Date() + 48 * 60 * 60 * 1000);
+        const expireDate = new Date();
+        expireDate.setTime(expireDate.getTime() + 2 * 60 * 1000);
+        return expireDate;
       },
     },
+    vouchers_incremented: { type: Boolean, default: false },
+    expiredStatus: { type: Boolean, default: false },
+
     createdAt: {
       type: Date,
       default: Date.now,
@@ -32,18 +41,18 @@ const ReservationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-ReservationSchema.index({ voucher: 1, user: 1 }, { unique: true });
-
 const Reservation = mongoose.model('Reservation', ReservationSchema);
 
-ReservationSchema.methods.isAlreadyReserved = async function (userId, voucherId) {
-    const reservation = await this.model('Reservation').findOne({
-      user: userId,
-      voucher: voucherId
-    });
-  
-    return reservation !== null;
-  };
-  
+ReservationSchema.methods.isAlreadyReserved = async function (
+  userId,
+  voucherId
+) {
+  const reservation = await this.model('Reservation').findOne({
+    user: userId,
+    voucher: voucherId,
+  });
+
+  return reservation !== null;
+};
 
 module.exports = Reservation;

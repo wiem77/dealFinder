@@ -2,14 +2,19 @@ const Category = require('../../models/CategoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Media = require('../../models/MediaModel');
 module.exports.addCategory = async (req, res) => {
+  const categoryName = req.body.category_name.trim().toUpperCase();
+
+  console.log(categoryName);
   try {
+    console.log('test1');
     const file = req.file;
 
     if (!file) {
+      console.log('test2');
       return res.status(422).send({ error: 'Icon is required' });
     }
     const fileName = req.file.filename;
-
+    console.log('test3');
     const media = new Media({
       path: `${req.protocol}://${req.headers.host}/public/image/${fileName}`,
       extension: fileName.split('.').pop(),
@@ -17,11 +22,13 @@ module.exports.addCategory = async (req, res) => {
 
     await media.save();
     console.log(req.body);
-    const categoryName = req.body.category_name.trim().toUpperCase();
+    console.log('test3');
     const existingCategory = await Category.findOne({
       category_name: categoryName,
     });
+    console.log('test4');
     if (existingCategory) {
+      console.log('test5');
       return res.status(409).send({ error: 'Category already exists' });
     }
     const newCategory = new Category({
@@ -29,11 +36,13 @@ module.exports.addCategory = async (req, res) => {
       subcategories: [],
       category_image: media._id,
     });
-    await newCategory.save();
+    console.log('test6');
+    await newCategory.save(newCategory);
+    console.log(newCategory);
     res.status(200).send({ success: true, data: newCategory });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: 'Server error' });
+    res.status(500).send({ error: 'Server error', message: error.message });
   }
 };
 

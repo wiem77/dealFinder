@@ -13,19 +13,24 @@ exports.addStore = async (req, res, next) => {
   console.log(req.body);
   const {
     email,
-    store_name,
-    sub_categories,
-    coordinates,
+    StoreName,
+    subCategories,
+
     phone,
     webSite,
     description,
   } = req.body;
-  console.log(sub_categories);
+  const lat = parseFloat(req.body.laltitude);
+  const long = parseFloat(req.body.longitude);
+  const coordinates = [lat, long];
+  console.log('coordinates', coordinates);
+  console.log(subCategories);
+
   // console.log(req.file);
   const store_image = req.file;
   try {
     const existingStore = await Store.findOne({
-      store_name,
+      store_name: StoreName,
       email: email,
     });
     if (existingStore) {
@@ -43,7 +48,7 @@ exports.addStore = async (req, res, next) => {
 
     // await media.save();
     const locationDetails = await getLocationAdrs(coordinates);
-
+    console.log('coordinates', locationDetails);
     const location = new Location({
       type: 'Point',
       coordinates: locationDetails.coordinates,
@@ -55,22 +60,22 @@ exports.addStore = async (req, res, next) => {
     });
 
     const savedLocation = await location.save();
-    console.log(sub_categories);
-    if (!req.body.sub_categories) {
+    console.log(subCategories);
+    if (!req.body.subCategories) {
       return res.status(400).send({ message: 'sub_categories is required' });
     }
 
     const store = new Store({
-      store_name: store_name,
+      store_name: StoreName,
       phone: phone,
       email: email,
       webSite: webSite,
       description: description,
       locations: [savedLocation._id],
-      sub_categories: [],
+      subCategories: [subCategories],
       vouchers: [],
     });
-    for (const subCategoryId of sub_categories) {
+    for (const subCategoryId of subCategories) {
       const subCategory = await SubCategory.findById(subCategoryId);
       console.log('FindSub', subCategory);
       if (subCategory) {
@@ -111,7 +116,6 @@ exports.deleteLocationForStore = async (req, res, next) => {
   const { storeId, locationId } = req.params;
 
   try {
-    
     const store = await Store.findByIdAndUpdate(storeId, {
       $pull: { locations: locationId },
     });
@@ -120,11 +124,12 @@ exports.deleteLocationForStore = async (req, res, next) => {
       return res.status(404).json({ success: false, error: 'Store not found' });
     }
 
- 
     const location = await Location.findOneAndDelete({ _id: locationId });
 
     if (!location) {
-      return res.status(404).json({ success: false, error: 'Location not found' });
+      return res
+        .status(404)
+        .json({ success: false, error: 'Location not found' });
     }
 
     res.status(200).json({ success: true, data: location });

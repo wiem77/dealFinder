@@ -10,6 +10,7 @@ import {
   ScrollView,
   Dimensions,
   Platform,
+  Alert,
 } from 'react-native';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
@@ -26,7 +27,14 @@ import CustomCard from '../../components/customCard/CustomCard';
 import Loading from '../../components/loading/Loading';
 
 const { width, height } = Dimensions.get('window');
-
+const showAlert = (title, message) => {
+  Alert.alert(
+    title,
+    message,
+    [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+    { cancelable: false }
+  );
+};
 const VoucherScreen = ({ route }) => {
   const { selectedVoucher, selectedStore } = route.params;
   console.log('selectedselectedStore', selectedStore);
@@ -35,43 +43,30 @@ const VoucherScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasFetchedData, setHasFetchedData] = useState(false);
   const navigation = useNavigation();
-  // useEffect(() => {
-  //   let isMounted = true;
-
-  //   const fetchVoucherData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${baseUrl}/vouchers/VoucherId/${voucher_id}`
-  //       );
-  //       console.log(response.data);
-  //       setVoucherData(response.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       if (isMounted) {
-  //         setIsLoading(false);
-  //         setHasFetchedData(true);
-  //       }
-  //     }
-  //   };
-
-  //   if (!hasFetchedData) {
-  //     fetchVoucherData();
-  //   }
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [voucher_id, hasFetchedData]);
-
-  // console.log('voucherData', voucherData);
 
   const handelBackPressed = () => {
     navigation.navigate('Store');
   };
 
-  const handelAddCartPressed = () => {
-    console.log('added to cart');
+  const handelReservationPressed = async () => {
+    const voucherId = selectedVoucher._id;
+    const userId = '645aa4b1ec2213962cb67c39';
+    console.log(voucherId);
+    try {
+      const response = await axios.post(
+        `${baseUrl}/reservation/user/${userId}/vouchers/${voucherId}`
+      );
+
+      console.log(response.data);
+      setVoucherData(response.data);
+      showAlert(
+        'élicitations',
+        "Vvous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures"
+      );
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Erreur inconnue';
+      showAlert('Reservastion invalide', errorMessage);
+    }
   };
 
   const toggleIsExpanded = () => {
@@ -107,7 +102,10 @@ const VoucherScreen = ({ route }) => {
         </SafeAreaView>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../../assets/image/Store1.png')}
+            // source={require('../../assets/image/Store1.png')}
+            source={{
+              uri: 'http://localhost:4000/public/image/test-jfif-1683655628677.jpeg',
+            }}
             style={styles.storeImage}
             resizeMode="cover"
           />
@@ -175,7 +173,7 @@ const VoucherScreen = ({ route }) => {
             <CustomBtn
               style={{ marginTop: '6%' }}
               text={'Reserver votre coupon'}
-              onPress={handelAddCartPressed}
+              onPress={handelReservationPressed}
               nameIcon={'cart-outline'}
               sizeIcon={24}
               colorIcon={Colors.white}
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
   detailles: {
     color: Colors.red,
     fontSize: width * 0.05,
-    // marginHorizontal: -10,
+    marginHorizontal: -10,
     fontWeight: '400',
     marginTop: height * 0.0,
     fontFamily: 'poppins',

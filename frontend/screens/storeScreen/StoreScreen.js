@@ -30,8 +30,9 @@ import { FontSize } from '../../constants/FontSize';
 
 const { width, height } = Dimensions.get('window');
 const StoreScreen = ({ route }) => {
-  const { store_id } = route.params;
-  console.log('storeid', store_id);
+  const { selectedStore } = route.params;
+  const voucherInfo = Object.values(selectedStore.vouchers);
+  console.log('storeid', selectedStore._id);
   const [iconColor, setIconColor] = useState();
   const [stores, setStores] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
@@ -39,6 +40,7 @@ const StoreScreen = ({ route }) => {
   const [emailVisible, setEmailVisible] = useState(false);
   const [websiteVisible, setWebsiteVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
   const navigation = useNavigation();
 
   const handelBackPressed = () => {
@@ -54,8 +56,12 @@ const StoreScreen = ({ route }) => {
     }
   };
 
-  const handelVoirPlus = (voucher_id) => {
-    navigation.navigate('Voucher', { voucher_id });
+  const handelVoirPlus = (voucherIdToFind) => {
+    const selectedVoucher = voucherInfo.find(
+      (voucher) => voucher._id === voucherIdToFind
+    );
+    console.log('selectedVoucher', selectedVoucher);
+    navigation.navigate('Voucher', { selectedVoucher, selectedStore });
   };
 
   const toggleEmailVisible = () => {
@@ -85,237 +91,193 @@ const StoreScreen = ({ route }) => {
       Voir moins
     </Text>
   );
-  async function getStores() {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/store/findOneStoreById/${store_id}`
-      );
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-
-    const fetchData = async () => {
-      try {
-        const data = await getStores();
-        if (isMounted) {
-          setStores(data);
-          if (data.store) {
-            const formattedAddress = data.store.locations[0]?.formattedAddress;
-            console.log('formattedAddress', formattedAddress);
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <>
-      {isLoading ? (
+      {/* {isLoading ? (
         <Loading />
-      ) : (
-        <View style={styles.container}>
-          <SafeAreaView>
-            <TouchableOpacity>
-              <AntDesign
-                name="arrowleft"
-                size={30}
-                color="black"
-                onPress={handelBackPressed}
-              />
-            </TouchableOpacity>
-          </SafeAreaView>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require('../../assets/image/Store1.png')}
-              style={styles.storeImage}
+      ) : ( */}
+      <View style={styles.container}>
+        <SafeAreaView>
+          <TouchableOpacity>
+            <AntDesign
+              name="arrowleft"
+              size={30}
+              color="black"
+              onPress={handelBackPressed}
+            />
+          </TouchableOpacity>
+        </SafeAreaView>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/image/Store1.png')}
+            style={styles.storeImage}
+          />
+        </View>
+        <View style={styles.detailsContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text
+              style={{
+                color: Colors.black,
+                fontSize: width * 0.09,
+                fontFamily: 'poppins',
+                fontWeight: '400',
+                marginTop: height * 0.0,
+                fontStyle: 'italic',
+              }}
+            >
+              {selectedStore.store_name}
+            </Text>
+            <MaterialCommunityIcons
+              name="cards-playing-heart-outline"
+              size={24}
+              color={iconColor}
+              onPress={handleClick}
             />
           </View>
-          <View style={styles.detailsContainer}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text
-                style={{
-                  color: Colors.black,
-                  fontSize: width * 0.09,
-                  fontFamily: 'poppins',
-                  fontWeight: '400',
-                  marginTop: height * 0.0,
-                  fontStyle: 'italic',
-                }}
+          <View style={styles.contactContainer}>
+            <View style={styles.contactItem}>
+              <TouchableOpacity
+                style={styles.contactButton}
+                onPress={togglePhoneVisible}
               >
-                {stores.store.store_name}
-              </Text>
-              <MaterialCommunityIcons
-                name="cards-playing-heart-outline"
-                size={24}
-                color={iconColor}
-                onPress={handleClick}
-              />
-            </View>
-            <View style={styles.contactContainer}>
-              <View style={styles.contactItem}>
-                <TouchableOpacity
-                  style={styles.contactButton}
-                  onPress={togglePhoneVisible}
-                >
-                  <FontAwesome name="phone" size={24} color={Colors.text} />
+                <FontAwesome name="phone" size={24} color={Colors.text} />
+              </TouchableOpacity>
+              {phoneVisible && (
+                <TouchableOpacity onPress={togglePhoneVisible}>
+                  <Text style={styles.contactText}>{selectedStore.phone}</Text>
                 </TouchableOpacity>
-                {phoneVisible && (
-                  <TouchableOpacity onPress={togglePhoneVisible}>
-                    <Text style={styles.contactText}>{stores.store.phone}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              <View style={styles.contactItem}>
-                <TouchableOpacity
-                  style={styles.contactButton}
-                  onPress={toggleEmailVisible}
-                >
-                  <FontAwesome
-                    name="envelope-o"
-                    size={24}
-                    color={Colors.text}
-                  />
-                </TouchableOpacity>
-                {emailVisible && (
-                  <TouchableOpacity onPress={toggleEmailVisible}>
-                    <Text style={styles.contactText}>{stores.store.email}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              <View style={styles.contactItem}>
-                <TouchableOpacity
-                  style={styles.contactButton}
-                  onPress={toggleWebsiteVisible}
-                >
-                  <FontAwesome name="globe" size={24} color={Colors.text} />
-                </TouchableOpacity>
-                {websiteVisible && (
-                  <TouchableOpacity onPress={toggleWebsiteVisible}>
-                    <Text style={styles.contactText}>
-                      {stores.store.webSite}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+              )}
             </View>
 
-            <View>
-              <Text
-                style={{
-                  color: Colors.background,
-                  fontWeight: '600',
-                  fontSize: 18,
-                  textDecorationLine: 'underline',
-                  marginVertical: '3%',
-                }}
+            <View style={styles.contactItem}>
+              <TouchableOpacity
+                style={styles.contactButton}
+                onPress={toggleEmailVisible}
               >
-                Desciption
-                <MaterialCommunityIcons
-                  name="storefront-outline"
-                  size={24}
-                  color="black"
-                />
-              </Text>
-              <ScrollView>
-                <ViewMoreText
-                  numberOfLines={2}
-                  renderViewMore={renderViewMore}
-                  renderViewLess={renderViewLess}
-                  onAfterCollapse={toggleIsExpanded}
-                  onAfterExpand={toggleIsExpanded}
-                >
-                  <Text style={styles.description}>
-                    {stores.store.description}
+                <FontAwesome name="envelope-o" size={24} color={Colors.text} />
+              </TouchableOpacity>
+              {emailVisible && (
+                <TouchableOpacity onPress={toggleEmailVisible}>
+                  <Text style={styles.contactText}>{selectedStore.email}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View style={styles.contactItem}>
+              <TouchableOpacity
+                style={styles.contactButton}
+                onPress={toggleWebsiteVisible}
+              >
+                <FontAwesome name="globe" size={24} color={Colors.text} />
+              </TouchableOpacity>
+              {websiteVisible && (
+                <TouchableOpacity onPress={toggleWebsiteVisible}>
+                  <Text style={styles.contactText}>
+                    {selectedStore.webSite}
                   </Text>
-                </ViewMoreText>
-              </ScrollView>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-          <View style={{ flexDirection: 'row' }}>
+
+          <View>
             <Text
               style={{
                 color: Colors.background,
                 fontWeight: '600',
                 fontSize: 18,
                 textDecorationLine: 'underline',
+                marginVertical: '3%',
               }}
             >
-              Coupons
+              Desciption
+              <MaterialCommunityIcons
+                name="storefront-outline"
+                size={24}
+                color="black"
+              />
             </Text>
-            <MaterialCommunityIcons
-              name="tag-text-outline"
-              size={24}
-              color="black"
-            />
+            <ScrollView>
+              <ViewMoreText
+                numberOfLines={2}
+                renderViewMore={renderViewMore}
+                renderViewLess={renderViewLess}
+                onAfterCollapse={toggleIsExpanded}
+                onAfterExpand={toggleIsExpanded}
+              >
+                <Text style={styles.description}>
+                  {selectedStore.description}
+                </Text>
+              </ViewMoreText>
+            </ScrollView>
           </View>
-
-          {stores.store && stores.store.vouchers.length > 0 ? (
-            <FlatList
-              data={stores.store.vouchers}
-              renderItem={({ item }) => (
-                <View>
-                  <Text style={styles.voucherTitle}>{item.name_V}</Text>
-                  <View style={{ flexDirection: 'column' }}>
-                    <Text style={styles.voucherDescription}>
-                      {item.description}
-                    </Text>
-                    <TouchableOpacity onPress={() => handelVoirPlus(item._id)}>
-                      <Text
-                        style={{
-                          fontFamily: 'inter',
-                          fontStyle: 'italic',
-                          fontWeight: '100',
-                          fontSize: FontSize.small,
-                          color: Colors.background,
-                        }}
-                      >
-                        En Savoir plus
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-              keyExtractor={(item) => item._id.toString()}
-              style={styles.vouchersList}
-            />
-          ) : stores.store ? (
-            <Text
-              style={{
-                margin: '20%',
-                fontFamily: 'inter',
-                fontStyle: 'italic',
-                fontWeight: '100',
-                fontSize: FontSize.small,
-                color: Colors.background,
-              }}
-            >
-              Pas de coupon valable
-            </Text>
-          ) : (
-            <ActivityIndicator size="large" color={Colors.black} />
-          )}
         </View>
-      )}
+        <View style={{ flexDirection: 'row' }}>
+          <Text
+            style={{
+              color: Colors.background,
+              fontWeight: '600',
+              fontSize: 18,
+              textDecorationLine: 'underline',
+            }}
+          >
+            Coupons
+          </Text>
+          <MaterialCommunityIcons
+            name="tag-text-outline"
+            size={24}
+            color="black"
+          />
+        </View>
+
+        {selectedStore && voucherInfo.length > 0 ? (
+          <FlatList
+            data={voucherInfo}
+            renderItem={({ item }) => (
+              <View>
+                <Text style={styles.voucherTitle}>{item.name_V}</Text>
+                <View style={{ flexDirection: 'column' }}>
+                  <Text style={styles.voucherDescription}>
+                    {item.description}
+                  </Text>
+                  <TouchableOpacity onPress={() => handelVoirPlus(item._id)}>
+                    <Text
+                      style={{
+                        fontFamily: 'inter',
+                        fontStyle: 'italic',
+                        fontWeight: '100',
+                        fontSize: FontSize.small,
+                        color: Colors.background,
+                      }}
+                    >
+                      En Savoir plus
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            keyExtractor={(item) => item._id.toString()}
+            style={styles.vouchersList}
+          />
+        ) : selectedStore ? (
+          <Text
+            style={{
+              margin: '20%',
+              fontFamily: 'inter',
+              fontStyle: 'italic',
+              fontWeight: '100',
+              fontSize: FontSize.small,
+              color: Colors.background,
+            }}
+          >
+            Pas de coupon valable
+          </Text>
+        ) : (
+          <ActivityIndicator size="large" color={Colors.black} />
+        )}
+      </View>
+      {/* )} */}
     </>
   );
 };

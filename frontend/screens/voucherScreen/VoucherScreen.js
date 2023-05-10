@@ -11,60 +11,61 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 import ViewMoreText from 'react-native-view-more-text';
-
 
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import CustomCard from '../../components/customCard/CustomCard';
+import Loading from '../../components/loading/Loading';
 
 const { width, height } = Dimensions.get('window');
-// const DATA = [
-//   {
-//     id: '1',
-//     storeName: 'My Store 1',
-//     distance: '2 km away',
-//     location: '123 Main Street',
-//     voucher: '10% off',
-//     subCategory: 'sport',
-//   },
-//   {
-//     id: '2',
-//     storeName: 'My Store 2',
-//     distance: '3 km away',
-//     location: '456 Main Street',
-//     voucher: '20% off',
-//     subCategory: 'food',
-//   },
-//   {
-//     id: '3',
-//     storeName: 'My Store 3',
-//     distance: '4 km away',
-//     location: '789 Main Street',
-//     voucher: '30% off',
-//     subCategory: 'clothing',
-//   },
-// ];
-const VoucherScreen = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const navigation = useNavigation();
 
-  const renderItem = ({ item }) => (
-    <CustomCard
-      storeName={item.storeName}
-      distance={item.distance}
-      location={item.location}
-      voucher={item.voucher}
-      subCategory={item.subCategory}
-    />
-  );
-  
+const VoucherScreen = ({ route }) => {
+  const { selectedVoucher, selectedStore } = route.params;
+  console.log('selectedselectedStore', selectedStore);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [voucherData, setVoucherData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasFetchedData, setHasFetchedData] = useState(false);
+  const navigation = useNavigation();
+  // useEffect(() => {
+  //   let isMounted = true;
+
+  //   const fetchVoucherData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${baseUrl}/vouchers/VoucherId/${voucher_id}`
+  //       );
+  //       console.log(response.data);
+  //       setVoucherData(response.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       if (isMounted) {
+  //         setIsLoading(false);
+  //         setHasFetchedData(true);
+  //       }
+  //     }
+  //   };
+
+  //   if (!hasFetchedData) {
+  //     fetchVoucherData();
+  //   }
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [voucher_id, hasFetchedData]);
+
+  // console.log('voucherData', voucherData);
+
   const handelBackPressed = () => {
     navigation.navigate('Store');
   };
@@ -89,69 +90,99 @@ const VoucherScreen = () => {
     </Text>
   );
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
-        <TouchableOpacity>
-          <AntDesign name="arrowleft" size={30} color="black" onPress={handelBackPressed} />
-        </TouchableOpacity>
-      </SafeAreaView>
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../../assets/image/Store1.png')}
-          style={styles.storeImage}
-          resizeMode="cover"
-        />
-      </View>
-      <View style={styles.contentContainer}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.voucherName}>Promo shoses</Text>
-          <Text style={styles.discountName}>PDiscount 15%</Text>
-        </View>
-        <View>
-          <Text style={styles.detailles}>Détailles</Text>
-        </View>
-        <ViewMoreText
-          style={{ marginTop: '6%', marginBottom: '6%' }}
-          numberOfLines={2}
-          renderViewMore={renderViewMore}
-          renderViewLess={renderViewLess}
-          onAfterCollapse={toggleIsExpanded}
-          onAfterExpand={toggleIsExpanded}
-        >
-          <Text style={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-            cursus mi vitae tellus fringilla, nec aliquam nulla fermentum. Sed
-            vehicula, lectus eget lacinia euismod, erat purus gravida libero, in
-            euismod purus urna at mauris. Suspendisse suscipit, odio a
-            ullamcorper faucibus, augue risus pretium felis, sit amet tristique
-            velit velit sit amet metus.
-          </Text>
-        </ViewMoreText>
-        <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.nbVoucher}> Nombre de Coupons restant</Text>
-            <MaterialCommunityIcons
-              name="tag-text"
-              size={25}
+    <>
+      {/* {isLoading ? (
+        <Loading />
+      ) : ( */}
+      <View style={styles.container}>
+        <SafeAreaView>
+          <TouchableOpacity>
+            <AntDesign
+              name="arrowleft"
+              size={30}
               color="black"
-              style={{ paddingHorizontal: 10 }}
+              onPress={handelBackPressed}
+            />
+          </TouchableOpacity>
+        </SafeAreaView>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/image/Store1.png')}
+            style={styles.storeImage}
+            resizeMode="cover"
+          />
+        </View>
+        <View style={styles.contentContainer}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.voucherName}>{selectedVoucher.name_V}</Text>
+            <Text style={styles.discountName}>
+              Remise {selectedVoucher.discount} %
+            </Text>
+          </View>
+          <View>
+            <Text style={styles.detailles}>Détailles :</Text>
+            <Text style={{}}>{selectedVoucher.description}</Text>
+          </View>
+          <ViewMoreText
+            style={{ marginTop: '6%', marginBottom: '6%' }}
+            numberOfLines={2}
+            renderViewMore={renderViewMore}
+            renderViewLess={renderViewLess}
+            onAfterCollapse={toggleIsExpanded}
+            onAfterExpand={toggleIsExpanded}
+          >
+            <Text style={styles.description}></Text>
+          </ViewMoreText>
+          <View style={{ marginTop: '8%', marginBottom: '6%' }}>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              <Text style={styles.nbVoucher}>Coupons disponible : </Text>
+              <Text style={{ paddingHorizontal: 10, fontSize: 23 }}>
+                {selectedVoucher.available_vouchers}
+                <MaterialCommunityIcons
+                  name="tag-text"
+                  size={25}
+                  color="black"
+                  style={{ paddingHorizontal: 10 }}
+                />
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: '6%',
+                marginBottom: '6%',
+              }}
+            >
+              <Text style={styles.nbVoucher}>Valable jusqua : </Text>
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontSize: 18,
+                  textDecorationLine: 'underline',
+                  fontStyle: 'italic',
+                }}
+              >
+                {selectedVoucher.validity_date.substring(0, 10)}
+              </Text>
+            </View>
+          </View>
+          <View style={{ marginTop: '8%', marginBottom: '6%' }}>
+            <CustomBtn
+              style={{ marginTop: '6%' }}
+              text={'Reserver votre coupon'}
+              onPress={handelAddCartPressed}
+              nameIcon={'cart-outline'}
+              sizeIcon={24}
+              colorIcon={Colors.white}
             />
           </View>
 
-          <Text> Nombre de Coupons restant</Text>
-        </View>
-        <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-          <CustomBtn
-            style={{ marginTop: '6%' }}
-            text={'Reserver votre coupon'}
-            onPress={handelAddCartPressed}
-            nameIcon={'cart-outline'}
-            sizeIcon={24}
-            colorIcon={Colors.white}
-          />
-        </View>
-
-        {/* <View style={styles.similareOffres}>
+          {/* <View style={styles.similareOffres}>
           <View style={{marginBottom:'6%',marginTop:'6%'}}>
             <FlatList
               horizontal
@@ -162,8 +193,10 @@ const VoucherScreen = () => {
             />
           </View>
         </View> */}
+        </View>
       </View>
-    </View>
+      {/* )} */}
+    </>
   );
 };
 
@@ -230,7 +263,7 @@ const styles = StyleSheet.create({
   detailles: {
     color: Colors.red,
     fontSize: width * 0.05,
-    marginHorizontal: -10,
+    // marginHorizontal: -10,
     fontWeight: '400',
     marginTop: height * 0.0,
     fontFamily: 'poppins',

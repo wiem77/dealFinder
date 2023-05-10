@@ -70,8 +70,10 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   const handelStoreSelected = (store_id) => {
-    navigation.navigate('Store', { store_id });
-    console.log('store_idddd', store_id);
+    const storesKeys = Object.keys(stores);
+    const selectedStore = stores[storesKeys.find((key) => key === store_id)];
+    console.log('selectedStore', selectedStore);
+    navigation.navigate('Store', { selectedStore });
   };
 
   const handleNAvigateProfilePressed = () => {
@@ -117,24 +119,26 @@ const HomeScreen = () => {
       </View>
       <View style={{ marginVertical: '5%' }}>
         <Text style={styles.categoryName}>Nouveauté</Text>
-        <FlatList
-          data={Object.values(stores)}
-          keyExtractor={(item) => item._id}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <CustomCard
-              storeName={item.store_name}
-              distance={item.distance}
-              location={Object.values(item.locations)[0].city} // set the location
-              voucher={Object.values(item.vouchers)[0].name_V} // set the voucher
-              subCategory={
-                Object.values(item.sub_categories)[0].subCategory_name
-              }
-              onPress={() => showAlert('Store Pressed', item.store_name)}
-            />
-          )}
-        />
+        {stores && (
+          <FlatList
+            data={Object.values(stores)}
+            keyExtractor={(item) => item._id}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <CustomCard
+                storeName={item.store_name}
+                distance={item.distance}
+                location={Object.values(item.locations)[0].city}
+                voucher={Object.values(item.vouchers)[0].name_V}
+                subCategory={
+                  Object.values(item.sub_categories)[0].subCategory_name
+                }
+                onPress={() => showAlert('Store Pressed', item.store_name)}
+              />
+            )}
+          />
+        )}
 
         <FlatList
           data={Object.values(stores)}

@@ -52,16 +52,20 @@ const UserSchema = new mongoose.Schema({
       ref: 'Store',
     },
   ],
-  cart: {
-    type: Schema.Types.ObjectId,
-    ref: 'Cart',
-  },
+
   reservedVouchers: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Reservation',
     },
   ],
+  archivedVouchers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Reservation',
+    },
+  ],
+
   verified: Boolean,
 });
 

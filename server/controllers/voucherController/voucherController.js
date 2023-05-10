@@ -100,7 +100,6 @@ module.exports.deleteVoucher = async (req, res) => {
       }
       const deletedVoucher = voucher;
       Voucher.deleteOne({ _id: id }).then(async () => {
-        
         const store = await Store.findById(voucher.store._id);
         store.voucher_count = store.voucher_count - 1;
         await store.save();
@@ -162,6 +161,23 @@ module.exports.findVouchersByStoreId = async (req, res) => {
   try {
     const { storeId } = req.params.id;
     const vouchers = await Voucher.find({ store: storeId })
+      .populate('store', 'store_name')
+      .lean();
+
+    res.status(200).json({ vouchers });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'An error occurred while finding vouchers by store ID',
+    });
+  }
+};
+
+module.exports.findVoucherWithId = async (req, res) => {
+  const { id: voucherId } = req.params;
+  console.log(voucherId);
+  try {
+    const vouchers = await Voucher.find({ _id: voucherId })
       .populate('store', 'store_name')
       .lean();
 

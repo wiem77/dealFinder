@@ -4,7 +4,8 @@ const {
   updateVoucher,
   deleteVoucher,
   findVouchers,
-  findVouchersByStoreId
+  findVouchersByStoreId,
+  findVoucherWithId,
 } = require('../../controllers/voucherController/voucherController');
 const router = express.Router();
 
@@ -22,4 +23,7 @@ router.get('/', findVouchers);
 
 //root:http://localhost:4000/api/vouchers/byStoreId/:id
 router.get('/byStoreId/:id', findVouchersByStoreId);
+
+//root:http://localhost:4000/api/vouchers/byVoucherId/:id
+router.get('/VoucherId/:id', findVoucherWithId);
 module.exports = router;

@@ -9,6 +9,8 @@ import Favorite from '../screens/favoriteScreen/Favorite';
 import CartScreen from '../screens/cartScreen/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import MapScreen from '../screens/mapScreen/MapScreen';
+import ReservationScreen from '../screens/reservationScreen/ReservationScreen';
+
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
   return (
@@ -57,7 +59,7 @@ const TabNavigation = () => {
       />
       <Tab.Screen
         name="Cart"
-        component={CartScreen}
+        component={ReservationScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

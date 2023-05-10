@@ -32,6 +32,7 @@ const HomeScreen = () => {
   const [locationCountry, setLocationCountry] = useState(null);
   const [favoriteStores, setFavoriteStores] = useState([]);
   const [iconColor, setIconColor] = useState('black');
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -59,6 +60,8 @@ const HomeScreen = () => {
     );
   };
   const { stores, isLoading } = useContext(StoresContext);
+
+  console.log('stores', stores);
   const addFavoriteStore = (storeData) => {
     setFavoriteStores([...favoriteStores, storeData]);
     console.log('storeData', storeData);
@@ -68,7 +71,7 @@ const HomeScreen = () => {
 
   const handelStoreSelected = (store_id) => {
     navigation.navigate('Store', { store_id });
-    console.log('store_id', store_id);
+    console.log('store_idddd', store_id);
   };
 
   const handleNAvigateProfilePressed = () => {
@@ -92,7 +95,6 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
           <View style={styles.search}>
@@ -116,35 +118,40 @@ const HomeScreen = () => {
       <View style={{ marginVertical: '5%' }}>
         <Text style={styles.categoryName}>Nouveauté</Text>
         <FlatList
-          data={stores}
-          keyExtractor={(item) => item.id}
+          data={Object.values(stores)}
+          keyExtractor={(item) => item._id}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CustomCard
               storeName={item.store_name}
               distance={item.distance}
-              location={item.locations[0]}
-              voucher={item.vouchers[0]}
-              subCategory={item.sub_categories[0]}
+              location={Object.values(item.locations)[0].city} // set the location
+              voucher={Object.values(item.vouchers)[0].name_V} // set the voucher
+              subCategory={
+                Object.values(item.sub_categories)[0].subCategory_name
+              }
               onPress={() => showAlert('Store Pressed', item.store_name)}
             />
           )}
         />
+
         <FlatList
-          data={stores}
-          keyExtractor={(item) => item._id.toString()}
+          data={Object.values(stores)}
+          keyExtractor={(item) => item._id}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <VerticalStoreCard
               key={item._id}
               storeName={item.store_name}
               distance={item.distance}
-              location={item.locations[0]}
-              voucher={item.vouchers[0]}
-              subCategory={item.sub_categories[0]}
+              location={Object.values(item.locations)[0].city} // set the location
+              voucher={Object.values(item.vouchers)[0].name_V} // set the voucher
+              subCategory={
+                Object.values(item.sub_categories)[0].subCategory_name
+              }
               onPressStore={() => handelStoreSelected(item._id)}
-              onPressFavorite={() => addFavoriteStore(item)}
+              // onPressFavorite={() => addFavoriteStore(item)}
             />
           )}
         />

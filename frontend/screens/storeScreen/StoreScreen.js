@@ -31,7 +31,7 @@ import { FontSize } from '../../constants/FontSize';
 const { width, height } = Dimensions.get('window');
 const StoreScreen = ({ route }) => {
   const { store_id } = route.params;
-  console.log(store_id);
+  console.log('storeid', store_id);
   const [iconColor, setIconColor] = useState();
   const [stores, setStores] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
@@ -54,8 +54,8 @@ const StoreScreen = ({ route }) => {
     }
   };
 
-  const handelVoirPlus = () => {
-    navigation.navigate('Voucher');
+  const handelVoirPlus = (voucher_id) => {
+    navigation.navigate('Voucher', { voucher_id });
   };
 
   const toggleEmailVisible = () => {
@@ -96,35 +96,35 @@ const StoreScreen = ({ route }) => {
       console.log(error);
     }
   }
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   setIsLoading(true);
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
 
-  //   const fetchData = async () => {
-  //     try {
-  //       const data = await getStores();
-  //       if (isMounted) {
-  //         setStores(data);
-  //         if (data.store) {
-  //           const formattedAddress = data.store.locations[0]?.formattedAddress;
-  //           console.log('formattedAddress', formattedAddress);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       if (isMounted) {
-  //         setIsLoading(false);
-  //       }
-  //     }
-  //   };
+    const fetchData = async () => {
+      try {
+        const data = await getStores();
+        if (isMounted) {
+          setStores(data);
+          if (data.store) {
+            const formattedAddress = data.store.locations[0]?.formattedAddress;
+            console.log('formattedAddress', formattedAddress);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
-  //   fetchData();
+    fetchData();
 
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -279,7 +279,7 @@ const StoreScreen = ({ route }) => {
                     <Text style={styles.voucherDescription}>
                       {item.description}
                     </Text>
-                    <TouchableOpacity onPress={handelVoirPlus}>
+                    <TouchableOpacity onPress={() => handelVoirPlus(item._id)}>
                       <Text
                         style={{
                           fontFamily: 'inter',

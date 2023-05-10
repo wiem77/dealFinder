@@ -16,7 +16,27 @@ export const StoresProvider = ({ children }) => {
     const getStores = async () => {
       try {
         const response = await axios.get(`${baseUrl}/store/getAllStore`);
-        return response.data;
+        const storesObject = response.data.reduce((acc, cur) => {
+          acc[cur._id] = {
+            ...cur,
+            sub_categories: cur.sub_categories.reduce((subAcc, subCur) => {
+              subAcc[subCur._id] = subCur;
+              return subAcc;
+            }, {}),
+            locations: cur.locations.reduce((locAcc, locCur) => {
+              locAcc[locCur._id] = locCur;
+              return locAcc;
+            }, {}),
+            vouchers: cur.vouchers.reduce((vouAcc, vouCur) => {
+              vouAcc[vouCur._id] = vouCur;
+              return vouAcc;
+            }, {}),
+          };
+          return acc;
+        }, {});
+
+        console.log(storesObject);
+        return storesObject;
       } catch (error) {
         console.log(error);
         throw new Error('An error occurred while fetching stores');
@@ -25,10 +45,11 @@ export const StoresProvider = ({ children }) => {
 
     if (!stores) {
       getStores()
-        .then((data) => {
+        .then((storesObject) => {
           if (isMounted) {
-            setStores(data);
+            setStores(storesObject);
             setIsLoading(false);
+            console.log('storesssss', stores);
           }
         })
         .catch((error) => {

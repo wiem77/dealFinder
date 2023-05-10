@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   View,
@@ -20,7 +19,7 @@ export default function VerticalStoreCard({
   imageUri,
   voucher,
   onPressFavorite,
-  onPressStore
+  onPressStore,
 }) {
   const [favorite, setFavorite] = useState(false);
 
@@ -32,10 +31,9 @@ export default function VerticalStoreCard({
       distance,
       imageUri,
       voucher,
-   
     });
   };
-
+  console.log('testtttttttttttttttt');
   return (
     <TouchableOpacity onPress={onPressStore}>
       <View style={styles.container}>

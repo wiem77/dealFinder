@@ -138,6 +138,7 @@ exports.deleteLocationForStore = async (req, res, next) => {
   }
 };
 exports.getAllStores = async (req, res) => {
+  console.log('get All');
   try {
     const stores = await Store.find({})
       .populate('locations', 'formattedAddress city zipcode coordinates')
@@ -149,7 +150,7 @@ exports.getAllStores = async (req, res) => {
         },
         select: 'subCategory_name category',
       })
-      .populate('vouchers', 'discount name_V')
+      .populate('vouchers')
       .lean();
 
     res.status(200).json(stores);

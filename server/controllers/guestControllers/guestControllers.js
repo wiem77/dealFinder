@@ -16,6 +16,7 @@ function generateEmail() {
   return baseEmail.replace('randomstring', randomString);
 }
 exports.createGuest = async (req, res, next) => {
+  console.log('guest');
   const { type, coordinates, formattedAddress, city, country } = req.body;
 
   try {

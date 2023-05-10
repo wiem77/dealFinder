@@ -5,7 +5,7 @@ const Reservation = require('../../models/ReservationModel');
 
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
-
+  console.log('reservation ');
   console.log(voucherId, userId);
   try {
     const voucher = await Voucher.findOne({
@@ -18,18 +18,20 @@ module.exports.createReservation = async (req, res) => {
     if (!voucher) {
       return res
         .status(404)
-        .json({ message: 'Voucher not found or unavailable.' });
+        .json({ message: "Le coupon n'a pas été trouvé ou est indisponible." });
     }
 
     if (voucher.available_vouchers === 0) {
-      return res.status(400).json({ message: 'No available vouchers.' });
+      return res.status(400).json({ message: 'Plus de coupons disponibles.' });
     }
 
     if (
       voucher.validity_date.getTime() - new Date().getTime() <
       24 * 60 * 60 * 1000
     ) {
-      return res.status(400).json({ message: 'Voucher expires too soon.' });
+      return res
+        .status(400)
+        .json({ message: "Date d'expiration du coupon dépassée." });
     }
 
     const isReserved = await Reservation.findOne({
@@ -51,7 +53,7 @@ module.exports.createReservation = async (req, res) => {
     if (isAlreadyReserved) {
       return res
         .status(400)
-        .json({ message: 'You have already reserved this voucher.' });
+        .json({ message: 'Vous avez déjà réservé ce coupon' });
     }
 
     const reservation = new Reservation({
@@ -73,7 +75,29 @@ module.exports.createReservation = async (req, res) => {
     ).exec();
 
     return res.status(201).json({
-      message: 'Reservation created successfully.',
+      message:
+        "Félicitations, vous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures.",
+      data: reservation,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+module.exports.getReservationWithUserId = async (req, res) => {
+  const { userId } = req.params;
+  console.log('reservationByUserID ');
+  try {
+    const reservation = await Reservation.find({ user: userId })
+      .populate('user')
+      .populate('voucher');
+    if (!reservation) {
+      return res
+        .status(404)
+        .json({ message: "Aucune réservation n'a été effectuée.." });
+    }
+    return res.status(201).json({
+      message: 'votre liste de reservation',
       data: reservation,
     });
   } catch (error) {

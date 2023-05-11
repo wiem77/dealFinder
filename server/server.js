@@ -18,7 +18,7 @@ const reservationRoutes = require('./routes/reservationRoute/reservationRoute');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 const Reservation = require('./models/ReservationModel');
-
+const { generateQrCode } = require('./utils/generateQrCode');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +35,16 @@ app.use(
 
 // deleteExpiredReservations();
 // updateExpiredReservations();
+let data = {
+  name: 'Employee Name',
+  age: 27,
+  department: 'Police',
+  id: 'aisuoiqu3234738jdhf100223',
+};
+
+// Converting the data into String format
+// let stringdata = JSON.stringify(data);
+// generateQrCode(stringdata);
 app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', uploadRoutes);

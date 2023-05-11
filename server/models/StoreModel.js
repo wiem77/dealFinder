@@ -56,6 +56,9 @@ const storeSchema = new mongoose.Schema({
     max: [5, 'Rating cannot be more than 5'],
     default: 0,
   },
+  accesscode: {
+    type: String,
+  },
 });
 
 const Store = mongoose.model('Store', storeSchema);

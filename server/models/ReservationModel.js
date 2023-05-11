@@ -12,6 +12,9 @@ const ReservationSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    qrCode: {
+      type: String,
+    },
     used: {
       type: Boolean,
       default: false,

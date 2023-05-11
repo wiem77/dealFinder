@@ -96,22 +96,23 @@ module.exports.getReservationWithUserId = async (req, res) => {
           expiredStatus: true,
           used: false,
           'voucher.available_vouchers': { $gt: 0 },
-          'voucher.validity_date': { $gt: Date.now() },
+          // 'voucher.validity_date': { $gt: Date.now() },
         },
+        { archived: true },
       ],
     })
-
       .populate(
-        'user'
-        // 'user',
-        // '-password -confirmpassword -picturePath -roles -favorite_stores '
+        'user',
+        '-password -confirmpassword -picturePath -roles -favorite_stores '
       )
       .populate('voucher');
-    if (!reservation) {
+    console.log(reservation);
+    if (reservation.length === 0) {
       return res
         .status(404)
         .json({ message: "Aucune réservation n'a été effectuée.." });
     }
+
     return res.status(201).json({
       message: 'votre liste de reservation',
       data: reservation,
@@ -124,40 +125,44 @@ module.exports.getReservationWithUserId = async (req, res) => {
 
 exports.resetArchivedReservations = async (req, res) => {
   try {
-    const { reservationId } = req.params;
-
+    const { reservationId, userId } = req.params;
+    console.log(req.params);
     const user = await User.findOne({
-      _id: req.user._id,
+      _id: userId,
       archivedVouchers: reservationId,
     });
+    console.log('req.user._id', userId);
     if (!user) {
       return res
         .status(404)
-        .json({ message: 'Reservation not found in user archive' });
+        .json({ message: "Réservation introuvable dans l'archive " });
     }
 
     const reservation = await Reservation.findOne({
       _id: reservationId,
       used: false,
       vouchers_incremented: false,
+      archived: true,
       'voucher.validity_date': { $gt: Date.now() },
       'voucher.available_vouchers': { $gt: 0 },
     });
     if (!reservation) {
-      return res
-        .status(404)
-        .json({ message: 'Reservation not eligible for reset' });
+      return res.status(404).json({
+        message: "La réservation n'est pas éligible pour être réinitialisée",
+      });
     }
 
     await reservation.voucher.updateOne({
-      $inc: { available_vouchers: 1 },
+      $dec: { available_vouchers: 1 },
     });
 
     await reservation.updateOne({
       vouchers_incremented: true,
     });
 
-    return res.status(200).json({ message: 'Reservation reset successfully' });
+    return res
+      .status(200)
+      .json({ message: 'La réservation a été réinitialisée avec succès' });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: 'Internal server error' });

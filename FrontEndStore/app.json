@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/DealFinderRed.png",
+      "image": "./assets/image/DealFinderRed.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

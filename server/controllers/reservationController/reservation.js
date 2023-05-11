@@ -86,10 +86,26 @@ module.exports.createReservation = async (req, res) => {
 };
 module.exports.getReservationWithUserId = async (req, res) => {
   const { userId } = req.params;
-  console.log('reservationByUserID ');
+  console.log('reservationByUserID ', userId);
   try {
-    const reservation = await Reservation.find({ user: userId })
-      .populate('user')
+    const reservation = await Reservation.find({
+      user: userId,
+      $or: [
+        { expiredStatus: false },
+        {
+          expiredStatus: true,
+          used: false,
+          'voucher.available_vouchers': { $gt: 0 },
+          'voucher.validity_date': { $gt: Date.now() },
+        },
+      ],
+    })
+
+      .populate(
+        'user'
+        // 'user',
+        // '-password -confirmpassword -picturePath -roles -favorite_stores '
+      )
       .populate('voucher');
     if (!reservation) {
       return res
@@ -103,5 +119,47 @@ module.exports.getReservationWithUserId = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+exports.resetArchivedReservations = async (req, res) => {
+  try {
+    const { reservationId } = req.params;
+
+    const user = await User.findOne({
+      _id: req.user._id,
+      archivedVouchers: reservationId,
+    });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: 'Reservation not found in user archive' });
+    }
+
+    const reservation = await Reservation.findOne({
+      _id: reservationId,
+      used: false,
+      vouchers_incremented: false,
+      'voucher.validity_date': { $gt: Date.now() },
+      'voucher.available_vouchers': { $gt: 0 },
+    });
+    if (!reservation) {
+      return res
+        .status(404)
+        .json({ message: 'Reservation not eligible for reset' });
+    }
+
+    await reservation.voucher.updateOne({
+      $inc: { available_vouchers: 1 },
+    });
+
+    await reservation.updateOne({
+      vouchers_incremented: true,
+    });
+
+    return res.status(200).json({ message: 'Reservation reset successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

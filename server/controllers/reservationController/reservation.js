@@ -137,15 +137,17 @@ exports.resetArchivedReservations = async (req, res) => {
         .status(404)
         .json({ message: "Réservation introuvable dans l'archive " });
     }
-
+    console.log(user);
+    console.log(reservationId);
     const reservation = await Reservation.findOne({
       _id: reservationId,
       used: false,
-      vouchers_incremented: false,
+
       archived: true,
-      'voucher.validity_date': { $gt: Date.now() },
-      'voucher.available_vouchers': { $gt: 0 },
-    });
+      // 'voucher.validity_date': { $gt: Date.now() },
+      // 'voucher.available_vouchers': { $gt: 0 },
+    }).populate('voucher');
+    console.log('reservation', reservation);
     if (!reservation) {
       return res.status(404).json({
         message: "La réservation n'est pas éligible pour être réinitialisée",
@@ -153,12 +155,22 @@ exports.resetArchivedReservations = async (req, res) => {
     }
 
     await reservation.voucher.updateOne({
-      $dec: { available_vouchers: 1 },
+      $inc: { available_vouchers: -1 },
     });
 
     await reservation.updateOne({
       vouchers_incremented: true,
+      archived:false,
+      createdAt: Date.now(),
+      expiry: new Date(Date.now() + 48 * 60 * 60 * 1000),
     });
+    await User.updateOne(
+      { _id: userId },
+      {
+        $pull: { archivedVouchers: reservationId },
+        $addToSet: { reservedVouchers: reservationId },
+      }
+    );
 
     return res
       .status(200)

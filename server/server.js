@@ -34,7 +34,7 @@ app.use(
 );
 
 // deleteExpiredReservations();
-updateExpiredReservations();
+// updateExpiredReservations();
 app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', uploadRoutes);

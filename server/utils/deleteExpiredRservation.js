@@ -30,7 +30,13 @@ module.exports.updateExpiredReservations = async () => {
     }
     await Reservation.updateMany(
       { _id: { $in: expiredReservations.map((r) => r._id) } },
-      { $set: { expiredStatus: true, vouchers_incremented: true } }
+      {
+        $set: {
+          expiredStatus: true,
+          vouchers_incremented: true,
+          archived: true,
+        },
+      }
     ).exec();
   }
 };

@@ -16,6 +16,7 @@ const ReservationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    archived: { type: Boolean, default: false },
     // expiry: {
     //   type: Date,
     //   default: function () {

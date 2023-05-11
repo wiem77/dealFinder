@@ -2,10 +2,11 @@ const Store = require('../../models/StoreModel');
 const Voucher = require('../../models/VoucherModel');
 const User = require('../../models/User');
 const Reservation = require('../../models/ReservationModel');
+const { generateQrCode } = require('../../utils/generateQrCode');
 
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
-  console.log('reservation ');
+  console.log('userId ', userId);
   console.log(voucherId, userId);
   try {
     const voucher = await Voucher.findOne({
@@ -56,28 +57,45 @@ module.exports.createReservation = async (req, res) => {
         .json({ message: 'Vous avez déjà réservé ce coupon' });
     }
 
-    const reservation = new Reservation({
-      user: userId,
-      voucher: voucherId,
-    });
+    const userInfo = await User.findOne(
+      { _id: userId },
+      'nom prenom  telephone age sexe email'
+    );
+    console.log(userInfo);
+    let stringdata = JSON.stringify(userInfo);
+    generateQrCode(stringdata, (err, url) => {
+      if (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .json({ message: 'Erreur lors de la génération de QR code.' });
+      }
+      console.log('QR code URL:', url);
+      const reservation = new Reservation({
+        user: userId,
+        voucher: voucherId,
+        qrCode: url,
+      });
+      console.log('reservation', reservation);
 
-    await reservation.save();
+      // await reservation.save();
 
-    await Voucher.updateOne(
-      { _id: voucherId },
-      { $inc: { available_vouchers: -1 } }
-    ).exec();
+      // await Voucher.updateOne(
+      //   { _id: voucherId },
+      //   { $inc: { available_vouchers: -1 } }
+      // ).exec();
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { reservedVouchers: reservation._id },
-      { new: true }
-    ).exec();
+      // const user = await User.findByIdAndUpdate(
+      //   userId,
+      //   { reservedVouchers: reservation._id },
+      //   { new: true }
+      // ).exec();
 
-    return res.status(201).json({
-      message:
-        "Félicitations, vous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures.",
-      data: reservation,
+      return res.status(201).json({
+        message:
+          "Félicitations, vous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures.",
+        data: reservation,
+      });
     });
   } catch (error) {
     console.error(error);
@@ -160,7 +178,7 @@ exports.resetArchivedReservations = async (req, res) => {
 
     await reservation.updateOne({
       vouchers_incremented: true,
-      archived:false,
+      archived: false,
       createdAt: Date.now(),
       expiry: new Date(Date.now() + 48 * 60 * 60 * 1000),
     });

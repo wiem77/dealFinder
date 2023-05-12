@@ -8,6 +8,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Alert,
+  Platform,
   ActivityIndicator,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
@@ -39,7 +40,7 @@ const ScanQrScreen = () => {
           `${baseUrl}/reservation/verify/${resCode}`
         );
         console.log('response.data', response.data);
-        const data=response.data;
+        const data = response.data;
         if (data) {
           console.log('success');
           navigation.navigate('Success', { data: data });
@@ -124,14 +125,17 @@ const ScanQrScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-        <CustomBtn
-          text={'Scanner à nouveau'}
-          onPress={() => setScanned(false)}
-          type="REDBTN"
-          nameIcon={'barcode-outline'}
-          sizeIcon={20}
-          colorIcon={Colors.white}
-        />
+        <View style={{ marginBottom: '50%', marginTop: 1 }}>
+          <CustomBtn
+            style={styles.scanAgainBtn}
+            text={'Scanner à nouveau'}
+            onPress={() => setScanned(false)}
+            type="REDBTN"
+            nameIcon={'barcode-outline'}
+            sizeIcon={20}
+            colorIcon={Colors.white}
+          />
+        </View>
       </SafeAreaView>
     );
   } else {
@@ -151,51 +155,123 @@ const ScanQrScreen = () => {
 export default ScanQrScreen;
 
 const { height, width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.backgroundWhite,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  maintext: {
-    fontSize: 16,
-    margin: 20,
-  },
-  barcodebox: {
+  scanResultContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: height / 2.5,
-    width: width / 1.5,
-    overflow: 'hidden',
-    borderRadius: 30,
-    backgroundColor: 'tomato',
   },
-  barcodeScanner: {
-    height: height / 2.5,
-    width: width / 1.5,
-  },
-  verifyBtn: {
-    backgroundColor: Colors.primary,
+  scanResultBox: {
+    backgroundColor: Colors.white,
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    elevation: 5,
   },
-  verifyBtnText: {
-    color: Colors.green,
+  scanResultText: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+    color: Colors.text,
+  },
+  verifyBtn: {
+    backgroundColor: Colors.green,
+    borderRadius: 10,
+    paddingHorizontal: 50,
+    paddingVertical: 10,
+    elevation: 3,
+  },
+  verifyBtnText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.white,
   },
   loadingIndicator: {
-    marginTop: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: {
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
     color: Colors.text,
+  },
+  barcodebox: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+  },
+  barcodeScanner: {
+    width: '100%',
+    height: '100%',
+  },
+  maintext: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: Colors.text,
+    marginTop: 20,
+  },
+  scanAgainBtn: {
     marginTop: 10,
-    fontSize: 16,
   },
 });
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: Colors.backgroundWhite,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   maintext: {
+//     fontSize: 16,
+//     margin: 20,
+//   },
+//   barcodebox: {
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     height: height / 2.5,
+//     width: width / 1.5,
+//     overflow: 'hidden',
+//     borderRadius: 30,
+//     backgroundColor: 'tomato',
+//   },
+//   barcodeScanner: {
+//     height: height / 2.5,
+//     width: width / 1.5,
+//   },
+//   verifyBtn: {
+//     backgroundColor: Colors.primary,
+//     borderRadius: 10,
+//     padding: 10,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     marginTop: 20,
+//   },
+//   verifyBtnText: {
+//     color: Colors.green,
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//   },
+//   loadingIndicator: {
+//     marginTop: 10,
+//     alignItems: 'center',
+//   },
+//   loadingText: {
+//     color: Colors.text,
+//     marginTop: 10,
+//     fontSize: 16,
+//   },
+// });

@@ -71,6 +71,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  container_GREENBTN: {
+    backgroundColor: Colors.green,
+    width: wp('80%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   container_REDBTN2: {
     backgroundColor: Colors.darkred,
     width: wp('30%'),

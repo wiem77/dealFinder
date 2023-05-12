@@ -28,20 +28,24 @@ const ScanQrScreen = () => {
 
   const handleVerifyCode = async ({ resCode }) => {
     setLoading(true);
+    let isAlertDisplayed = false;
     try {
       if (resCode === undefined) {
         console.log('nnoooo', resCode);
         Alert.alert('Attention', 'Code Invalide ');
+        isAlertDisplayed = true;
       } else {
         const response = await axios.get(
           `${baseUrl}/reservation/verify/${resCode}`
         );
         console.log('response.data', response.data);
-        if (response.data) {
+        const data=response.data;
+        if (data) {
           console.log('success');
-          navigation.navigate('Success');
+          navigation.navigate('Success', { data: data });
         } else {
           Alert.alert('Attention', 'Code Invalide ');
+          isAlertDisplayed = true;
         }
       }
     } catch (error) {
@@ -50,14 +54,18 @@ const ScanQrScreen = () => {
         'Erreur',
         "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
       );
+      isAlertDisplayed = true;
     }
 
     setTimeout(() => {
       setLoading(false);
 
-      alert(`Les données suivantes ont été numérisées et vérifiées: ${text}`);
-    }, 2000);
+      if (!isAlertDisplayed) {
+        alert(`Les données suivantes ont été numérisées et vérifiées: ${text}`);
+      }
+    }, 3000);
   };
+
   const askForCameraPermission = () => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();

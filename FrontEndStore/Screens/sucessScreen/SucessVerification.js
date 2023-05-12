@@ -31,20 +31,61 @@ const showAlert = (title, message) => {
     { cancelable: false }
   );
 };
-const SuccessVerification = () => {
+const SuccessVerification = ({ route }) => {
+  const { data } = route.params;
+
+  //   __v: 0,
+  //   _id: '645e56a0392671ae367aa9b2',
+  //   archived: true,
+  //   createdAt: '2023-05-12T15:09:20.373Z',
+  //   expiredStatus: false,
+  //   expiry: '2023-05-12T15:11:20.373Z',
+  //   reservationCode: 8787,
+  //   updatedAt: '2023-05-12T15:10:12.375Z',
+  //   used: true,
+  //   user: {
+  //     __v: 10,
+  //     _id: '64521faf355648a452bd8a9e',
+  //     archivedVouchers: [Array],
+  //     email: 'user+a6o6lzki@example.com',
+  //     location: '64521faf355648a452bd8a9b',
+  //     nom: 'guest1',
+  //     prenom: 'guest',
+  //     telephone: '+13639112359',
+  //   },
+  //   voucher: {
+  //     __v: 0,
+  //     _id: '645b95e654fc20e9082437f7',
+  //     available_vouchers: 19,
+  //     createdAt: '2023-05-10T13:02:30.747Z',
+  //     description:
+  //       'Coupon de réduction de 10% sur  tous achat superireur a  200t Dt',
+  //     discount: 10,
+  //     is_available: true,
+  //     name_V: 'happy life 20%',
+  //     qrcodes: [Array],
+  //     updatedAt: '2023-05-12T15:09:20.452Z',
+  //     validity_date: '2023-07-10T00:00:00.000Z',
+  //   },
+  //   vouchers_incremented: false,
+  // };
+
+  const voucherName = data?.data?.voucher?.name_V;
+
+  console.log(voucherName);
+  console.log('voucher', data?.voucher);
+  console.log('user', data?.user);
+  const nbVoucher = data?.data?.voucher?.available_vouchers;
+  const discount = data?.data?.voucher?.discount;
+  const validity_date = data?.data?.voucher?.validity_date.slice(0, 10);
+  const userName = `${data?.data?.user?.prenom} , ${data?.data?.user?.nom} `;
+  console.log('data', userName);
+  const telephone = data?.data?.user?.telephone;
+
+  const navigation = useNavigation();
   return (
     <>
       <View style={styles.container}>
-        <SafeAreaView>
-          <TouchableOpacity>
-            <AntDesign
-              name="arrowleft"
-              size={30}
-              color="black"
-              //   onPress={handelBackPressed}
-            />
-          </TouchableOpacity>
-        </SafeAreaView>
         <View style={styles.imageContainer}>
           <Image
             source={require('../../assets/image/approved.png')}
@@ -52,68 +93,138 @@ const SuccessVerification = () => {
             resizeMode="contain"
           />
         </View>
+
         <View style={styles.contentContainer}>
+          <View>
+            <Text style={styles.detailles}>Coupon Valide</Text>
+          </View>
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}
           >
-            {/* <Text style={styles.voucherName}>{selectedVoucher.name_V}</Text> */}
-            <Text style={styles.discountName}>
-              {/* Remise {selectedVoucher.discount} % */}
-            </Text>
+            <Text style={styles.voucherName}>{voucherName}</Text>
+            <Text style={styles.discountName}>Remise {discount}%</Text>
           </View>
-          <View>
-            <Text style={styles.detailles}>Détailles :</Text>
-            {/* <Text style={{}}>{selectedVoucher.description}</Text> */}
+
+          {/* Add line divider */}
+          <View
+            style={{
+              borderBottomColor: 'grey',
+              borderBottomWidth: 1,
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+          />
+
+          <View style={{ marginTop: '8%', marginBottom: '6%' }}></View>
+
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.voucherName}>Utilisateur information:</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <Text style={styles.nbVoucher}>Nom : </Text>
+                <Text style={{ paddingHorizontal: 10, fontSize: 20 }}>
+                  {userName}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginTop: '6%',
+                  marginBottom: '6%',
+                }}
+              >
+                <Text style={styles.nbVoucher}>télephone : </Text>
+                <Text
+                  style={{
+                    paddingHorizontal: 10,
+                    fontSize: 18,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {telephone}
+                </Text>
+              </View>
+            </View>
           </View>
 
           <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <Text style={styles.nbVoucher}>Coupons disponible : </Text>
-              <Text style={{ paddingHorizontal: 10, fontSize: 23 }}>
-                {/* {selectedVoucher.available_vouchers} */}
-                <MaterialCommunityIcons
-                  name="tag-text"
-                  size={25}
-                  color="black"
-                  style={{ paddingHorizontal: 10 }}
-                />
+            <CustomBtn
+              style={{ marginTop: '6%' }}
+              text={'Retour a la page de Scan'}
+              onPress={() => navigation.navigate('ScanQr')}
+              type="GREENBTN"
+              nameIcon={'barcode-outline'}
+              sizeIcon={25}
+              colorIcon={Colors.white}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/image/approved.png')}
+            style={styles.storeImage}
+            resizeMode="contain"
+          />
+        </View>
+
+        <View style={styles.contentContainer}>
+          <View>
+            <Text style={styles.detailles}>Coupon Valide</Text>
+          </View>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.voucherName}>{voucherName}</Text>
+            <Text style={styles.discountName}>Remise {discount}%</Text>
+          </View>
+
+          <View style={{ marginTop: '8%', marginBottom: '6%' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <Text style={styles.nbVoucher}>Nom : </Text>
+              <Text style={{ paddingHorizontal: 10, fontSize: 20 }}>
+                {userName}
               </Text>
             </View>
+
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
                 marginTop: '6%',
                 marginBottom: '6%',
               }}
             >
-              <Text style={styles.nbVoucher}>Valable jusqua : </Text>
+              <Text style={styles.nbVoucher}>télephone : </Text>
               <Text
                 style={{
                   paddingHorizontal: 10,
                   fontSize: 18,
-                  textDecorationLine: 'underline',
+
                   fontStyle: 'italic',
                 }}
               >
-                {/* {selectedVoucher.validity_date.substring(0, 10)} */}
+                {telephone}
               </Text>
             </View>
           </View>
           <View style={{ marginTop: '8%', marginBottom: '6%' }}>
             <CustomBtn
               style={{ marginTop: '6%' }}
-              text={'Reserver votre coupon'}
-              //   onPress={handelReservationPressed}
-              nameIcon={'cart-outline'}
-              sizeIcon={24}
+              text={'Retour a la page de Scan'}
+              onPress={() => navigation.navigate('ScanQr')}
+              type="GREENBTN"
+              nameIcon={'barcode-outline'}
+              sizeIcon={25}
               colorIcon={Colors.white}
             />
           </View>
         </View>
-      </View>
+      </View> */}
     </>
   );
 };
@@ -178,21 +289,19 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   detailles: {
-    color: Colors.red,
-    fontSize: width * 0.05,
-    marginHorizontal: -10,
+    color: Colors.green,
+    fontSize: width * 0.08,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     fontWeight: '400',
     marginTop: height * 0.0,
     fontFamily: 'poppins',
     marginBottom: '3%',
-    marginTop: '6%',
-  },
-  seeMoreText: {
-    color: Colors.lightRed2,
-    fontFamily: 'poppins',
-    fontWeight: 'bold',
+    marginBottom: '10%',
     textDecorationLine: 'underline',
   },
+
   description: {
     fontSize: 14,
     marginBottom: 10,
@@ -200,7 +309,7 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
   },
   nbVoucher: {
-    color: Colors.red,
+    color: Colors.black,
     fontSize: width * 0.04,
 
     fontWeight: '400',

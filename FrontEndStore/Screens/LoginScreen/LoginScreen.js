@@ -6,7 +6,7 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { EMAIL_REGEX } from '../../config/config';
@@ -18,15 +18,18 @@ import Custominput from '../../components/customInput/Custominput';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import logo from '../../assets/image/DealFinderRed.png';
 import { useNavigation } from '@react-navigation/native';
-// import { AuthContext } from '../../context/AuthProvider';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { AuthContext } from '../../context/AuthProvider';
+import { login } from '../../util/auth';
+
 const LoginScreen = () => {
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const navigation = useNavigation();
-  const { login } = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
   // useEffect(() => {
   //   console.log('User:', user);
   // }, [user]);
@@ -39,17 +42,21 @@ const LoginScreen = () => {
     );
   };
   const OnSignInPressed = async (data) => {
+    setIsAuthenticating(true);
     try {
-      console.log(data);
       const accesscode = data.accesscode;
 
-      await login(accesscode);
+      const token = await login(accesscode);
+      console.log(token);
+      authCtx.authenticate(token);
       console.log('Sign in successful');
       // navigation.navigate('ScanQrScreen');
     } catch (error) {
       showAlert('Error', error.message);
+      setIsAuthenticating(false);
     }
   };
+
   const {
     control,
     handleSubmit,

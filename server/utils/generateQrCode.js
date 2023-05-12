@@ -1,5 +1,4 @@
 const QRCode = require('qrcode');
-const fs = require('fs');
 
 module.exports.generateQrCode = (stringdata, callback) => {
   console.log('test1');
@@ -15,7 +14,7 @@ module.exports.generateQrCode = (stringdata, callback) => {
         console.log('error occurred');
         return callback(err);
       }
-      console.log('QR code URL:', url);
+
       console.log('test3');
       callback(null, url);
     });

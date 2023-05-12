@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   ImageBackground,
   TouchableOpacity,
-  Image,
+  Alert,
   ActivityIndicator,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
@@ -16,23 +16,45 @@ import CustomBtn from '../../components/customBtn/CustomBtn';
 import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
 const ScanQrScreen = () => {
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [text, setText] = useState('Pas encore Scanner');
-  const [qrId, setQrId] = useState('');
+  const [text, setText] = useState();
+
   const [loading, setLoading] = useState(false);
 
-  const handleVerifyCode = async () => {
+  const handleVerifyCode = async ({ resCode }) => {
     setLoading(true);
-    // Ajoutez ici le code pour vérifier les données de numérisation
-    // par exemple, vous pouvez utiliser une requête HTTP ou une vérification de base de données pour valider le code
+    try {
+      if (resCode === undefined) {
+        console.log('nnoooo', resCode);
+        Alert.alert('Attention', 'Code Invalide ');
+      } else {
+        const response = await axios.get(
+          `${baseUrl}/reservation/verify/${resCode}`
+        );
+        console.log('response.data', response.data);
+        if (response.data) {
+          console.log('success');
+          navigation.navigate('Success');
+        } else {
+          Alert.alert('Attention', 'Code Invalide ');
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        'Erreur',
+        "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
+      );
+    }
 
-    // Ici, j'utilise setTimeout pour simuler une vérification de code qui prend 2 secondes
     setTimeout(() => {
       setLoading(false);
-      // Si la vérification est réussie, vous pouvez naviguer vers une autre interface ici
+
       alert(`Les données suivantes ont été numérisées et vérifiées: ${text}`);
     }, 2000);
   };
@@ -46,24 +68,13 @@ const ScanQrScreen = () => {
     askForCameraPermission();
   }, []);
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log(data);
     setScanned(true);
-    setText(data);
-    console.log('Type' + type + '\nData:' + data);
-    setQrId(data);
+    const newData = data.replace(/"/g, '');
+    console.log('newData', newData);
+    setText(newData);
+    console.log(text);
   };
-
-  // const handleVerifyCode = () => {
-  // fetch(`https://example.com/api/verify/${qrId}`)
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     if (data.valid) {
-  //       navigation.navigate('ReservationInfo');
-  //     } else {
-  //       alert('Le code QR n\'est pas valide, veuillez réessayer.');
-  //     }
-  //   })
-  //   .catch(error => alert('Une erreur est survenue, veuillez réessayer.'));
-  // };
 
   if (hasPermission === null) {
     return (
@@ -92,7 +103,7 @@ const ScanQrScreen = () => {
           </View>
           <TouchableOpacity
             style={styles.verifyBtn}
-            onPress={handleVerifyCode}
+            onPress={() => handleVerifyCode({ resCode: text })}
             disabled={loading}
           >
             {loading ? (

@@ -12,15 +12,14 @@ module.exports.verifyCodeReservation = async (req, res) => {
   try {
     const reservation = await Reservation.findOne({
       reservationCode: resCode,
-      // $and: [
-      //   {
+      $and: [
+        {
+          used: false,
 
-      //     used: false,
-
-      //     'voucher.validity_date': { $gt: Date.now() },
-      //   },
-      //   { archived: false },
-      // ],
+          // 'voucher.validity_date': { $gt: Date.now() },
+        },
+        { archived: false },
+      ],
     })
       .populate(
         'user',
@@ -34,7 +33,7 @@ module.exports.verifyCodeReservation = async (req, res) => {
     reservation.archived = true;
     reservation.used = true;
     reservation.qrCode = undefined;
-    reservation.reservationCode = undefined;
+
     await reservation.save();
 
     // Update the user's reservedVouchers and usedVouchers arrays
@@ -101,11 +100,9 @@ module.exports.createReservation = async (req, res) => {
       (r) => r.voucher.toString() === voucherId
     );
     if (isUsed) {
-      return res
-        .status(400)
-        .json({
-          message: 'You cannot reserve a coupon you have already used.',
-        });
+      return res.status(400).json({
+        message: 'You cannot reserve a coupon you have already used.',
+      });
     }
 
     const reservationCode = await generateReservationCode();

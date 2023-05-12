@@ -58,6 +58,7 @@ const storeSchema = new mongoose.Schema({
   },
   accesscode: {
     type: String,
+    unique: true,
   },
 });
 

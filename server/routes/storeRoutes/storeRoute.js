@@ -8,10 +8,17 @@ const {
   updateStore,
   getOneStore,
   deleteLocationForStore,
+  loginStore,
+  logout,
 } = require('../../controllers/storeController/storeController');
 const { validateLocations } = require('../../utils/ValidationSchema');
 const uploader = require('../../config/multerConfig');
+const { auth } = require('../../middleWare/auth');
 const router = express.Router();
+
+//root:http://localhost:4000/api/store/loginStore
+router.post('/loginStore', loginStore);
+router.post('/logout', auth, logout);
 //root:http://localhost:4000/api/store/addStore
 router.post('/addStore', uploader.single('image'), addStore);
 

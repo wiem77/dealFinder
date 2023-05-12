@@ -7,6 +7,9 @@ const Media = require('../../models/MediaModel');
 const { storeValidation } = require('../../utils/ValidationSchema');
 
 const sendEmail = require('../../utils/generatEmailValidation');
+
+const generateStoreToken = require('../../utils/generateStoreToken');
+const StoreToken = require('../../models/StoreToken');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 exports.addStore = async (req, res, next) => {
   console.log('add2...');
@@ -327,4 +330,39 @@ exports.updateStore = (req, res) => {
     .catch((error) => {
       res.status(500).json({ error });
     });
+};
+exports.loginStore = async (req, res) => {
+  console.log('Entering  store login  function...');
+  console.log(req.body);
+  try {
+    console.log('Looking up store...');
+    const store = await Store.findOne({ accesscode: req.body.accesscode });
+    if (!store) {
+      console.log(store);
+      return res.status(400).send({ message: "Code d'acces invalide " });
+    }
+    const { accessToken, refreshToken } = await generateStoreToken(store);
+    console.log('Login successful');
+    console.log(accessToken, refreshToken, store);
+
+    return res.status(200).send({
+      accessToken,
+      refreshToken,
+      message: 'Logged in successfully as user',
+      store,
+    });
+  } catch (error) {
+    console.error('Server error:', error.message);
+    return res.status(500).send({ message: 'Server error' });
+  }
+};
+module.exports.logout = async (req, res) => {
+  try {
+    const refreshToken = req.header('x-refresh-token');
+    const storeId = req.user._id;
+    await StoreToken.deleteOne({ storeId, token: refreshToken });
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ error: true, message: 'Internal server error' });
+  }
 };

@@ -6,7 +6,7 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { EMAIL_REGEX } from '../../config/config';
@@ -23,9 +23,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { AuthContext } from '../../context/AuthProvider';
 const LoginScreen = () => {
-  // const { signIn } = useContext(AuthContext);
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
+  const { login } = useContext(AuthContext);
+  // useEffect(() => {
+  //   console.log('User:', user);
+  // }, [user]);
   const showAlert = (title, message) => {
     Alert.alert(
       title,
@@ -36,12 +40,12 @@ const LoginScreen = () => {
   };
   const OnSignInPressed = async (data) => {
     try {
-      const email = data.email;
-      const pass = data.pwd;
-      console.log(pass, email);
-      // await signIn(email, pass);
-      // console.log('Sign in successful');
-      // navigation.navigate('Home');
+      console.log(data);
+      const accesscode = data.accesscode;
+
+      await login(accesscode);
+      console.log('Sign in successful');
+      // navigation.navigate('ScanQrScreen');
     } catch (error) {
       showAlert('Error', error.message);
     }

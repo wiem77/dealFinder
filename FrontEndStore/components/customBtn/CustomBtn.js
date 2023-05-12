@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   container_REDBTN: {
     backgroundColor: Colors.red,
-    width: wp('50%'),
+    width: wp('70%'),
     height: wp('12%'),
     borderRadius: 5,
     paddingVertical: 10,

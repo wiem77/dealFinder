@@ -41,6 +41,10 @@ const ReservationSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    reservationCode: {
+      type: Number,
+      unique: true,
+    },
   },
   { timestamps: true }
 );

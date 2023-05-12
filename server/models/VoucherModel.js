@@ -21,12 +21,7 @@ const voucherSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    qrcodes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'QrCode',
-      },
-    ],
+
     discount: {
       type: Number,
       required: true,

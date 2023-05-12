@@ -3,6 +3,7 @@ const {
   createReservation,
   getReservationWithUserId,
   resetArchivedReservations,
+  verifyCodeReservation,
 } = require('../../controllers/reservationController/reservation');
 const router = express.Router();
 
@@ -18,4 +19,6 @@ router.put(
   resetArchivedReservations
 );
 
+//root:http://localhost:4000/api/reservation/verify/:resCode
+router.get('/verify/:resCode', verifyCodeReservation);
 module.exports = router;

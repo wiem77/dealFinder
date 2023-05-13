@@ -5,6 +5,7 @@ const {
   resetArchivedReservations,
   verifyCodeReservation,
 } = require('../../controllers/reservationController/reservation');
+const { auth } = require('../../middleWare/auth');
 const router = express.Router();
 
 //root:http://localhost:4000/api/reservation/user/:userId/vouchers/:voucherId
@@ -20,5 +21,5 @@ router.put(
 );
 
 //root:http://localhost:4000/api/reservation/verify/:resCode
-router.get('/verify/:resCode', verifyCodeReservation);
+router.get('/verify/:resCode', auth, verifyCodeReservation);
 module.exports = router;

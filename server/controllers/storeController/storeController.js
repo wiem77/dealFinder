@@ -353,7 +353,9 @@ exports.loginStore = async (req, res) => {
     });
   } catch (error) {
     console.error('Server error:', error.message);
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(500).send({
+      message: 'Une erreur est survenue, veuillez réessayer à nouveau ',
+    });
   }
 };
 module.exports.logout = async (req, res) => {

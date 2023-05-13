@@ -11,7 +11,7 @@ const Location = require('../../models/LocationModel');
 
 const Media = require('../../models/MediaModel');
 module.exports.signUp = async (req, res) => {
-  // const data = JSON.parse(req.body.userData);
+  const data = JSON.parse(req.body.userData);
   const {
     nom,
     prenom,
@@ -27,7 +27,7 @@ module.exports.signUp = async (req, res) => {
     type,
     city,
     country,
-  } = req.body;
+  } = data;
   console.log('Register..');
 
   try {
@@ -156,12 +156,14 @@ module.exports.signIn = async (req, res) => {
         refreshToken,
         message: 'Logged in successfully as admin',
         role: user.roles,
+        user: user,
       });
     } else {
       return res.status(200).send({
         accessToken,
         refreshToken,
         message: 'Logged in successfully as user',
+        user: user,
         role: user.roles,
       });
     }

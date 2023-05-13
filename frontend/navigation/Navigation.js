@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
@@ -17,13 +17,49 @@ import StoreScreen from '../screens/storeScreen/StoreScreen';
 import VoucherScreen from '../screens/voucherScreen/VoucherScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import Favorite from '../screens/favoriteScreen/Favorite';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../context/AuthProvider';
 const ConsumerStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
+
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="LoginIn" component={LoginScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="OtpScreen" component={OtpScreen} />
+      <Stack.Screen name="SucessScreen" component={SucessScreen} />
+    </Stack.Navigator>
+  );
+}
+function AuthenticatedStack() {
+  const authCtx = useContext(AuthContext);
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={TabNavigation} />
+
+      <Stack.Screen name="Store" component={StoreScreen} />
+
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+
+      <Stack.Screen name="Voucher" component={VoucherScreen} />
+    </Stack.Navigator>
+  );
+}
+function NavigationCheckAuth() {
+  const authCtx = useContext(AuthContext);
+  return (
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
+  );
+}
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="Home" component={TabNavigation} />
       <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <ConsumerStack.Screen name="Home" component={TabNavigation} />
 
       <ConsumerStack.Screen name="Store" component={StoreScreen} />
 
@@ -41,11 +77,7 @@ const ConsumerNavigation = () => {
   );
 };
 const Navigation = () => {
-  return (
-    <NavigationContainer>
-      <ConsumerNavigation />
-    </NavigationContainer>
-  );
+  return <NavigationCheckAuth />;
 };
 
 export default Navigation;

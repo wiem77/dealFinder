@@ -1,5 +1,5 @@
 import { StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { EMAIL_REGEX } from '../../config/config';
@@ -12,9 +12,11 @@ import CustomBtn from '../../components/customBtn/CustomBtn';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthProvider';
+import { login } from '../../util/auth';
 
 const LoginScreen = () => {
-  const { signIn } = useContext(AuthContext);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
   const showAlert = (title, message) => {
     Alert.alert(
@@ -25,15 +27,17 @@ const LoginScreen = () => {
     );
   };
   const OnSignInPressed = async (data) => {
+    setIsAuthenticating(true);
     try {
       const email = data.email;
-      const pass = data.pwd;
-      console.log(pass, email);
-      await signIn(email, pass);
+      const password = data.pwd;
+      console.log(password, email);
+      const { token, user } = await login({ email, password });
+      authCtx.authenticate({ token, user });
       console.log('Sign in successful');
-      navigation.navigate('Home');
     } catch (error) {
       showAlert('Error', error.message);
+      setIsAuthenticating(false);
     }
   };
   const {

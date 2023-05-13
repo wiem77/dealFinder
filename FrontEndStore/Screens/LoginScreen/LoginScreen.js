@@ -28,11 +28,9 @@ import { login } from '../../util/auth';
 
 const LoginScreen = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const navigation = useNavigation();
+
   const authCtx = useContext(AuthContext);
-  // useEffect(() => {
-  //   console.log('User:', user);
-  // }, [user]);
+
   const showAlert = (title, message) => {
     Alert.alert(
       title,
@@ -46,13 +44,14 @@ const LoginScreen = () => {
     try {
       const accesscode = data.accesscode;
 
-      const token = await login(accesscode);
-      console.log(token);
-      authCtx.authenticate(token);
+      const { token, store } = await login(accesscode);
+
+      console.log('storeLOGINE', store);
+      authCtx.authenticate({ token, store });
+
       console.log('Sign in successful');
-      // navigation.navigate('ScanQrScreen');
     } catch (error) {
-      showAlert('Error', error.message);
+      showAlert('Error', "Le code d'authentification saisi est invalide.");
       setIsAuthenticating(false);
     }
   };

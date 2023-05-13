@@ -8,8 +8,9 @@ async function authenticate(accesscode) {
   });
 
   const token = response.data.accessToken;
-
-  return token;
+  const store = response.data.store;
+  console.log('store', store);
+  return { token, store };
 }
 export function login(accesscode) {
   return authenticate(accesscode);

@@ -11,7 +11,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import { Colors } from '../../constants/Colors';
@@ -19,16 +19,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
+import { AuthContext } from '../../context/AuthProvider';
 const ScanQrScreen = () => {
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState();
-
   const [loading, setLoading] = useState(false);
-
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const idStore = authCtx.store;
   const handleVerifyCode = async ({ resCode }) => {
+    console.log('idStore', idStore);
     setLoading(true);
+
+    console.log(resCode);
     let isAlertDisplayed = false;
     try {
       if (resCode === undefined) {
@@ -37,8 +42,14 @@ const ScanQrScreen = () => {
         isAlertDisplayed = true;
       } else {
         const response = await axios.get(
-          `${baseUrl}/reservation/verify/${resCode}`
+          `${baseUrl}/reservation/verify/${resCode}`,
+          {
+            headers: {
+              'x-access-token': token,
+            },
+          }
         );
+
         console.log('response.data', response.data);
         const data = response.data;
         if (data) {
@@ -54,6 +65,7 @@ const ScanQrScreen = () => {
       Alert.alert(
         'Erreur',
         "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
+        // error.message
       );
       isAlertDisplayed = true;
     }

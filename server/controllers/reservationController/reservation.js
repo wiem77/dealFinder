@@ -4,9 +4,10 @@ const User = require('../../models/User');
 const Reservation = require('../../models/ReservationModel');
 const { generateQrCode } = require('../../utils/generateQrCode');
 const generateReservationCode = require('../../utils/generateOTP');
-
 module.exports.verifyCodeReservation = async (req, res) => {
-  const { resCode } = req.params;
+
+  const { resCode, store_id } = req.params;
+  console.log(resCode, store_id);
   console.log(resCode);
   console.log('reservationCode ', resCode);
   try {
@@ -15,7 +16,6 @@ module.exports.verifyCodeReservation = async (req, res) => {
       $and: [
         {
           used: false,
-
           // 'voucher.validity_date': { $gt: Date.now() },
         },
         { archived: false },
@@ -26,17 +26,30 @@ module.exports.verifyCodeReservation = async (req, res) => {
         '-password -confirmpassword -picturePath -roles -favorite_stores -reservedVouchers -usedVouchers'
       )
       .populate('voucher', '-store');
+
     console.log(reservation);
+
     if (!reservation) {
       return res.status(404).json({ message: 'QrCode invalide..' });
     }
+
+    const voucher = await Voucher.findOne({
+      _id: reservation.voucher,
+      store: store_id,
+    });
+
+    if (!voucher) {
+      return res
+        .status(404)
+        .json({ message: 'Voucher not found for this store.' });
+    }
+
     reservation.archived = true;
     reservation.used = true;
     reservation.qrCode = undefined;
 
     await reservation.save();
 
-    // Update the user's reservedVouchers and usedVouchers arrays
     const user = await User.findById(reservation.user._id);
     user.reservedVouchers.pull(reservation._id);
     user.usedVouchers.push(reservation._id);
@@ -51,6 +64,53 @@ module.exports.verifyCodeReservation = async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+// module.exports.verifyCodeReservation = async (req, res) => {
+//   const { resCode } = req.params;
+//   console.log(resCode);
+//   console.log('reservationCode ', resCode);
+//   try {
+//     const reservation = await Reservation.findOne({
+//       reservationCode: resCode,
+//       $and: [
+//         {
+//           used: false,
+
+//           // 'voucher.validity_date': { $gt: Date.now() },
+//         },
+//         { archived: false },
+//       ],
+//     })
+//       .populate(
+//         'user',
+//         '-password -confirmpassword -picturePath -roles -favorite_stores -reservedVouchers -usedVouchers'
+//       )
+//       .populate('voucher', '-store');
+//     console.log(reservation);
+//     if (!reservation) {
+//       return res.status(404).json({ message: 'QrCode invalide..' });
+//     }
+//     reservation.archived = true;
+//     reservation.used = true;
+//     reservation.qrCode = undefined;
+
+//     await reservation.save();
+
+//     // Update the user's reservedVouchers and usedVouchers arrays
+//     const user = await User.findById(reservation.user._id);
+//     user.reservedVouchers.pull(reservation._id);
+//     user.usedVouchers.push(reservation._id);
+//     await user.save();
+
+//     return res.status(201).json({
+//       message: 'Réservation valider ',
+//       data: reservation,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Server error' });
+//   }
+// };
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
   console.log('userId ', userId);

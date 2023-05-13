@@ -20,6 +20,6 @@ router.put(
   resetArchivedReservations
 );
 
-//root:http://localhost:4000/api/reservation/verify/:resCode
-router.get('/verify/:resCode', auth, verifyCodeReservation);
+//root:http://localhost:4000/api/reservation/verify/:resCode/:store_id
+router.get('/verify/:resCode/:store_id', auth, verifyCodeReservation);
 module.exports = router;

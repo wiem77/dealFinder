@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [issAuthenticated, setIsAuthenticated] = useState(false);
   function authenticate({ token, store }) {
     setAuthToken(token);
-    setStoreInfo(JSON.stringify(store));
+    setStoreInfo(store);
     setIsAuthenticated(true);
     AsyncStorage.setItem('token', token);
     AsyncStorage.setItem('store', JSON.stringify(store));

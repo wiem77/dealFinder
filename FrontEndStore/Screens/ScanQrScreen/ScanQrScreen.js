@@ -28,9 +28,11 @@ const ScanQrScreen = () => {
   const [loading, setLoading] = useState(false);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-  const idStore = authCtx.store;
+  const store = authCtx.store;
   const handleVerifyCode = async ({ resCode }) => {
-    console.log('idStore', idStore);
+    console.log(store);
+    const store_id = store._id;
+    console.log('store_id', store._id);
     setLoading(true);
 
     console.log(resCode);
@@ -42,7 +44,7 @@ const ScanQrScreen = () => {
         isAlertDisplayed = true;
       } else {
         const response = await axios.get(
-          `${baseUrl}/reservation/verify/${resCode}`,
+          `${baseUrl}/reservation/verify/${resCode}/${store_id}`,
           {
             headers: {
               'x-access-token': token,
@@ -64,8 +66,8 @@ const ScanQrScreen = () => {
       console.log(error);
       Alert.alert(
         'Erreur',
-        "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
-        // error.message
+        // "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
+        error.message
       );
       isAlertDisplayed = true;
     }

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { customFonts } from './config/config';
 import Navigation from './navigation/Navigation';
-import { AuthProvider } from './context/AuthProvider';
+import { AuthContext, AuthProvider } from './context/AuthProvider';
 import { StoresProvider } from './context/StoreProvider';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useContext } from 'react';
+import { StyleSheet, Image, View } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
@@ -19,8 +19,50 @@ import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import Favorite from '../screens/favoriteScreen/Favorite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthProvider';
+import * as SplashScreen from 'expo-splash-screen';
 const ConsumerStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
+
+function Root() {
+  const [isTryingLogIn, setIsTryingLogIn] = useState(true);
+  const authCtx = useContext(AuthContext);
+  useEffect(() => {
+    async function fetchToken() {
+      const storedToken = await AsyncStorage.getItem('token');
+      const storedUser = await AsyncStorage.getItem('user');
+
+      console.log('storedToken', storedToken);
+      console.log('storedUser', storedUser);
+
+      if (storedToken) {
+        authCtx.authenticate({
+          token: storedToken,
+          user: JSON.parse(storedUser),
+        });
+      }
+    }
+    const timeoutId = setTimeout(() => {
+      setIsTryingLogIn(false);
+      SplashScreen.hideAsync();
+    }, 1000);
+
+    fetchToken();
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  if (isTryingLogIn) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Image source={require('../assets/loading.gif')} />
+      </View>
+    );
+  }
+
+  return <NavigationCheckAuth />;
+}
 
 function AuthStack() {
   return (
@@ -81,9 +123,7 @@ const ConsumerNavigation = () => {
   );
 };
 const Navigation = () => {
-  return <NavigationCheckAuth />;
+  return <Root />;
 };
 
 export default Navigation;
-
-const styles = StyleSheet.create({});

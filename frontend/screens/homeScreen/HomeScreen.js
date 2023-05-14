@@ -23,19 +23,33 @@ import { Colors } from '../../constants/Colors';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
 import { StoreContext } from '../../context/StoreProvider';
-
+import { AuthContext } from '../../context/AuthProvider';
+import { baseUrl } from '../../config/config';
+import axios from 'axios';
+const showAlert = (title, message) => {
+  Alert.alert(
+    title,
+    message,
+    [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+    { cancelable: false }
+  );
+};
 const HomeScreen = () => {
-  
-  
- 
-  const [favoriteStores, setFavoriteStores] = useState([]);
-  const [locationCountry, setLocationCountry] = useState(null);
   const [iconColor, setIconColor] = useState('black');
-  const [location, setLocation] = useState(null);
+
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const { stores } = useContext(StoreContext);
-  console.log('homeeee', stores);
+  const authCtx = useContext(AuthContext);
+
+  const user = authCtx.user;
+  const userId = user._id;
+
+  const navigation = useNavigation();
+
   const handleStoreSelected = (store_id) => {
     console.log('store_id', store_id);
     const selectedStore = stores?.find((store) => store._id === store_id);
@@ -43,28 +57,32 @@ const HomeScreen = () => {
     console.log('selectedStore', selectedStore);
     navigation.navigate('Store', { selectedStore });
   };
-  const showAlert = (title, message) => {
-    Alert.alert(
-      title,
-      message,
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-      { cancelable: false }
-    );
-  };
-// const addFavoriteStore = (storeData) => {
-  //   setFavoriteStores([...favoriteStores, storeData]);
-  //   console.log('storeData', storeData);
-  //   navigation.navigate('Favorite', { storeData });
-  // };
-  const navigation = useNavigation();
 
   const handleNAvigateProfilePressed = () => {
     navigation.navigate('Profile');
     console.log('profile Pressed');
   };
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
+
+  const handleFavorite = async (userId, storeId, isFavorite, storeName) => {
+    console.log(userId, storeId, isFavorite, storeName);
+    try {
+      const urlADD = `${baseUrl}/users/${userId}/favorite-stores/${storeId}`;
+      const urlDel = `${baseUrl}/users/${userId}/deletefavorite-stores/${storeId}`;
+      if (isFavorite === false) {
+        await axios.post(urlADD);
+        setIsFavorite(true);
+        showAlert(`${storeName}`, 'Ajouter aux favoris ');
+        console.log('Added to favorite stores');
+      } else {
+        await axios.delete(urlDel);
+        setIsFavorite(false);
+        console.log('Removed from favorite stores');
+      }
+    } catch (error) {
+      console.error(error);
+      showAlert(`error`, `${error.message}`);
+    }
+  };
 
   return (
     <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
@@ -136,8 +154,10 @@ const HomeScreen = () => {
               subCategory={
                 Object.values(item.sub_categories)[0].subCategory_name
               }
-                onPressStore={() => handleStoreSelected(item._id)}
-              onPressFavorite={() => addFavoriteStore(item)}
+              onPressStore={() => handleStoreSelected(item._id)}
+              onPressFavorite={() =>
+                handleFavorite(userId, item._id, isFavorite, item.store_name)
+              }
             />
           )}
         />

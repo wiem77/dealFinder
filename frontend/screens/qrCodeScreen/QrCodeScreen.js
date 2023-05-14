@@ -1,11 +1,18 @@
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  ScrollView,
+  Image,
+} from 'react-native';
 import React from 'react';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import CustomBtn from '../../components/customBtn/CustomBtn';
-import QRCode from 'react-native-qrcode-svg';
+
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
+import QRCode from 'react-native-qrcode-svg';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -15,26 +22,33 @@ const qrCardHeight = Dimensions.get('window').height * 0.8;
 const qrCodeSize = qrCardHeight * 0.5;
 const windowHeight = Dimensions.get('window').height;
 const QrCodeScreen = ({ route }) => {
-  const { qrCodeValue } = route.params;
-  console.log(qrCodeValue);
+  const { qrData } = route.params;
+
+  const qrCodeUrl = qrData?.qrCode;
+  const voucherName = qrData?.vouchers?.name_V;
+  const storeName = qrData?.vouchers?.store.store_name;
+
+  const expiryDate = qrData?.expiry.substr(0, 10);
+  console.log(qrData);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View>
-          <Ionicons name="arrow-back-outline" size={30} color="black" />
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>Scanner-QrCode </Text>
-          </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Scanner-QrCode </Text>
         </View>
       </View>
       <ScrollView style={styles.qrCard}>
         <View style={styles.qrWarpper}>
-      
+          {/* <QRCode value={qrCodeUrl} size={300} /> */}
+          <Image
+            style={{ width: 200, height: 200 }}
+            source={{ uri: qrCodeUrl }}
+          />
         </View>
         <View style={styles.textWarrper}>
           <View style={styles.row}>
-            <Text style={styles.text1}>Nom de la Boutique</Text>
-            <Text style={styles.text2}>Plan B</Text>
+            <Text style={styles.text1}>{storeName}</Text>
+            <Text style={styles.text2}>{voucherName}</Text>
           </View>
           <View style={styles.separator} />
           <View style={styles.row}>
@@ -44,13 +58,9 @@ const QrCodeScreen = ({ route }) => {
           <View style={styles.separator} />
           <View style={styles.row}>
             <Text style={styles.text1}>Date d'expiration</Text>
-            <Text style={styles.text2}>25-03-2023</Text>
+            <Text style={styles.text2}>{expiryDate}</Text>
           </View>
           <View style={styles.separator} />
-          <View style={styles.row}>
-            <Text style={styles.text1}>Promotions</Text>
-            <Text style={styles.text2}>10%</Text>
-          </View>
         </View>
       </ScrollView>
     </View>
@@ -79,7 +89,6 @@ const styles = StyleSheet.create({
     width: wp('80%'),
     height: wp('12%'),
     padding: 15,
-    marginVertical: 6,
 
     alignItems: 'center',
 
@@ -118,13 +127,13 @@ const styles = StyleSheet.create({
   separator: {
     borderBottomWidth: 1,
     borderColor: '#ddd',
-    marginVertical: windowHeight * 0.005, // <-- utilisez les dimensions de l'écran pour définir la taille de la bordure inférieure
+    marginVertical: windowHeight * 0.005,
   },
   textWarrper: {},
   qrWarpper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: windowHeight * 0.02, // <-- réduire l'espace entre la carte QR et les autres éléments
+    marginVertical: windowHeight * 0.02,
   },
 
   text1: {

@@ -5,7 +5,6 @@ const Reservation = require('../../models/ReservationModel');
 const { generateQrCode } = require('../../utils/generateQrCode');
 const generateReservationCode = require('../../utils/generateOTP');
 module.exports.verifyCodeReservation = async (req, res) => {
-
   const { resCode, store_id } = req.params;
   console.log(resCode, store_id);
   console.log(resCode);
@@ -121,7 +120,12 @@ module.exports.createReservation = async (req, res) => {
       is_available: true,
       available_vouchers: { $gt: 0 },
       validity_date: { $gt: new Date() },
-    }).exec();
+    })
+      .populate({
+        path: 'store',
+        select: 'store_name',
+      })
+      .exec();
 
     if (!voucher) {
       return res

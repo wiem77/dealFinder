@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,9 +13,10 @@ import {
   Alert,
 } from 'react-native';
 import axios from 'axios';
+
 import { baseUrl } from '../../config/config';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
-
+import { AuthContext } from '../../context/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import ViewMoreText from 'react-native-view-more-text';
 
@@ -39,33 +40,77 @@ const VoucherScreen = ({ route }) => {
   const { selectedVoucher, selectedStore } = route.params;
   console.log('selectedselectedStore', selectedStore);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [voucherData, setVoucherData] = useState();
+  const [qrCodeData, setQrCodeData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [hasFetchedData, setHasFetchedData] = useState(false);
   const navigation = useNavigation();
-
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
+  if (token != null) {
+    console.log('test');
+  } else {
+    console.log('test2', token);
+  }
   const handelBackPressed = () => {
     navigation.navigate('Store');
   };
 
-  const handelReservationPressed = async () => {
-    const voucherId = selectedVoucher._id;
-    const userId = '645aa4b1ec2213962cb67c39';
-    console.log(voucherId);
-    try {
-      const response = await axios.post(
-        `${baseUrl}/reservation/user/${userId}/vouchers/${voucherId}`
-      );
+  const handleReservationPressed = async () => {
+    if (token) {
+      const voucherId = selectedVoucher._id;
+      const userId = user._id;
+      console.log(voucherId);
+      try {
+        const response = await axios.post(
+          `${baseUrl}/reservation/user/${userId}/vouchers/${voucherId}`,
+          {
+            headers: {
+              'x-access-token': token,
+            },
+          }
+        );
+        setQrCodeData(response?.data?.data);
+        const qrData=response?.data?.data
+        console.log('test1', response?.data?.data);
+        console.log('test2', response?.data);
 
-      console.log(response.data);
-      setVoucherData(response.data);
-      showAlert(
-        'élicitations',
-        "Vvous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures"
+        Alert.alert(
+          'Félicitations',
+          "Vous avez réservé votre coupon. Utilisez-le avant l'expiration des 48 heures",
+          [
+            {
+              text: 'Ok',
+              onPress: () => navigation.navigate('QrCode', { qrData }),
+
+              style: 'destructive',
+            },
+          ]
+        );
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || 'Erreur inconnue';
+        showAlert('Reservastion invalide', errorMessage);
+      }
+    } else {
+      Alert.alert(
+        'Non connecté',
+        'Vous devez vous connecter ou créer un compte pour réserver un coupon.',
+        [
+          {
+            text: 'Créer un compte',
+            onPress: () => navigation.navigate('SignUp'),
+            style: 'destructive',
+          },
+          {
+            text: 'Se connecter',
+            onPress: () => navigation.navigate('LoginIn'),
+          },
+          {
+            text: 'Continuer Votre Visiste',
+            onPress: () => console.log('guest'),
+          },
+        ]
       );
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Erreur inconnue';
-      showAlert('Reservastion invalide', errorMessage);
     }
   };
 
@@ -173,7 +218,7 @@ const VoucherScreen = ({ route }) => {
             <CustomBtn
               style={{ marginTop: '6%' }}
               text={'Reserver votre coupon'}
-              onPress={handelReservationPressed}
+              onPress={handleReservationPressed}
               nameIcon={'cart-outline'}
               sizeIcon={24}
               colorIcon={Colors.white}

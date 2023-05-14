@@ -25,10 +25,18 @@ const Stack = createNativeStackNavigator();
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <Stack.Screen name="LoginIn" component={LoginScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="OtpScreen" component={OtpScreen} />
       <Stack.Screen name="SucessScreen" component={SucessScreen} />
+      <Stack.Screen name="Home" component={TabNavigation} />
+      <Stack.Screen name="QrCode" component={QrCodeScreen} />
+      <Stack.Screen name="Store" component={StoreScreen} />
+
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+
+      <Stack.Screen name="Voucher" component={VoucherScreen} />
     </Stack.Navigator>
   );
 }
@@ -37,12 +45,10 @@ function AuthenticatedStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={TabNavigation} />
-
       <Stack.Screen name="Store" component={StoreScreen} />
-
       <Stack.Screen name="Profile" component={ProfileScreen} />
-
       <Stack.Screen name="Voucher" component={VoucherScreen} />
+      <Stack.Screen name="QrCode" component={QrCodeScreen} />
     </Stack.Navigator>
   );
 }
@@ -58,7 +64,6 @@ function NavigationCheckAuth() {
 const ConsumerNavigation = () => {
   return (
     <ConsumerStack.Navigator screenOptions={{ headerShown: false }}>
-      <ConsumerStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <ConsumerStack.Screen name="Home" component={TabNavigation} />
 
       <ConsumerStack.Screen name="Store" component={StoreScreen} />
@@ -72,7 +77,6 @@ const ConsumerNavigation = () => {
       <ConsumerStack.Screen name="OtpScreen" component={OtpScreen} />
       <ConsumerStack.Screen name="SucessScreen" component={SucessScreen} />
       <ConsumerStack.Screen name="Test" component={Test} />
-      <ConsumerStack.Screen name="QrCode" component={QrCodeScreen} />
     </ConsumerStack.Navigator>
   );
 };

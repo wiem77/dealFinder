@@ -14,8 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 
 import * as Location from 'expo-location';
 
-import { StoresContext } from '../../context/StoreProvider';
-
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 import CustomCard from '../../components/customCard/CustomCard';
 
@@ -24,33 +22,27 @@ import Loading from '../../components/loading/Loading';
 import { Colors } from '../../constants/Colors';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
+import { StoreContext } from '../../context/StoreProvider';
 
 const HomeScreen = () => {
+  
+  
+ 
+  const [favoriteStores, setFavoriteStores] = useState([]);
+  const [locationCountry, setLocationCountry] = useState(null);
+  const [iconColor, setIconColor] = useState('black');
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
-  const [locationCountry, setLocationCountry] = useState(null);
-  const [favoriteStores, setFavoriteStores] = useState([]);
-  const [iconColor, setIconColor] = useState('black');
-
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      let geocode = await Location.reverseGeocodeAsync({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-      setLocationName(geocode[0].city);
-      setLocationRegion(geocode[0].region);
-      setLocationCountry(geocode[0].country);
-    })();
-  }, []);
+  const { stores } = useContext(StoreContext);
+  console.log('homeeee', stores);
+  const handleStoreSelected = (store_id) => {
+    console.log('store_id', store_id);
+    const selectedStore = stores?.find((store) => store._id === store_id);
+    console.log('selectedStore', selectedStore);
+    console.log('selectedStore', selectedStore);
+    navigation.navigate('Store', { selectedStore });
+  };
   const showAlert = (title, message) => {
     Alert.alert(
       title,
@@ -59,30 +51,20 @@ const HomeScreen = () => {
       { cancelable: false }
     );
   };
-  const { stores, isLoading } = useContext(StoresContext);
-
-  console.log('stores', stores);
-  const addFavoriteStore = (storeData) => {
-    setFavoriteStores([...favoriteStores, storeData]);
-    console.log('storeData', storeData);
-    navigation.navigate('Favorite', { storeData });
-  };
+// const addFavoriteStore = (storeData) => {
+  //   setFavoriteStores([...favoriteStores, storeData]);
+  //   console.log('storeData', storeData);
+  //   navigation.navigate('Favorite', { storeData });
+  // };
   const navigation = useNavigation();
-
-  const handelStoreSelected = (store_id) => {
-    const storesKeys = Object.keys(stores);
-    const selectedStore = stores[storesKeys.find((key) => key === store_id)];
-    console.log('selectedStore', selectedStore);
-    navigation.navigate('Store', { selectedStore });
-  };
 
   const handleNAvigateProfilePressed = () => {
     navigation.navigate('Profile');
     console.log('profile Pressed');
   };
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   return (
     <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
@@ -121,41 +103,41 @@ const HomeScreen = () => {
         <Text style={styles.categoryName}>Nouveauté</Text>
         {stores && (
           <FlatList
-            data={Object.values(stores)}
+            data={stores}
             keyExtractor={(item) => item._id}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <CustomCard
                 storeName={item.store_name}
-                distance={item.distance}
-                location={Object.values(item.locations)[0].city}
-                voucher={Object.values(item.vouchers)[0].name_V}
+                // distance={item.distance}
+                distance={Object.values(item.locations)[0].city}
+                voucher={Object.values(item.vouchers)[0].discount}
                 subCategory={
                   Object.values(item.sub_categories)[0].subCategory_name
                 }
-                onPress={() => showAlert('Store Pressed', item.store_name)}
+                onPress={() => console.log('Store Pressed', item.store_name)}
               />
             )}
           />
         )}
 
         <FlatList
-          data={Object.values(stores)}
+          data={stores}
           keyExtractor={(item) => item._id}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <VerticalStoreCard
               key={item._id}
               storeName={item.store_name}
-              distance={item.distance}
-              location={Object.values(item.locations)[0].city} // set the location
-              voucher={Object.values(item.vouchers)[0].name_V} // set the voucher
+              // distance={item.distance}
+              distance={Object.values(item.locations)[0].city}
+              voucher={Object.values(item.vouchers)[0].discount}
               subCategory={
                 Object.values(item.sub_categories)[0].subCategory_name
               }
-              onPressStore={() => handelStoreSelected(item._id)}
-              // onPressFavorite={() => addFavoriteStore(item)}
+                onPressStore={() => handleStoreSelected(item._id)}
+              onPressFavorite={() => addFavoriteStore(item)}
             />
           )}
         />

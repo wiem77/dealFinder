@@ -5,30 +5,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const StoreContext = createContext();
 
 export const StoresProvider = ({ children }) => {
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState();
 
   useEffect(() => {
     const fetchStores = async () => {
       try {
         const response = await axios.get(`${baseUrl}/store/getAllStore`);
         const data = response.data;
+
         setStores(data);
-        await AsyncStorage.setItem('stores', JSON.stringify(response.data));
-        console.log(
-          'Data fetcheddddddddddddddd:',
-          JSON.stringify(response.data)
-        );
+        await AsyncStorage.setItem('stores', JSON.stringify(data));
+        console.log('Data fetched:', JSON.stringify(data));
       } catch (error) {
         console.error(error);
       }
     };
 
-  
     AsyncStorage.getItem('stores')
-      .then((data) => {
-        if (data) {
-          setStores(JSON.parse(data));
-          console.log('testttt', data);
+      .then((storesData) => {
+        if (storesData) {
+          setStores(JSON.parse(storesData));
+          console.log('storesData:', JSON.parse(storesData));
         } else {
           fetchStores();
         }
@@ -36,10 +33,59 @@ export const StoresProvider = ({ children }) => {
       .catch((error) => console.error(error));
   }, []);
 
+ 
+
   return (
     <StoreContext.Provider value={{ stores }}>{children}</StoreContext.Provider>
   );
 };
+
+// useEffect(() => {
+//   const fetchStores = async () => {
+//     try {
+//       const response = await axios.get(`${baseUrl}/store/getAllStore`);
+//       // const data = response.data;
+
+//       const storesObject = response.data.reduce((acc, cur) => {
+//         acc[cur._id] = {
+//           ...cur,
+//           sub_categories: cur.sub_categories.reduce((subAcc, subCur) => {
+//             subAcc[subCur._id] = subCur;
+//             return subAcc;
+//           }, {}),
+//           locations: cur.locations.reduce((locAcc, locCur) => {
+//             locAcc[locCur._id] = locCur;
+//             return locAcc;
+//           }, {}),
+//           vouchers: cur.vouchers.reduce((vouAcc, vouCur) => {
+//             vouAcc[vouCur._id] = vouCur;
+//             return vouAcc;
+//           }, {}),
+//         };
+//         return acc;
+//       }, {});
+//       setStores(storesObject);
+//       await AsyncStorage.setItem('stores', storesObject);
+//       console.log(
+//         'Data fetcheddddddddddddddd:',
+//         JSON.stringify(storesObject)
+//       );
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   AsyncStorage.getItem('stores')
+//     .then((storesObject) => {
+//       if (storesObject) {
+//         setStores(storesObject);
+//         console.log('testttt', storesObject);
+//       } else {
+//         fetchStores();
+//       }
+//     })
+//     .catch((error) => console.error(error));
+// }, []);
 
 // export const StoresContext = createContext({
 //   stores: null,

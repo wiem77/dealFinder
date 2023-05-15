@@ -63,53 +63,6 @@ module.exports.verifyCodeReservation = async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
-
-// module.exports.verifyCodeReservation = async (req, res) => {
-//   const { resCode } = req.params;
-//   console.log(resCode);
-//   console.log('reservationCode ', resCode);
-//   try {
-//     const reservation = await Reservation.findOne({
-//       reservationCode: resCode,
-//       $and: [
-//         {
-//           used: false,
-
-//           // 'voucher.validity_date': { $gt: Date.now() },
-//         },
-//         { archived: false },
-//       ],
-//     })
-//       .populate(
-//         'user',
-//         '-password -confirmpassword -picturePath -roles -favorite_stores -reservedVouchers -usedVouchers'
-//       )
-//       .populate('voucher', '-store');
-//     console.log(reservation);
-//     if (!reservation) {
-//       return res.status(404).json({ message: 'QrCode invalide..' });
-//     }
-//     reservation.archived = true;
-//     reservation.used = true;
-//     reservation.qrCode = undefined;
-
-//     await reservation.save();
-
-//     // Update the user's reservedVouchers and usedVouchers arrays
-//     const user = await User.findById(reservation.user._id);
-//     user.reservedVouchers.pull(reservation._id);
-//     user.usedVouchers.push(reservation._id);
-//     await user.save();
-
-//     return res.status(201).json({
-//       message: 'Réservation valider ',
-//       data: reservation,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Server error' });
-//   }
-// };
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
   console.log('userId ', userId);
@@ -403,5 +356,42 @@ exports.resetArchivedReservations = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports.getAllReservationByIDUSer = async (req, res) => {
+  console.log('resssssssssssssssssssssssss');
+  const userId = req.params.userId;
+  try {
+    const reservations = await Reservation.find({
+      user: userId,
+      $and: [{ used: false }],
+    })
+      .populate({
+        path: 'voucher',
+        populate: {
+          path: 'store',
+          select: 'store_name store_image',
+        },
+      })
+      .select(
+        '-user.password -user.confirmpassword -user.picturePath  -user.age -user.sexe  -user.favorite_stores '
+      );
+
+    console.log(reservations);
+
+    if (reservations.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Aucune réservation n'a été effectuée." });
+    }
+    console.log(reservations);
+    return res.status(201).json({
+      message: 'Votre liste de réservations',
+      data: reservations,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erreur du serveur.' });
   }
 };

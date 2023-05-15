@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,78 +8,59 @@ import {
   FlatList,
   SafeAreaView,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5, Foundation } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-
+import { FontSize } from '../../constants/FontSize';
+import { AuthContext } from '../../context/AuthProvider';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+import { useFocusEffect } from '@react-navigation/native';
 const ReservationScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [reservationData, setReservationData] = useState([]);
+  const navigation = useNavigation();
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          console.log('reservationUse ');
+          const storedData = await AsyncStorage.getItem('reservationData');
+          if (storedData) {
+            const response = await axios.get(
+              `${baseUrl}/reservation/user/${user._id}/allReservation`,
+              {
+                headers: {
+                  'x-access-token': token,
+                },
+              }
+            );
+            console.log('dataaaaaa ');
+            const data = response.data.data;
+            console.log('reservationUse ', data);
 
-  const [reservationData, setReservationData] = useState([
-    {
-      id: 1,
-      couponName: 'Coupon 1',
-      storeName: 'Boutique 1',
-      discount: '50% ',
-      image: require('../../assets/image/Sport.png'),
-      isValid: true,
-      isExpired: false,
-    },
-    {
-      id: 2,
-      couponName: 'Coupon 2',
-      storeName: 'Boutique 2',
-      discount: '10€',
-      // image: require('../../assets/image/sport.png'),
-      isValid: false,
-      isExpired: true,
-    },
-    {
-      id: 3,
-      couponName: 'Coupon 3',
-      storeName: 'Boutique 3',
-      discount: '20% ',
-      // image: require('../../assets/image/sport.png'),
-      isValid: true,
-      isExpired: false,
-    },
-    {
-      id: 4,
-      couponName: 'Coupon 2',
-      storeName: 'Boutique 2',
-      discount: '10€ ',
-      // image: require('../../assets/image/sport.png'),
-      isValid: false,
-      isExpired: true,
-    },
-    {
-      id: 5,
-      couponName: 'Coupon 3',
-      storeName: 'Boutique 3',
-      discount: '20% ',
-      // image: require('../../assets/image/sport.png'),
-      isValid: true,
-      isExpired: false,
-    },
-    {
-      id: 6,
-      couponName: 'Coupon 3',
-      storeName: 'Boutique 3',
-      discount: '20% ',
-      // image: require('../../assets/image/sport.png'),
-      isValid: true,
-      isExpired: false,
-    },
-    {
-      id: 7,
-      couponName: 'Coupon 3',
-      storeName: 'Boutique 3',
-      discount: '20% ',
-      // image: require('../../assets/image/sport.png'),
-      isValid: true,
-      isExpired: false,
-    },
-  ]);
+            await AsyncStorage.setItem('reservationData', JSON.stringify(data));
+
+            setReservationData(data);
+          } else {
+            setReservationData(JSON.parse(storedData));
+            console.log('resssss ');
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
 
   const handleDeleteReservation = (id) => {
     const newData = reservationData.filter((item) => item.id !== id);
@@ -105,8 +86,8 @@ const ReservationScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Mes réservations</Text>
-        <FontAwesome5
-          name="bookmark"
+        <Foundation
+          name="clipboard-notes"
           size={24}
           color="black"
           style={styles.iconContainer}
@@ -115,40 +96,64 @@ const ReservationScreen = () => {
       {reservationData.length > 0 ? (
         <FlatList
           data={reservationData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[
                 styles.reservationCard,
-                item.isValid ? styles.validCard : styles.expiredCard,
+                item.expiredStatus ? styles.expiredCard : styles.validCard,
               ]}
               onPress={() =>
-                item.isExpired
+                item.expiredStatus
                   ? alert('Reservation expired')
-                  : console.log('Reservation details')
+                  : navigation.navigate('QrCpdeReservation', {
+                      qrData: item,
+                    })
               }
             >
               <View style={styles.cardContent}>
                 <View>
-                  <Image style={styles.cardImage} source={item.image} />
+                  <Image
+                    style={styles.cardImage}
+                    source={require('../../assets/image/vo.jpg')}
+                  />
                 </View>
 
                 <View style={styles.cardDetails}>
-                  <Text style={styles.storeName}>{item.storeName}</Text>
-                  <Text style={styles.couponName}>{item.couponName}</Text>
+                  <Text style={styles.storeName}>
+                    {item.voucher.store.store_name}
+                  </Text>
+                  <Text style={styles.couponName}>{item.voucher?.name_V}</Text>
                   <View style={styles.discountContainer}>
-                    <Text style={styles.discountLabel}>Discount</Text>
-                    <View style={styles.verticalLine} />
-                    <View style={styles.discount}>
-                      <Text style={styles.discountText}>{item.discount}</Text>
-                    </View>
-
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => handleDeleteReservation(item.id)}
+                    <View
+                      style={[
+                        styles.discount,
+                        {
+                          backgroundColor: item.expiredStatus
+                            ? '#BEBEBE'
+                            : Colors.red,
+                        },
+                      ]}
                     >
-                      <AntDesign name="delete" size={24} color="black" />
-                    </TouchableOpacity>
+                      <Text style={styles.discountText}>
+                        {item.voucher?.discount}%
+                      </Text>
+                    </View>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <View style={{}} />
+                      <TouchableOpacity
+                        style={[styles.deleteButton, { marginLeft: 70 }]}
+                        onPress={() => handleDeleteReservation(item.id)}
+                      >
+                        <MaterialCommunityIcons
+                          name="delete-outline"
+                          size={24}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -168,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundWhite,
     paddingHorizontal: 20,
-    paddingBottom: '20%', // Ajout de la propriété paddingBottom
+    paddingBottom: '20%',
   },
   emptyListContainer: {
     justifyContent: 'center',
@@ -223,12 +228,11 @@ const styles = StyleSheet.create({
   },
   validCard: {
     borderWidth: 2,
-    borderColor: '#FF0000',
+    borderColor: Colors.red,
   },
   expiredCard: {
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#BEBEBE',
-    borderColor: '#FF0000',
   },
   cardContent: {
     flexDirection: 'row',
@@ -237,9 +241,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   couponName: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginRight: 10,
+    fontWeight: '400',
+    fontFamily: 'inter',
+    color: Colors.text,
+    fontSize: 17,
+    marginRight: -2,
   },
   deleteButton: {
     borderRadius: 5,
@@ -249,7 +255,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    backgroundColor: '#FF0000',
+    backgroundColor: Colors.red,
   },
   discountText: {
     color: Colors.black,
@@ -276,8 +282,10 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 18,
+    // fontFamily: 'inter',
+    color: Colors.text,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   noReservationContainer: {
     flex: 1,
@@ -295,174 +303,21 @@ const styles = StyleSheet.create({
   discountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  discountLabel: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginRight: 10,
-  },
-  verticalLine: {
-    width: 2,
-    height: '100%',
-    backgroundColor: '#ccc',
-    marginRight: 10,
+    justifyContent: 'space-between',
+    flex: 1,
   },
   discount: {
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    backgroundColor: '#FF0000',
+    marginRight: 5,
   },
+
   discountText: {
-    color: Colors.black,
+    color: Colors.backgroundWhite,
     fontWeight: 'bold',
     fontSize: 16,
   },
 });
-
-//     <View style={styles.container}>
-//       <SafeAreaView style={styles.header}>
-//         <Text style={styles.headerText}>Mes réservations</Text>
-//         <View style={styles.iconContainer}>
-//           <FontAwesome5 name="bookmark" size={24} color="black" />
-//         </View>
-//       </SafeAreaView>
-//       <FlatList
-//         data={reservationData}
-//         keyExtractor={(item) => item.id.toString()}
-//         renderItem={({ item }) => (
-//           <TouchableOpacity
-//             style={[
-//               styles.reservationCard,
-//               item.isValid ? styles.validCard : styles.expiredCard,
-//             ]}
-//             onPress={() =>
-//               item.isExpired
-//                 ? alert('Reservation expired')
-//                 : console.log('Reservation details')
-//             }
-//           >
-//             <View style={styles.cardContent}>
-//               <Image style={styles.cardImage} source={item.image} />
-//               <View style={styles.cardDetails}>
-//                 <Text style={styles.storeName}>{item.storeName}</Text>
-//                 <Text style={styles.couponName}>{item.couponName}</Text>
-//                 <View style={styles.discount}>
-//                   <Text style={styles.discountText}>{item.discount}</Text>
-//                 </View>
-//               </View>
-//               <TouchableOpacity
-//                 style={styles.deleteButton}
-//                 onPress={() => handleDeleteReservation(item.id)}
-//               >
-//                 <AntDesign name="delete" size={24} color="black" />
-//               </TouchableOpacity>
-//             </View>
-//           </TouchableOpacity>
-//         )}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: Colors.backgroundWhite,
-//     paddingHorizontal: 20,
-//   },
-//   header: {
-//     paddingHorizontal: 20,
-//     marginBottom: '10%',
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     marginTop: '20%',
-//   },
-//   iconContainer: {
-//     marginLeft: 10,
-//   },
-//   headerText: {
-//     color: Colors.black,
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//   },
-//   reservationCard: {
-//     width: '100%',
-//     height: 120,
-//     marginBottom: 10,
-//     borderRadius: 10,
-//     alignSelf: 'center',
-//     justifyContent: 'center',
-//     padding: 10,
-//     backgroundColor: '#FFFFFF',
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.25,
-//     shadowRadius: 3.84,
-//     elevation: 5,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   validCard: {
-//     borderWidth: 2,
-//     borderColor: '#FF0000',
-//   },
-//   expiredCard: {
-//     borderWidth: 2,
-//     borderColor: '#BEBEBE',
-//   },
-//   cardContent: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     width: '100%',
-//     paddingHorizontal: 10,
-//   },
-//   couponName: {
-//     fontWeight: 'bold',
-//     fontSize: 18,
-//     marginRight: 10,
-//   },
-//   deleteButton: {
-//     borderRadius: 5,
-//     padding: 5,
-//   },
-//   discountBadge: {
-//     paddingHorizontal: 10,
-//     paddingVertical: 5,
-//     borderRadius: 5,
-//     backgroundColor: '#FF0000',
-//   },
-//   discountText: {
-//     color: Colors.black,
-//     fontWeight: 'bold',
-//     fontSize: 16,
-//   },
-//   expiredText: {
-//     color: '#BEBEBE',
-//     fontSize: 14,
-//     marginTop: 5,
-//   },
-//   alertText: {
-//     color: '#FF0000',
-//     fontSize: 14,
-//     marginTop: 5,
-//   },
-//   cardImage: {
-//     marginTop: 45,
-//     width: 70,
-//     height: 100,
-//     borderRadius: 10,
-//     marginRight: 0,
-//   },
-//   storeName: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginBottom: 5,
-//   },
-// });
 
 export default ReservationScreen;

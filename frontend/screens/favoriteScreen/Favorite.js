@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,27 +15,29 @@ import StoreCard2 from '../../components/storeCard2/StoreCard';
 import Colors from '../../constants/Colors';
 
 import Imgtest from '../../assets/image/Store1.png';
-
+import { AuthContext } from '../../context/AuthProvider';
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.9;
 
-const Favorite = ({ route }) => {
+const Favorite = () => {
   const [favoriteStores, setFavoriteStores] = useState([]);
+  const authCtx = useContext(AuthContext);
 
-  // handle adding the store passed through navigation to the favorites list
-  useEffect(() => {
-    const storeData = route.params?.storeData;
-    if (storeData) {
-      setFavoriteStores([...favoriteStores, storeData]);
-    }
-  }, [route.params?.storeData]);
+  const user = authCtx.user;
+  console.log('userFavorites', user.favorite_stores);
+  // useEffect(() => {
+  //   const storeData = route.params?.storeData;
+  //   if (storeData) {
+  //     setFavoriteStores([...favoriteStores, storeData]);
+  //   }
+  // }, [route.params?.storeData]);
 
-  // handle removing a store from favorites
-  const handleRemoveFavorite = (storeId) => {
-    setFavoriteStores((prevStores) =>
-      prevStores.filter((store) => store.id !== storeId)
-    );
-  };
+  // // handle removing a store from favorites
+  // const handleRemoveFavorite = (storeId) => {
+  //   setFavoriteStores((prevStores) =>
+  //     prevStores.filter((store) => store.id !== storeId)
+  //   );
+  // };
 
   return (
     <View style={styles.container}>

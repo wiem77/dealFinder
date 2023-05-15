@@ -4,6 +4,7 @@ const {
   getReservationWithUserId,
   resetArchivedReservations,
   verifyCodeReservation,
+  getAllReservationByIDUSer,
 } = require('../../controllers/reservationController/reservation');
 const { auth } = require('../../middleWare/auth');
 const router = express.Router();
@@ -22,4 +23,7 @@ router.put(
 
 //root:http://localhost:4000/api/reservation/verify/:resCode/:store_id
 router.get('/verify/:resCode/:store_id', auth, verifyCodeReservation);
+
+//root:http://localhost:4000/api/reservation/user/:userId/allReservation
+router.get('/user/:userId/allReservation', getAllReservationByIDUSer);
 module.exports = router;

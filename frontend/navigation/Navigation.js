@@ -20,6 +20,8 @@ import Favorite from '../screens/favoriteScreen/Favorite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthProvider';
 import * as SplashScreen from 'expo-splash-screen';
+import IconButton from '../components/iconButton/IconBtn';
+import QrReservation from '../screens/reservationQR/QrReservation';
 const ConsumerStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -75,7 +77,7 @@ function AuthStack() {
       <Stack.Screen name="Home" component={TabNavigation} />
       <Stack.Screen name="QrCode" component={QrCodeScreen} />
       <Stack.Screen name="Store" component={StoreScreen} />
-
+      <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
 
       <Stack.Screen name="Voucher" component={VoucherScreen} />
@@ -86,11 +88,25 @@ function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={TabNavigation} />
+      <Stack.Screen
+        name="Home"
+        component={TabNavigation}
+        options={{
+          headerRight: () => (
+            <IconButton
+              icon="exit"
+              color={'black'}
+              size={28}
+              onPress={authCtx.logout}
+            />
+          ),
+        }}
+      />
       <Stack.Screen name="Store" component={StoreScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Voucher" component={VoucherScreen} />
       <Stack.Screen name="QrCode" component={QrCodeScreen} />
+      <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
     </Stack.Navigator>
   );
 }

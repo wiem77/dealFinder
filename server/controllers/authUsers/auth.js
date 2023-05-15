@@ -132,13 +132,38 @@ module.exports.signIn = async (req, res) => {
   console.log(req.body);
   try {
     console.log('Looking up user...');
-    const user = await User.findOne({ email: req.body.email });
-    console.log('test');
+    const user = await User.findOne({ email: req.body.email })
+      .populate('favorite_stores', '-password -confirmpassword')
+      .populate({
+        path: 'reservedVouchers',
+        select: 'qrCode expiry archived used',
+        populate: {
+          path: 'voucher',
+          select: 'name_V discount is_available store',
+        },
+      })
+      .populate({
+        path: 'archivedVouchers',
+        select: 'qrCode expiry archived used',
+        populate: {
+          path: 'voucher',
+          select: 'name_V discount is_available',
+        },
+      })
+      .populate({
+        path: 'usedVouchers',
+        select: 'qrCode expiry archived used',
+        populate: {
+          path: 'voucher',
+          select: 'name_V discount is_available',
+        },
+      });
+
     if (!user) {
       console.log(user);
       return res.status(400).send({ message: 'Invalid email or password' });
     }
-
+    console.log('req.body.password', req.body.password);
     console.log('Comparing passwords...');
     const validPwd = await bcrypt.compare(req.body.password, user.password);
     if (!validPwd) {

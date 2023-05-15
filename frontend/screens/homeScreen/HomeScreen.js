@@ -46,7 +46,7 @@ const HomeScreen = () => {
   const authCtx = useContext(AuthContext);
 
   const user = authCtx.user;
-  const userId = user._id;
+  const userId = user?._id;
 
   const navigation = useNavigation();
 

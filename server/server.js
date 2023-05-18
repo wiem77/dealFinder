@@ -27,9 +27,9 @@ app.use(bodyParser.json());
 dbConnect();
 
 app.use(
-  cors('exp://192.168.8.100:19000')
+  cors('exp://192.168.8.123:19000')
   // cors({
-  //   origin: ['http://localhost:3000', 'exp://192.168.8.101:19000'],
+  //   origin: ['http://localhost:3000', 'exp://192.168.8.123:19000'],
   //   optionsSuccessStatus: 200,
   // })
 );
@@ -44,7 +44,7 @@ let data = {
 };
 
 // Converting the data into String format
-// let stringdata = JSON.stringify(data);
+// let stringdata = JS ON.stringify(data);
 // generateQrCode(stringdata);
 app.use(cookieParser());
 app.use('/api', authRoutes);

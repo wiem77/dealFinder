@@ -22,6 +22,9 @@ import { AuthContext } from '../context/AuthProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import IconButton from '../components/iconButton/IconBtn';
 import QrReservation from '../screens/reservationQR/QrReservation';
+import HistoryScreen from '../screens/HistoryScreen/HistoryScreen';
+import DrawerNavigation from './DrawerNavigation';
+
 const ConsumerStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -87,27 +90,30 @@ function AuthStack() {
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={TabNavigation}
-        options={{
-          headerRight: () => (
-            <IconButton
-              icon="exit"
-              color={'black'}
-              size={28}
-              onPress={authCtx.logout}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen name="Store" component={StoreScreen} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Voucher" component={VoucherScreen} />
-      <Stack.Screen name="QrCode" component={QrCodeScreen} />
-      <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
-    </Stack.Navigator>
+    <DrawerNavigation>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={TabNavigation}
+          options={{
+            headerRight: () => (
+              <IconButton
+                icon="exit"
+                color={'black'}
+                size={28}
+                onPress={authCtx.logout}
+              />
+            ),
+          }}
+        />
+        <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="Store" component={StoreScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Voucher" component={VoucherScreen} />
+        <Stack.Screen name="QrCode" component={QrCodeScreen} />
+        <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
+      </Stack.Navigator>
+    </DrawerNavigation>
   );
 }
 function NavigationCheckAuth() {

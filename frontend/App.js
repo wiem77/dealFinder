@@ -5,6 +5,7 @@ import { customFonts } from './config/config';
 import Navigation from './navigation/Navigation';
 import { AuthContext, AuthProvider } from './context/AuthProvider';
 import { StoresProvider } from './context/StoreProvider';
+import 'react-native-gesture-handler';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {

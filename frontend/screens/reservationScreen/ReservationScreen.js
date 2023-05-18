@@ -11,7 +11,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5, Foundation } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-import { FontSize } from '../../constants/FontSize';
+
 import { AuthContext } from '../../context/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';

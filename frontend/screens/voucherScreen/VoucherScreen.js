@@ -53,7 +53,7 @@ const VoucherScreen = ({ route }) => {
     console.log('test2', token);
   }
   const handelBackPressed = () => {
-    navigation.navigate('Store');
+    navigation.goBack();
   };
 
   const handleReservationPressed = async () => {
@@ -71,7 +71,7 @@ const VoucherScreen = ({ route }) => {
           }
         );
         setQrCodeData(response?.data?.data);
-        const qrData=response?.data?.data
+        const qrData = response?.data?.data;
         console.log('test1', response?.data?.data);
         console.log('test2', response?.data);
 

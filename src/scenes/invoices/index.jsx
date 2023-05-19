@@ -51,24 +51,6 @@ const Invoices = () => {
 
   //   );
   // };
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${baseUrl}vouchers/deleteVoucher/${id}`);
-      setVoucherData((prevData) => {
-        const newData = [...prevData];
-        const index = newData.findIndex((voucher) => voucher.id === id);
-        if (index !== -1) {
-          newData.splice(index, 1);
-        }
-        return newData;
-      });
-      alert(
-        'La suppression a été effectuée avec succès raffrechiser la page  !'
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const transformStoreData = (vouchers) => {
     console.log('voucherscdlcbahdbachc', vouchers);
@@ -154,10 +136,6 @@ const Invoices = () => {
             idVoucher={params.row._id}
             data={params.row}
           />
-
-          <IconButton onClick={() => setOpen(true)}>
-            <Delete />
-          </IconButton>
         </Box>
       ),
     },
@@ -165,7 +143,7 @@ const Invoices = () => {
 
   return (
     <Box m="20px">
-      <Header title="Coupons" subtitle="List of Coupons" />
+      <Header title="Coupons" subtitle="List des Coupons" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -203,7 +181,6 @@ const Invoices = () => {
           columns={columns}
           components={{ Toolbar: GridToolbar }}
         />
-        {modal}
       </Box>
     </Box>
   );

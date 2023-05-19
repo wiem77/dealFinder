@@ -6,7 +6,7 @@ import Modal from '@mui/material/Modal';
 import { Edit } from '@mui/icons-material';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
-import { TextField } from '@mui/material';
+import { FormControl, InputLabel, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -14,22 +14,23 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Select, MenuItem } from '@mui/material';
 import { useState } from 'react';
 
-function ModalSubCat({ style, data, id }) {
-  const storesInfo = data.storesNames.map((store) => ({
-    _idstore: store._id,
-    store_name: store.store_name,
-  }));
-  const initialValues = {
-    _id: data._id,
-    subCategory_name: data.subCategory_name,
-    stores: storesInfo.store_name,
-  };
+function ModalSubCat({ style, data, id, sub }) {
+  console.log('dataModalSubcat', data);
+  console.log('subShow', sub);
+  const catInfo =
+    sub && sub.length > 0
+      ? sub.map((s) => ({
+          _idc: s._id,
+          name_c: s.subCategory_name,
+        }))
+      : [];
+
   const [open, setOpen] = useState(false);
   const [subCatInfo, setSubCatInfo] = useState();
   const handleClose = () => {
     setOpen(false);
   };
-
+  console.log('subCatInfooooooooooo', subCatInfo);
   const handleOpen = async (id) => {
     setSubCatInfo(id);
     setOpen(true);
@@ -47,7 +48,7 @@ function ModalSubCat({ style, data, id }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Formik initialValues={initialValues}>
+          <Formik>
             {({ values, handleChange }) => (
               <form>
                 <Box
@@ -60,29 +61,23 @@ function ModalSubCat({ style, data, id }) {
                     },
                   }}
                 >
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="Nom de coupon"
-                    onChange={handleChange}
-                    value={values.subCategory_name}
-                    name="subCategory_name"
-                    readOnly={false}
-                    sx={{ gridColumn: 'span 4' }}
-                  />
-                  <Select
-                    fullWidth
-                    label="Stores"
-                    value=""
-                    sx={{ gridColumn: 'span 4' }}
-                  >
-                    {storesInfo.map((store) => (
-                      <MenuItem key={store._idstore} value="" disabled>
-                        {store.store_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel id="Sous_Catégories-label">
+                      Sous Catégories
+                    </InputLabel>
+                    <Select
+                      fullWidth
+                      label="Sous_Catégories"
+                      value=""
+                      sx={{ gridColumn: 'span 4' }}
+                    >
+                      {catInfo.map((sub) => (
+                        <MenuItem key={sub._idc} value="" disabled>
+                          {sub.name_c}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Box>
                 <Box display="flex" justifyContent="end" mt="20px"></Box>
               </form>

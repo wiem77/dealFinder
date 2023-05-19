@@ -8,9 +8,9 @@ import {
   useTheme,
   IconButton,
 } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -20,6 +20,13 @@ import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
 import EditCategory from '../../components/EditCategory';
+import ShowStoreV from '../../components/ShowStoreV';
+import DeleteVfromStore from '../../components/deleteModels/deleteVfromStore';
+import AddVoucher from '../../components/AddVoucher';
+import AddSubCatModal from '../../components/AddSubCatModal';
+import DeletesCatfromCat from '../../components/deleteModels/deleteSubCatfromCat';
+import ModalSubCat from '../../components/showDetails/ModalSubCat';
+import CategoryForm from '../catForm';
 
 const style = {
   position: 'absolute',
@@ -81,32 +88,38 @@ const Category = () => {
   };
 
   const transformStoreData = (categories) => {
-    return categories.map((category) => {
-      let subcategoriesNames = '';
-      console.log(category);
-      if (category.subcategories && category.subcategories.length > 0) {
-        subcategoriesNames = category.subcategories
-          .map((subCategory) => subCategory.subCategory_name)
-          .join(', ');
-      } else {
-        subcategoriesNames = 'pas de sous souscategory';
+    return categories?.map((category) => {
+      let subcategoriesNames;
+      console.log('category', category);
+      if (category.subcategories && category.subcategories?.length > 0) {
+        subcategoriesNames = category.subcategories.map(
+          (subCategory) => subCategory
+        );
       }
-
+      const nbCat =
+        subcategoriesNames && subcategoriesNames?.length > 0
+          ? subcategoriesNames?.length
+          : 0;
+      const nbCatt = nbCat > 0 ? `${nbCat} ` : 'pas de sous_catégories';
+      console.log(
+        'subcategoriesNamessss123',
+        subcategoriesNames[0].subCategory_name
+      );
       return {
         id: category.id,
         _id: category._id,
         category_name: category.category_name,
-        subCategoy: subcategoriesNames,
         category_image: category.category_image[0].path,
+        subcategories: subcategoriesNames,
+        nbCatt: nbCatt,
       };
     });
   };
-  console.log(categoryData.category_image);
+
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         const response = await axios.get(`${baseUrl}category/getAllCategory`);
-        console.log(response.data.categories);
         const categoryWithId = response.data.categories.map(
           (category, index) => ({
             ...category,
@@ -131,12 +144,6 @@ const Category = () => {
       headerName: 'Nom_Catégories',
       flex: 1,
       cellClassName: 'name-column--cell',
-    },
-
-    {
-      field: 'subCategoy',
-      headerName: 'sous_Categories',
-      flex: 1,
     },
 
     {
@@ -171,7 +178,54 @@ const Category = () => {
     },
 
     {
-      field: 'Actions',
+      field: 'nbCatt',
+      headerName: 'Sous_Catégories',
+      flex: 1,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            textAlign: 'center',
+            height: '100%',
+            boxSizing: 'border-box',
+          }}
+        >
+          {params.row.subcategories && params.row.subcategories.length > 0 ? (
+            <Typography>{params.row.subcategories.length}</Typography>
+          ) : (
+            <Typography>pas de sous_catégories</Typography>
+          )}
+          {params.row.nbCatt !== 'pas de sous_catégories' && (
+            <>
+              <DeletesCatfromCat
+                data={params.row}
+                id={params.row._id}
+                style={style}
+                sub={params.row.subcategories}
+              />
+              <ModalSubCat
+                data={params.row}
+                id={params.row._id}
+                style={style}
+                sub={params.row.subcategories}
+              />
+              <AddSubCatModal
+                data={params.row}
+                id={params.row._id}
+                style={style}
+                sub={params.row.subcategories}
+              />
+            </>
+          )}
+        </Box>
+      ),
+    },
+
+    {
+      field: 'test',
       headerName: 'Actions',
       flex: 1,
       renderCell: (params) => (
@@ -199,6 +253,7 @@ const Category = () => {
     <>
       <Box m="20px">
         <Header title="Catégories" subtitle="Liste des catégories disponible" />
+
         <Box
           m="40px 0 0 0"
           height="75vh"
@@ -231,6 +286,7 @@ const Category = () => {
             },
           }}
         >
+          <CategoryForm />
           <DataGrid
             rows={categoryData}
             columns={columns}

@@ -9,21 +9,18 @@ import {
 import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
-
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
-
 import Header from '../../components/Header';
-
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
-
 import { useEffect, useState } from 'react';
 import EditStore from '../../components/EditStore';
 import ModalStore from '../../components/showDetails/ModalShowStore';
 import AddVoucher from '../../components/AddVoucher';
 import ShowStoreV from '../../components/ShowStoreV';
 import DeleteVfromStore from '../../components/deleteModels/deleteVfromStore';
+import StoreForm from '../formStore';
 
 const Store = () => {
   const theme = useTheme();
@@ -84,8 +81,8 @@ const Store = () => {
       if (store.vouchers && store.vouchers.length > 0) {
         voucherNames = store.vouchers.map((voucher) => voucher);
       }
-      if (store.sub_categories && store.sub_categories.length > 0) {
-        subCategoryNames = store.sub_categories.map((subCat) => subCat);
+      if (store?.sub_categories && store?.sub_categories?.length > 0) {
+        subCategoryNames = store?.sub_categories?.map((subCat) => subCat);
       }
       console.log('subCategoryNames', subCategoryNames);
       if (store.locations && store.locations.length > 0) {
@@ -96,9 +93,20 @@ const Store = () => {
         voucherNames && voucherNames.length > 0 ? voucherNames.length : 0;
       const nbVoucher = nbV > 0 ? `${nbV} ` : 0;
 
-      const city1 = addresses[0].city;
-      const zipcode1 = addresses[0].zipcode;
-      const location1 = addresses[0].formattedAddress;
+      const city1 =
+        addresses && addresses.length > 0 ? addresses[0].city : null;
+      const zipcode1 =
+        addresses && addresses.length > 0 ? addresses[0].zipcode : null;
+      const location1 =
+        addresses && addresses.length > 0
+          ? addresses[0].formattedAddress
+          : null;
+
+      const category =
+        store.sub_categories && store?.sub_categories?.length > 0
+          ? store?.sub_categories[0]?.category.category_name
+          : null;
+
       return {
         id: store.id,
         _id: store._id,
@@ -108,10 +116,9 @@ const Store = () => {
         location: location1,
         rating: store.rating,
         city: city1,
-
         zipcode: zipcode1,
-        category: store.sub_categories[0].category.category_name,
-        subCategoy: subCategoryNames,
+        category: category,
+        subCategory: subCategoryNames,
         name_V: voucherNames,
         locations: addresses,
         nbVoucher: nbVoucher,
@@ -265,6 +272,7 @@ const Store = () => {
             },
           }}
         >
+          <StoreForm />
           <DataGrid
             rows={storesData}
             columns={columns}
@@ -273,43 +281,6 @@ const Store = () => {
           />
         </Box>
       </Box>
-      <Button color="success" onClick={handleOpen}>
-        Voir détails
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Nom de la Boutique : {storeInfo.store_name}
-          </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Numéro de télephone : {storeInfo.phone}
-          </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Ville : {storeInfo.city}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Description : {storeInfo.description}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            location : {storeInfo.location}
-          </Typography>
-
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Nom de coupons : {storeInfo.name_V}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Sous_Categories : {storeInfo.subCategoy}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Calassification : {storeInfo.rating}
-          </Typography>
-        </Box>
-      </Modal>
     </>
   );
 };

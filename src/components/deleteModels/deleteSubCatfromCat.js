@@ -18,7 +18,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import Header from '../Header';
 export default function DeletesCatfromCat({ style, data, id, sub }) {
-  console.log('subDelete', sub);
   const catInfo =
     sub && sub.length > 0
       ? sub.map((s) => ({
@@ -36,10 +35,7 @@ export default function DeletesCatfromCat({ style, data, id, sub }) {
   const handleOpen = async (id) => {
     setCInfo(id);
     setOpen(true);
-    console.log(setCInfo);
   };
-
-  console.log('subbbbbbbbbb', sub);
 
   const handleDeleteSubCat = (subCat) => {
     const id = subCat.id;
@@ -99,10 +95,10 @@ export default function DeletesCatfromCat({ style, data, id, sub }) {
                     <InputLabel id="Sous_Catégories-label">
                       Sous Catégories
                     </InputLabel>
-
                     <Select
                       labelId="Sous_Catégories-label"
                       id="Sous_Catégories"
+                      label="Sous_Catégories"
                       fullWidth
                       multiple
                       value={selectedSubCat}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Topbar from './scenes/global/Topbar';
 import Sidebar from './scenes/global/Sidebar';
@@ -20,10 +20,14 @@ import Category from './scenes/category';
 import { Login } from './Login';
 import SubCategory from './scenes/subCategory';
 import CategoryForm from './scenes/catForm';
+import { AuthContext } from './context/AuthProvider';
 
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { isAuthenticated } = useContext(AuthContext);
 
   return (
     <ColorModeContext.Provider value={colorMode}>

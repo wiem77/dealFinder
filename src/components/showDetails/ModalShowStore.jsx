@@ -17,24 +17,25 @@ function ModalStore({ style, data, id }) {
   const [open, setOpen] = useState(false);
   const initialValues = {
     _id: data._id,
-    _id: data._id,
     store_name: data.store_name,
     phone: data.phone,
     category: data.category,
     email: data.email,
     rating: data.rating,
   };
-  const storesInfo = data.subCategoy.map((subCat) => ({
-    _idSub: subCat._id,
-    sub_name: subCat.subCategory_name,
+
+  const storesInfo = data?.subCategoy?.map((subCat) => ({
+    _idSub: subCat?._id,
+    sub_name: subCat?.subCategory_name,
   }));
-  const locationInfo = data.locations.map((loc) => ({
-    _idSub: loc._id,
-    adr: loc.formattedAddress,
-    laltitude: loc.coordinates[0],
-    longitude: loc.coordinates[1],
-    city: loc.city,
-    zipcode: loc.zipcode,
+
+  const locationInfo = data?.locations?.map((loc) => ({
+    _idSub: loc?._id,
+    adr: loc?.formattedAddress,
+    laltitude: loc?.coordinates[0],
+    longitude: loc?.coordinates[1],
+    city: loc?.city,
+    zipcode: loc?.zipcode,
   }));
 
   const handleClose = () => {
@@ -44,9 +45,11 @@ function ModalStore({ style, data, id }) {
   const handleOpen = async (id) => {
     setOpen(true);
   };
+
   const [selectedSubCat, setSelectedSubCat] = React.useState(
-    storesInfo.length > 0 ? storesInfo[0]._idSub : ''
+    storesInfo?.length > 0 ? storesInfo[0]?._idSub : ''
   );
+
   const [selectedLocation, setSelectedLocation] = React.useState(
     locationInfo.length > 0 ? locationInfo[0] : null
   );
@@ -100,19 +103,23 @@ function ModalStore({ style, data, id }) {
                     readOnly={false}
                     sx={{ gridColumn: 'span 2' }}
                   />
-                  <Select
-                    fullWidth
-                    value={selectedSubCat}
-                    onChange={(event) => setSelectedSubCat(event.target.value)}
-                    label="Sous-Catégorie"
-                    sx={{ gridColumn: 'span 4' }}
-                  >
-                    {storesInfo.map((cat) => (
-                      <MenuItem key={cat._idSub} value={cat._idSub}>
-                        {cat.sub_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  {storesInfo?.length > 0 && (
+                    <Select
+                      fullWidth
+                      value={selectedSubCat}
+                      onChange={(event) =>
+                        setSelectedSubCat(event.target.value)
+                      }
+                      label="Sous-Catégorie"
+                      sx={{ gridColumn: 'span 4' }}
+                    >
+                      {storesInfo?.map((cat) => (
+                        <MenuItem key={cat?._idSub} value={cat?._idSub}>
+                          {cat?.sub_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
 
                   <Select
                     label="Localisation"

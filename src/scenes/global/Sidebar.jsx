@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -19,6 +19,7 @@ import PieChartOutlineOutlinedIcon from '@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import { Category } from '@mui/icons-material';
+import { AuthContext } from '../../context/AuthProvider';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -43,7 +44,7 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState('Tableaux de Board');
-
+  const { isAuthenticated } = useContext(AuthContext);
   return (
     <Box
       sx={{
@@ -94,15 +95,17 @@ const Sidebar = () => {
 
           {!isCollapsed && (
             <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
+              {/* <Box display="flex" justifyContent="center" alignItems="center">
                 <img
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/user.png`}
+                  src={
+                    'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.iconfinder.com%2Ficons%2F1588014%2Fadmin_avatar_human_man_people_profile_user_icon&psig=AOvVaw0deW0csSjJ1euZTVKDm6R9&ust=1684581698401000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDN2v-hgf8CFQAAAAAdAAAAABAF'
+                  }
                   style={{ cursor: 'pointer', borderRadius: '50%' }}
                 />
-              </Box>
+              </Box> */}
               <Box textAlign="center">
                 <Typography
                   variant="h2"
@@ -193,13 +196,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Ajout d'une Catégorie"
-              to="/Addcategory"
-              icon={<Category />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
             <Item
               title="Notifications"
               to="/notification"

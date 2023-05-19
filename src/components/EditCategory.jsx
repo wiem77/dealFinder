@@ -17,8 +17,6 @@ const checkoutSchema = yup.object().shape({
     .required('Il est nécessaire  de spécifier le nom de la boutique'),
 });
 export default function EditCategory({ style, data, categoryId }) {
-  console.log('categoryId', categoryId);
-  console.log('NAMEEEEE', data);
   const [open, setOpen] = React.useState(false);
   const [categoryInfo, setCategoryInfo] = React.useState();
   const handleClose = () => {
@@ -99,12 +97,15 @@ export default function EditCategory({ style, data, categoryId }) {
                 >
                   <div>
                     {console.log(data)}
+
                     <img
                       //   src={
                       //     'http://localhost:4000/123.png'
                       //     // 'http://localhost:4000/123.png'
                       //   }
-                      src={data.category_image}
+                      src={
+                        'DesktopAll/DealFinder/server/image/test-png-1683798150797.png'
+                      }
                       alt="Category Image"
                       style={{
                         borderRadius: '50%',

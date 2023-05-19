@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Select, MenuItem, IconButton } from '@mui/material';
+import {
+  Box,
+  Select,
+  MenuItem,
+  IconButton,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -37,7 +44,7 @@ export default function DeletesCatfromCat({ style, data, id, sub }) {
   const handleDeleteSubCat = (subCat) => {
     const id = subCat.id;
     const name = subCat.name;
-    const confirmMessage = `êtes-vous sûr de vouloir supprimer la Boutique ${name}?`;
+    const confirmMessage = `êtes-vous sûr de vouloir supprimer cette Catégorie ${name}?`;
     const result = window.confirm(confirmMessage);
     if (result) {
       axios
@@ -71,10 +78,8 @@ export default function DeletesCatfromCat({ style, data, id, sub }) {
       >
         <Box sx={style}>
           <Header
-            title=" Liste des Coupons"
-            subtitle={
-              'Sélectionner une sous_Catégorie pour les supprimer' + ' - ' + id
-            }
+            title=" Liste des Sous_Catégories"
+            subtitle={'Sélectionner une sous_Catégorie pour les supprimer'}
           />
 
           <Formik>
@@ -90,25 +95,32 @@ export default function DeletesCatfromCat({ style, data, id, sub }) {
                     },
                   }}
                 >
-                  <Select
-                    fullWidth
-                    label="Sous_Catégories"
-                    multiple
-                    value={selectedSubCat}
-                    onChange={(event) => {
-                      setSelectedSubCat(event.target.value);
-                    }}
-                    sx={{ gridColumn: 'span 4' }}
-                  >
-                    {availableCoupons.map((cat) => (
-                      <MenuItem
-                        key={cat._idc}
-                        value={{ id: cat._idc, name: cat.name_c }}
-                      >
-                        {cat.name_c}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel id="Sous_Catégories-label">
+                      Sous Catégories
+                    </InputLabel>
+
+                    <Select
+                      labelId="Sous_Catégories-label"
+                      id="Sous_Catégories"
+                      fullWidth
+                      multiple
+                      value={selectedSubCat}
+                      onChange={(event) => {
+                        setSelectedSubCat(event.target.value);
+                      }}
+                      sx={{ gridColumn: 'span 4' }}
+                    >
+                      {availableCoupons.map((cat) => (
+                        <MenuItem
+                          key={cat._idc}
+                          value={{ id: cat._idc, name: cat.name_c }}
+                        >
+                          {cat.name_c}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   <Box
                     display="flex"
                     alignItems="center"

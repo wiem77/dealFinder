@@ -62,7 +62,7 @@ export const CategoryList = ({ categories }) => {
         style={[styles.button, selectedCategory && styles.buttonSelected]}
       >
         <Text style={styles.buttonText}>
-          {selectedCategory ? selectedCategory : 'Rechercher une catégorie'}
+          {!showPicker ? 'Rechercher une catégorie' : selectedCategory}
         </Text>
       </TouchableOpacity>
 
@@ -135,11 +135,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
-  picker: {
-    height: 40,
-    width: 200,
-    marginBottom: 10,
-  },
+
   pickerItem: {
     fontSize: 16,
   },

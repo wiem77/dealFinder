@@ -2,44 +2,57 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   FlatList,
-  Alert,
   TouchableOpacity,
-  SafeAreaView,
 } from 'react-native';
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
+
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+
 import { Colors } from '../../constants/Colors';
-import { CategoryContext } from '../../context/CtegoryProvider';
-import { ScrollView } from 'react-native-gesture-handler';
-import CustomBtn from '../../components/customBtn';
-import {
-  Ionicons,
-  FontAwesome5,
-  MaterialIcons,
-  MaterialCommunityIcons,
-  AntDesign,
-} from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
+
+import { ScrollView } from 'react-native-gesture-handler';
+
+import { Ionicons } from '@expo/vector-icons';
+
 import { StoreContext } from '../../context/StoreProvider';
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
-import Navigation from '../../navigation/Navigation';
-export const CategoryList = ({ categories }) => {
+
+export const CategoryList = ({ categories, showNewItems }) => {
   const { stores } = useContext(StoreContext);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedStores, setSelectedStores] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
   const navigation = useNavigation();
+
   const handleCategoryChange = (categoryValue) => {
-    console.log('categoryValue', categoryValue);
     setSelectedCategory(categoryValue);
     setSelectedSubCategory(null);
+
+    if (categoryValue) {
+      const selectedCategoryObj = categories.categories.find(
+        (category) => category?.category_name === categoryValue
+      );
+
+      if (selectedCategoryObj) {
+        setSelectedStores(
+          selectedCategoryObj.subcategories.flatMap(
+            (subCategory) => subCategory.stores
+          )
+        );
+      }
+    } else {
+      setSelectedStores(stores);
+    }
   };
   const pickerRef = useRef(null);
+  useEffect(() => {
+    setSelectedStores(stores);
+  }, [stores]);
 
   const handleSubCategoryChange = (subCategoryValue) => {
     setSelectedSubCategory(subCategoryValue);
@@ -113,7 +126,7 @@ export const CategoryList = ({ categories }) => {
         </View>
       )}
 
-      {selectedCategory && (
+      {selectedCategory ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.categoryContainer}>
             {categories.categories
@@ -142,7 +155,32 @@ export const CategoryList = ({ categories }) => {
               ))}
           </View>
         </ScrollView>
+      ) : (
+        <View style={styles.newItemsContainer}>
+          <Text style={styles.categoryName}>Nouveauté</Text>
+          {stores && (
+            <FlatList
+              data={stores}
+              keyExtractor={(item) => item._id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.newItemsList}
+              renderItem={({ item }) => (
+                <CustomCard
+                  storeName={item.store_name}
+                  distance={Object.values(item.locations)[0].city}
+                  voucher={Object.values(item.vouchers)[0]?.discount}
+                  subCategory={
+                    Object.values(item.sub_categories)[0]?.subCategory_name
+                  }
+                  onPress={() => console.log('Store Pressed', item.store_name)}
+                />
+              )}
+            />
+          )}
+        </View>
       )}
+
       <View style={styles.flatListContainer}>
         <FlatList
           data={selectedStores}
@@ -167,6 +205,7 @@ export const CategoryList = ({ categories }) => {
               />
             </View>
           )}
+          ListHeaderComponent={<View style={{ flex: 1 }} />}
         />
       </View>
     </View>
@@ -199,9 +238,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#EFEFEF',
   },
+  cardContainer: {
+    marginHorizontal: 10,
+    marginBottom: 10,
+  },
+  flatListContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
   pickerItem: {
     fontSize: 16,
     color: '#333333',
+    marginHorizontal: 10,
   },
   closeButton: {
     backgroundColor: Colors.darkred,
@@ -237,51 +285,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: Colors.red,
   },
+
+  newItemsContainer: {
+    marginVertical: 10,
+  },
+  newItemsList: {
+    paddingLeft: 10,
+  },
+  categoryName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    paddingLeft: 10,
+  },
 });
 
 export default styles;
-
-// const style = StyleSheet.create({
-//   picker: {
-//     height: 150,
-//     width: 200,
-//     alignSelf: 'center',
-//     marginBottom: 10,
-//   },
-//   pickerItem: {
-//     height: 150,
-//   },
-//   categoryContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     padding: 10,
-//   },
-//   categoryItem: {
-//     marginRight: 10,
-//     paddingVertical: 5,
-//     paddingHorizontal: 10,
-//     borderRadius: 10,
-//     backgroundColor: 'lightgray',
-//   },
-//   categoryText: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-//   categoryContainer: {
-//     flexDirection: 'row',
-//     marginTop: 30,
-//     marginBottom: 20,
-//     justifyContent: 'space-between',
-//   },
-//   categoryItem: {
-//     marginRight: 10,
-//   },
-
-//   categoryText: { fontSize: 16, color: 'grey', fontWeight: 'bold' },
-//   categoryTextSelected: {
-//     color: Colors.red,
-//     paddingBottom: 5,
-//     borderBottomWidth: 2,
-//     borderColor: Colors.red,
-//   },
-// });

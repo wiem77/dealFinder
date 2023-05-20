@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { Colors } from '../../constants/Colors';
@@ -35,7 +35,7 @@ export const CategoryList = ({ categories }) => {
     setSelectedCategory(categoryValue);
     setSelectedSubCategory(null);
   };
-
+  const pickerRef = useRef(null);
   const handleSubCategoryChange = (subCategoryValue) => {
     setSelectedSubCategory(subCategoryValue);
 
@@ -55,10 +55,21 @@ export const CategoryList = ({ categories }) => {
 
   console.log('selectedCategory', selectedCategory);
 
+  const openPicker = () => {
+    setShowPicker(true);
+  };
+
+  const closePicker = () => {
+    setShowPicker(false);
+    if (pickerRef.current) {
+      pickerRef.current.blur();
+    }
+  };
+
   return (
     <View>
       <TouchableOpacity
-        onPress={() => setShowPicker(!showPicker)}
+        onPress={openPicker}
         style={[styles.button, selectedCategory && styles.buttonSelected]}
       >
         <Text style={styles.buttonText}>
@@ -67,21 +78,27 @@ export const CategoryList = ({ categories }) => {
       </TouchableOpacity>
 
       {showPicker && (
-        <Picker
-          selectedValue={selectedCategory}
-          onValueChange={handleCategoryChange}
-          style={styles.picker}
-          itemStyle={styles.pickerItem}
-        >
-          <Picker.Item label="Sélectionnez une catégorie" value={null} />
-          {categories.categories.map((category) => (
-            <Picker.Item
-              key={category._id}
-              label={category.category_name}
-              value={category.category_name}
-            />
-          ))}
-        </Picker>
+        <View>
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={handleCategoryChange}
+            style={styles.picker}
+            itemStyle={styles.pickerItem}
+            ref={pickerRef}
+          >
+            <Picker.Item label="Sélectionnez une catégorie" value={null} />
+            {categories.categories.map((category) => (
+              <Picker.Item
+                key={category._id}
+                label={category.category_name}
+                value={category.category_name}
+              />
+            ))}
+          </Picker>
+          <TouchableOpacity onPress={closePicker} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Fermer</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       {selectedCategory && (
@@ -117,27 +134,42 @@ export const CategoryList = ({ categories }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#4CAF50',
     padding: 10,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'black',
     borderRadius: 5,
   },
   buttonSelected: {
-    backgroundColor: 'blue',
+    backgroundColor: '#2196F3',
   },
   buttonText: {
     fontSize: 16,
     textAlign: 'center',
-    color: 'black',
+    color: 'white',
   },
-
+  picker: {
+    width: '100%',
+    height: 200,
+    marginBottom: 10,
+    backgroundColor: '#EFEFEF',
+  },
   pickerItem: {
     fontSize: 16,
+    color: '#333333',
+  },
+  closeButton: {
+    backgroundColor: '#FF4081',
+    padding: 10,
+    marginTop: 10,
+    alignSelf: 'center',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'white',
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -150,11 +182,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#CCCCCC',
     borderRadius: 5,
+    color: '#333333',
   },
   categoryTextSelected: {
-    backgroundColor: 'blue',
+    backgroundColor: '#FF4081',
     color: 'white',
   },
 });

@@ -15,7 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Colors } from '../../constants/Colors';
 import { CategoryContext } from '../../context/CtegoryProvider';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import CustomBtn from '../../components/customBtn';
 import {
   Ionicons,
   FontAwesome5,
@@ -25,17 +25,22 @@ import {
 } from '@expo/vector-icons';
 import { FontSize } from '../../constants/FontSize';
 import { StoreContext } from '../../context/StoreProvider';
+import VerticalStoreCard from '../../components/verticalCard/StoreCard';
+import Navigation from '../../navigation/Navigation';
 export const CategoryList = ({ categories }) => {
+  const { stores } = useContext(StoreContext);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedStores, setSelectedStores] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
+  const navigation = useNavigation();
   const handleCategoryChange = (categoryValue) => {
-    console.log('tetststst');
     console.log('categoryValue', categoryValue);
     setSelectedCategory(categoryValue);
     setSelectedSubCategory(null);
   };
   const pickerRef = useRef(null);
+
   const handleSubCategoryChange = (subCategoryValue) => {
     setSelectedSubCategory(subCategoryValue);
 
@@ -46,13 +51,18 @@ export const CategoryList = ({ categories }) => {
       );
 
     if (selectedSubCategoryObj) {
-      console.log(
-        'Selected Subcategory Stores:',
-        selectedSubCategoryObj?.stores
-      );
+      setSelectedStores(selectedSubCategoryObj.stores);
+      console.log(selectedSubCategoryObj.stores);
     }
   };
+  const handleStoreSelected = (store_id) => {
+    console.log('store_id', store_id);
+    console.log('store_id', store_id);
+    const selectedStore = stores?.find((store) => store._id === store_id);
+    console.log('selectedStore', selectedStore);
 
+    navigation.navigate('Store', { selectedStore: selectedStore });
+  };
   console.log('selectedCategory', selectedCategory);
 
   const openPicker = () => {
@@ -72,6 +82,7 @@ export const CategoryList = ({ categories }) => {
         onPress={openPicker}
         style={[styles.button, selectedCategory && styles.buttonSelected]}
       >
+        <Ionicons name="search" size={24} color="black" />
         <Text style={styles.buttonText}>
           {!showPicker ? 'Rechercher une catégorie' : selectedCategory}
         </Text>
@@ -95,6 +106,7 @@ export const CategoryList = ({ categories }) => {
               />
             ))}
           </Picker>
+
           <TouchableOpacity onPress={closePicker} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Fermer</Text>
           </TouchableOpacity>
@@ -131,23 +143,55 @@ export const CategoryList = ({ categories }) => {
           </View>
         </ScrollView>
       )}
+      <View style={styles.flatListContainer}>
+        <FlatList
+          data={selectedStores}
+          keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+          contentContainerStyle={{ paddingHorizontal: 5 }}
+          renderItem={({ item }) => (
+            <View style={styles.cardContainer}>
+              <VerticalStoreCard
+                key={item._id}
+                storeName={item.store_name}
+                distance={Object.values(item.locations)[0].city}
+                voucher={Object.values(item.vouchers)[0]?.discount}
+                subCategory={
+                  Object.values(item.sub_categories)[0].subCategory_name
+                }
+                onPressStore={() => handleStoreSelected(item._id)}
+                onPressFavorite={() =>
+                  handleFavorite(userId, item._id, isFavorite, item.store_name)
+                }
+              />
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    marginBottom: 10,
+    marginTop: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 5,
+    width: '70%',
   },
+
   buttonSelected: {
-    backgroundColor: '#2196F3',
+    backgroundColor: 'white',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 15,
+    fontFamily: 'inter',
     textAlign: 'center',
-    color: 'white',
+    color: Colors.dark,
   },
   picker: {
     width: '100%',
@@ -160,7 +204,7 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   closeButton: {
-    backgroundColor: '#FF4081',
+    backgroundColor: Colors.darkred,
     padding: 10,
     marginTop: 10,
     alignSelf: 'center',
@@ -173,6 +217,8 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     flexDirection: 'row',
+    marginTop: 30,
+    marginBottom: 20,
   },
   categoryItem: {
     marginRight: 10,
@@ -181,14 +227,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    borderWidth: 1,
     borderColor: '#CCCCCC',
     borderRadius: 5,
     color: '#333333',
   },
   categoryTextSelected: {
-    backgroundColor: '#FF4081',
-    color: 'white',
+    color: Colors.red,
+    paddingBottom: 5,
+    borderBottomWidth: 2,
+    borderColor: Colors.red,
   },
 });
 

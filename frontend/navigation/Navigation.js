@@ -1,6 +1,6 @@
-import { StyleSheet, Image, View } from 'react-native';
+import { StyleSheet, Image, View, TouchableOpacity } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import WelcomeScreen from '../screens/WelcomeScreen/WelcomeScreen';
@@ -24,6 +24,7 @@ import IconButton from '../components/iconButton/IconBtn';
 import QrReservation from '../screens/reservationQR/QrReservation';
 import HistoryScreen from '../screens/HistoryScreen/HistoryScreen';
 import DrawerNavigation from './DrawerNavigation';
+import { AntDesign } from '@expo/vector-icons';
 
 const ConsumerStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();

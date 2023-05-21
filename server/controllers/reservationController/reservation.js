@@ -362,6 +362,7 @@ exports.resetArchivedReservations = async (req, res) => {
 module.exports.getAllReservationByIDUSer = async (req, res) => {
   console.log('resssssssssssssssssssssssss');
   const userId = req.params.userId;
+  console.log('userId', userId);
   try {
     const reservations = await Reservation.find({
       user: userId,

@@ -239,3 +239,63 @@ module.exports.getUsers = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+module.exports.updateUserPassword = async (req, res) => {
+  const { newPassword, confirmPassword } = req.body;
+
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    console.log(newPassword, confirmPassword);
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message:
+          'Le nouveau mot de passe et la confirmation ne correspondent pas',
+      });
+    }
+    const salt = await bcrypt.genSalt(Number(process.env.SALT));
+    const hashPwd = await bcrypt.hash(newPassword, salt);
+    const confirmhashPwd = await bcrypt.hash(confirmPassword, salt);
+    user.password = hashPwd;
+    user.confirmpassword = confirmhashPwd;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: 'Mot de passe mis à jour avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du mot de passe', error);
+    return res.status(500).json({
+      message: 'Une erreur est survenue lors de la mise à jour du mot de passe',
+    });
+  }
+};
+module.exports.updateUser = async (req, res) => {
+  const { userId } = req.params;
+  const { email, telephone } = req.body;
+  console.log(email, telephone);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    if (email && email !== user.email) {
+      user.email = email;
+    }
+    if (telephone && telephone !== user.telephone) {
+      user.telephone = telephone;
+    }
+    await user.save();
+    res
+      .status(200)
+      .json({ message: 'Utilisateur mis à jour avec succès', user });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        message:
+          "Une erreur est survenue lors de la mise à jour de l'utilisateur",
+      });
+  }
+};

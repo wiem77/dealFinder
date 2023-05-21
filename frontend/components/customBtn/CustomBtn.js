@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 6,
     flexDirection: 'row',
-  justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
 
     ...Platform.select({
@@ -80,6 +80,32 @@ const styles = StyleSheet.create({
 
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  container_REDBTN3: {
+    backgroundColor: Colors.darkred,
+    width: wp('70%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  container_WHITE3: {
+    backgroundColor: Colors.backgroundWhite,
+    width: wp('70%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  text_WHITE3: {
+    color: Colors.darkred,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   text_REDBTN2: {
     color: Colors.white,
@@ -121,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.medium,
     fontWeight: '500',
     lineHeight: 19,
-    padding:5,
+    padding: 5,
   },
   text_SECONDARY: {
     color: Colors.black,

@@ -18,6 +18,7 @@ const Custominput = ({
   iconName,
   defaultValue,
   placeHolder,
+  type = 'PRIMARY',
 }) => {
   return (
     <View>
@@ -31,7 +32,11 @@ const Custominput = ({
         }) => (
           <>
             <View
-              style={[styles.inputContainer, error && styles.errorContainer]}
+              style={[
+                styles.inputContainer,
+                styles[`inputContainer_${type}`],
+                error && styles.errorContainer,
+              ]}
             >
               <TextInput
                 value={value}
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: wp('80%'),
     height: wp('13%'),
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: Colors.text,
     borderRadius: 8,
     backgroundColor: Colors.white, // Add this line
@@ -79,7 +84,7 @@ const styles = StyleSheet.create({
           height: 4,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 10,
+        shadowRadius: 2,
       },
       android: {
         shadowColor: Colors.black,
@@ -88,7 +93,41 @@ const styles = StyleSheet.create({
           height: 4,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 10,
+        shadowRadius: 1,
+        elevation: 0,
+        overflow: 'hidden',
+      },
+    }),
+  },
+  inputContainer_PRIMARY: {},
+  inputContainer_THERD: { width: wp('55%') },
+  inputContainer_SEC: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: wp('70%'),
+    height: wp('13%'),
+    borderWidth: 0.5,
+    borderColor: Colors.text,
+    borderRadius: 8,
+    backgroundColor: Colors.white,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.black,
+        shadowOffset: {
+          width: 1,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 2,
+      },
+      android: {
+        shadowColor: Colors.black,
+        shadowOffset: {
+          width: 1,
+          height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 1,
         elevation: 0,
         overflow: 'hidden',
       },

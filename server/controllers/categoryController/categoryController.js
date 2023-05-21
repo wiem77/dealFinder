@@ -113,10 +113,29 @@ module.exports.updateCategory = async (req, res) => {
 };
 
 module.exports.getAllCategories = (req, res) => {
-  console.log('get all .category....');
+  console.log('get all categories....');
   Category.find({})
-    .populate('subcategories', 'subCategory_name')
-
+    .populate({
+      path: 'subcategories',
+      populate: {
+        path: 'stores',
+        model: 'Store',
+        select: '-accesscode',
+        populate: [
+          {
+            path: 'vouchers',
+            model: 'Voucher',
+          },
+          {
+            path: 'locations',
+            model: 'Location',
+          },
+        ],
+        match: {
+          vouchers: { $gt: [] }, // Condition pour vérifier si le tableau des vouchers n'est pas vide
+        },
+      },
+    })
     .populate('category_image')
     .then((categories) => {
       res.status(200).send({ success: true, categories: categories });

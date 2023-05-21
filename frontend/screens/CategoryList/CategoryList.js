@@ -69,8 +69,6 @@ export const CategoryList = ({ categories, showNewItems }) => {
     }
   };
   const handleStoreSelected = (store_id) => {
-    console.log('store_id', store_id);
-    console.log('store_id', store_id);
     const selectedStore = stores?.find((store) => store._id === store_id);
     console.log('selectedStore', selectedStore);
 
@@ -216,11 +214,13 @@ const styles = StyleSheet.create({
     marginTop: 30,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'white',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    width: '70%',
+
+    width: '100%',
   },
 
   buttonSelected: {
@@ -231,12 +231,14 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
     textAlign: 'center',
     color: Colors.dark,
+    justifyContent: 'center',
   },
   picker: {
     width: '100%',
     height: 200,
     marginBottom: 10,
     backgroundColor: '#EFEFEF',
+    alignSelf: 'center',
   },
   cardContainer: {
     marginHorizontal: 10,
@@ -285,19 +287,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: Colors.red,
   },
-
   newItemsContainer: {
-    marginVertical: 10,
+    marginTop: 10,
+    paddingHorizontal: 10,
   },
   newItemsList: {
-    paddingLeft: 10,
+    paddingVertical: 10,
   },
   categoryName: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    paddingLeft: 10,
   },
 });
-
 export default styles;

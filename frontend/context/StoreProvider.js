@@ -32,8 +32,15 @@ export const StoresProvider = ({ children }) => {
       })
       .catch((error) => console.error(error));
   }, []);
+  function RemoveStore() {
+    AsyncStorage.removeItem('stores');
+    setStores(null);
+    console.log('deleted Store');
+  }
 
   return (
-    <StoreContext.Provider value={{ stores }}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={{ stores, RemoveStore }}>
+      {children}
+    </StoreContext.Provider>
   );
 };

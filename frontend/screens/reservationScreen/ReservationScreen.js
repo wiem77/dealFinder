@@ -29,7 +29,7 @@ const ReservationScreen = () => {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          console.log('reservationUse ');
+          console.log('reservationUse', user);
           const storedData = await AsyncStorage.getItem('reservationData');
           if (storedData) {
             const response = await axios.get(

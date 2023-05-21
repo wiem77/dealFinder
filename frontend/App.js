@@ -6,6 +6,7 @@ import Navigation from './navigation/Navigation';
 import { AuthContext, AuthProvider } from './context/AuthProvider';
 import { StoresProvider } from './context/StoreProvider';
 import 'react-native-gesture-handler';
+import { CategoryProvider } from './context/CtegoryProvider';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
@@ -13,10 +14,12 @@ export default function App() {
   }
   return (
     <StoresProvider>
-      <AuthProvider>
-        <StatusBar style="auto" />
-        <Navigation />
-      </AuthProvider>
+      <CategoryProvider>
+        <AuthProvider>
+          <StatusBar style="auto" />
+          <Navigation />
+        </AuthProvider>
+      </CategoryProvider>
     </StoresProvider>
   );
 }

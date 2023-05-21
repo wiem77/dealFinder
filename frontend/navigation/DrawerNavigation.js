@@ -14,11 +14,16 @@ import {
 } from '@react-navigation/drawer';
 import ContactScreen from '../screens/contactScreen/ContactScreen';
 import TabNavigation from './TabNavigtaion';
+import { CategoryContext } from '../context/CtegoryProvider';
+import { StoreContext, StoresProvider } from '../context/StoreProvider';
 const DrawerContent = (props) => {
   const authCtx = useContext(AuthContext);
-
+  const catCtx = useContext(CategoryContext);
+  const storeCtx = useContext(StoreContext);
   const handleLogout = () => {
     authCtx.logout();
+    storeCtx.RemoveStore();
+    catCtx.RemoveCat();
   };
   return (
     <DrawerContentScrollView {...props}>
@@ -53,6 +58,7 @@ const DrawerNavigation = () => {
         activeTintColor: 'black',
         inactiveTintColor: 'gray',
         labelStyle: { fontSize: 16 },
+        headerShown: false,
       }}
       drawerContent={(props) => <DrawerContent {...props} />}
     >

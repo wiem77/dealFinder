@@ -78,8 +78,9 @@ function AuthStack() {
       <Stack.Screen name="OtpScreen" component={OtpScreen} />
       <Stack.Screen name="SucessScreen" component={SucessScreen} />
       <Stack.Screen name="Home" component={TabNavigation} />
-      <Stack.Screen name="QrCode" component={QrCodeScreen} />
       <Stack.Screen name="Store" component={StoreScreen} />
+      <Stack.Screen name="QrCode" component={QrCodeScreen} />
+
       <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
 
@@ -90,30 +91,16 @@ function AuthStack() {
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
   return (
-    <DrawerNavigation>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={TabNavigation}
-          options={{
-            headerRight: () => (
-              <IconButton
-                icon="exit"
-                color={'black'}
-                size={28}
-                onPress={authCtx.logout}
-              />
-            ),
-          }}
-        />
-        <Stack.Screen name="History" component={HistoryScreen} />
-        <Stack.Screen name="Store" component={StoreScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Voucher" component={VoucherScreen} />
-        <Stack.Screen name="QrCode" component={QrCodeScreen} />
-        <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
-      </Stack.Navigator>
-    </DrawerNavigation>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Drawer" component={DrawerNavigation} />
+      <Stack.Screen name="Home" component={TabNavigation} />
+      <Stack.Screen name="History" component={HistoryScreen} />
+      <Stack.Screen name="Store" component={StoreScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Voucher" component={VoucherScreen} />
+      <Stack.Screen name="QrCode" component={QrCodeScreen} />
+      <Stack.Screen name="QrCpdeReservation" component={QrReservation} />
+    </Stack.Navigator>
   );
 }
 function NavigationCheckAuth() {

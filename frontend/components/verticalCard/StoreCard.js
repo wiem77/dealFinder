@@ -33,7 +33,7 @@ export default function VerticalStoreCard({
       voucher,
     });
   };
-  console.log('testtttttttttttttttt');
+
   return (
     <TouchableOpacity onPress={onPressStore}>
       <View style={styles.container}>
@@ -44,11 +44,13 @@ export default function VerticalStoreCard({
             >
               <Text style={styles.storeName}>{storeName}</Text>
               <TouchableOpacity onPress={handlePressFavorite}>
-                <Entypo
-                  name={favorite ? 'heart' : 'heart-outlined'}
-                  size={24}
-                  color={Colors.red}
-                />
+                <View style={styles.circle}>
+                  <Ionicons
+                    name={favorite ? 'heart-sharp' : 'heart-outline'}
+                    size={25}
+                    color={favorite ? Colors.red : 'white'}
+                  />
+                </View>
               </TouchableOpacity>
             </View>
             <Text style={styles.subCategory}>{subCategory}</Text>
@@ -75,7 +77,7 @@ export default function VerticalStoreCard({
 }
 
 const { width } = Dimensions.get('window');
-const cardWidth = width * 0.4;
+const cardWidth = width * 0.3;
 const cardHeight = cardWidth * 1.5;
 
 const styles = StyleSheet.create({
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 20,
   },
+
   imageBackground: {
     width: '100%',
     height: '100%',
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
   },
   subCategory: {
     color: Colors.white,
-    fontSize: FontSize.small,
+    fontSize: FontSize.xxsmall,
     fontWeight: 'bold',
     backgroundColor: Colors.background,
     padding: 5,
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.grey,
   },
   storeName: {
-    fontSize: FontSize.medium,
+    fontSize: FontSize.small,
     fontWeight: 'bold',
     color: Colors.grey,
     backgroundColor: 'rgba(245, 245, 245, 0.4)',

@@ -181,7 +181,14 @@ module.exports.signIn = async (req, res) => {
         refreshToken,
         message: 'Logged in successfully as admin',
         role: user.roles,
-        user: user,
+        user: {
+          _id: user._id,
+          name: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          password: user.password,
+          roles: user.roles,
+        },
       });
     } else {
       return res.status(200).send({

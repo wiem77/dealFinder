@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Alert, SafeAreaView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -71,35 +78,23 @@ const HomeScreen = () => {
       showAlert(`error`, `${error.message}`);
     }
   };
+  const DrawerHeader = () => {
+    const navigation = useNavigation();
 
+    const handleDrawerOpen = () => {
+      navigation.openDrawer();
+    };
+
+    return (
+      <TouchableOpacity onPress={handleDrawerOpen}>
+        <AntDesign name="menuunfold" size={40} color="black" />
+      </TouchableOpacity>
+    );
+  };
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        paddingHorizontal: 20,
-        backgroundColor: '#FAF7F4',
-      }}
-    >
-      <View style={style.header}>
-        <View>
-          <Text style={{ fontSize: 25, fontWeight: '600' }}>Binvenue</Text>
-          <Text style={{ fontSize: 38, color: Colors.red, fontWeight: '600' }}>
-            DealFinder
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'center',
-            paddingRight: 15,
-          }}
-        >
-          <AntDesign name="appstore-o" size={45} color="black" />
-          <Text style={{ paddingVertical: 5 }}>Catégories</Text>
-        </View>
-      </View>
+    <>
       <CategoryList categories={categories} showNewItems={showNewItems} />
-    </SafeAreaView>
+    </>
   );
 };
 

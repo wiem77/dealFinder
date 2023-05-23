@@ -22,6 +22,7 @@ import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 import { Select, CheckIcon, Box, Center, Input, HStack } from 'native-base';
 import { Card as NativeBaseCard } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
+import Search from '../../components/SerachBar/Search';
 
 export const CategoryList = ({ categories, showNewItems }) => {
   const { stores } = useContext(StoreContext);
@@ -30,7 +31,7 @@ export const CategoryList = ({ categories, showNewItems }) => {
   const [selectedStores, setSelectedStores] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
   const navigation = useNavigation();
-
+  console.log('categroires', categories);
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
     setSelectedSubCategory(null);
@@ -51,10 +52,6 @@ export const CategoryList = ({ categories, showNewItems }) => {
       setSelectedStores(stores);
     }
   };
-  const pickerRef = useRef(null);
-  useEffect(() => {
-    setSelectedStores(stores);
-  }, [stores]);
 
   const handleSubCategoryChange = (subCategoryValue) => {
     setSelectedSubCategory(subCategoryValue);
@@ -78,57 +75,45 @@ export const CategoryList = ({ categories, showNewItems }) => {
   };
   console.log('selectedCategory', selectedCategory);
 
-  const openPicker = () => {
-    setShowPicker(true);
-  };
-
-  const closePicker = () => {
-    setShowPicker(false);
-    if (pickerRef.current) {
-      pickerRef.current.blur();
-    }
-  };
-
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { marginLeft: 20 }]}>
         <View style={styles.header}>
           <View>
             <Text style={styles.welcomeText}>Bienvenue</Text>
             <Text style={styles.appName}>DealFinder</Text>
           </View>
           <View style={styles.iconContainer}>
-            {/* Add your icon components here */}
+            <Ionicons name="cart-outline" size={35} color="black" />
           </View>
         </View>
       </SafeAreaView>
+      <Search />
       <View style={styles.content}>
-        <Center>
-          <Box>
-            <Select
-              selectedValue={selectedCategory}
-              minWidth="200"
-              accessibilityLabel="Choose Category"
-              placeholder="Choose Category"
-              _selectedItem={{
-                bg: 'danger.50',
-                endIcon: <CheckIcon size="5" />,
-              }}
-              mt={1}
-              onValueChange={handleCategoryChange}
-              colorScheme="danger"
-            >
-              <Select.Item label="Sélectionnez une catégorie" value={null} />
-              {categories.categories.map((category) => (
-                <Select.Item
-                  key={category._id}
-                  label={category.category_name}
-                  value={category.category_name}
-                />
-              ))}
-            </Select>
-          </Box>
-        </Center>
+        <Box mx={4}>
+          <Select
+            selectedValue={selectedCategory}
+            minWidth="200"
+            accessibilityLabel="Choose Category"
+            placeholder="Choose Category"
+            _selectedItem={{
+              bg: 'danger.50',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={9}
+            onValueChange={handleCategoryChange}
+            colorScheme="danger"
+          >
+            <Select.Item label="Sélectionnez une catégorie" value={null} />
+            {categories.categories.map((category) => (
+              <Select.Item
+                key={category._id}
+                label={category.category_name}
+                value={category.category_name}
+              />
+            ))}
+          </Select>
+        </Box>
 
         {selectedCategory ? (
           <ScrollView
@@ -198,7 +183,7 @@ export const CategoryList = ({ categories, showNewItems }) => {
             styles.flatListContainer,
             {
               flex: selectedCategory === null ? 1 : 0,
-              marginTop: selectedCategory !== null ? 10 : 0,
+              marginTop: selectedCategory !== null ? '10%' : 15,
             },
           ]}
         >
@@ -242,6 +227,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundWhite,
   },
+  categoryItem: { marginTop: '15%' },
+
   safeArea: {
     paddingHorizontal: 20,
     backgroundColor: '#FAF7F4',
@@ -266,7 +253,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   content: {
-    flex: 1,
+    flex: 0,
   },
   button: {
     marginTop: 30,
@@ -289,34 +276,11 @@ const styles = StyleSheet.create({
     color: Colors.dark,
     justifyContent: 'center',
   },
-  picker: {
-    width: '100%',
-    height: 200,
-    marginBottom: 10,
-    backgroundColor: '#EFEFEF',
-    alignSelf: 'center',
-  },
-  pickerItem: {
-    fontSize: 16,
-    color: '#333333',
-    marginHorizontal: 10,
-  },
-  closeButton: {
-    backgroundColor: Colors.darkred,
-    padding: 10,
-    marginTop: 10,
-    alignSelf: 'center',
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'white',
-  },
+
   categoryListContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 10, // Ajustez cette valeur selon vos préférences
+    marginTop: 10,
   },
 
   newItemsContainer: {
@@ -367,6 +331,7 @@ const styles = StyleSheet.create({
 
   flatListContent: {
     paddingHorizontal: 5,
+    // flexGrow: 1,
   },
   cardContainer: {
     width: '40%',

@@ -274,6 +274,7 @@ const ProfileScreen = () => {
                     <Text style={styles.text}>{user.telephone}</Text>
                   </View>
                 </View>
+                <View style={styles.divider} />
                 <CustomBtn
                   text="Modifier mot de passe"
                   onPress={handleEditPassword}
@@ -282,6 +283,7 @@ const ProfileScreen = () => {
                   sizeIcon={20}
                   colorIcon={Colors.white}
                 />
+                <View style={styles.divider} />
                 <CustomBtn
                   text="Modifier donnée"
                   onPress={handleEditData}
@@ -303,6 +305,12 @@ const styles = StyleSheet.create({
     flex: 1,
 
     backgroundColor: '#FBF5F5',
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    backgroundColor: 'lightgray',
+    marginVertical: 10,
   },
   contentContainer: {
     borderTopLeftRadius: 25,
@@ -332,9 +340,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageContainer: {
-    marginTop: 10,
+    marginTop: 20,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+
+  profileImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    borderWidth: 3,
+    borderColor: 'lightgray',
   },
   profileImage: {
     width: 100,
@@ -392,94 +408,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-
-//     backgroundColor: '#FBF5F5',
-//   },
-//   contentContainer: {
-//     borderTopLeftRadius: 25,
-//     borderTopRightRadius: 25,
-//     backgroundColor: Colors.white,
-//     paddingHorizontal: '10%',
-//     paddingVertical: height * 0.05,
-//     marginTop: '4%',
-//     width: '100%',
-//     flex: 1,
-//     alignItems: 'center',
-//     ...Platform.select({
-//       ios: {
-//         shadowColor: '#000',
-//         shadowOffset: { width: 1, height: 1 },
-//         shadowOpacity: 1,
-//         shadowRadius: 1,
-//       },
-//       android: {
-//         elevation: 10,
-//       },
-//     }),
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   imageContainer: {
-//     alignItems: 'center',
-//     marginBottom: 20,
-//   },
-//   profileImage: {
-//     width: 100,
-//     height: 100,
-//     borderRadius: 50,
-//   },
-//   infoContainer: {
-//     marginBottom: 20,
-//   },
-//   row: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     marginBottom: 5,
-//   },
-//   label: {
-//     fontSize: 16,
-//     marginRight: 5,
-//   },
-//   text: {
-//     fontSize: 16,
-//   },
-//   input: {
-//     height: 80,
-
-//     marginBottom: 10,
-//     paddingHorizontal: 10,
-//   },
-//   button: {
-//     backgroundColor: 'blue',
-//     padding: 10,
-//     borderRadius: 5,
-//     alignItems: 'center',
-//     marginBottom: 10,
-//   },
-//   buttonText: {
-//     color: 'white',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-//   editButton: {
-//     backgroundColor: 'lightblue',
-//     padding: 10,
-//     borderRadius: 5,
-//     alignItems: 'center',
-//     marginBottom: 10,
-//   },
-//   editButtonText: {
-//     color: 'black',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-// });
 
 export default ProfileScreen;

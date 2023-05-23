@@ -7,19 +7,30 @@ import { AuthContext, AuthProvider } from './context/AuthProvider';
 import { StoresProvider } from './context/StoreProvider';
 import 'react-native-gesture-handler';
 import { CategoryProvider } from './context/CtegoryProvider';
+import { NativeBaseProvider, extendTheme } from 'native-base';
 export default function App() {
+  const newColorTheme = {
+    brand: {
+      900: '#8287af',
+      800: '#7c83db',
+      700: '#b3bef6',
+    },
+  };
+  const theme = extendTheme({ colors: newColorTheme });
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
   return (
-    <StoresProvider>
-      <CategoryProvider>
-        <AuthProvider>
-          <StatusBar style="auto" />
-          <Navigation />
-        </AuthProvider>
-      </CategoryProvider>
-    </StoresProvider>
+    <NativeBaseProvider theme={theme}>
+      <StoresProvider>
+        <CategoryProvider>
+          <AuthProvider>
+            <StatusBar style="auto" />
+            <Navigation />
+          </AuthProvider>
+        </CategoryProvider>
+      </StoresProvider>
+    </NativeBaseProvider>
   );
 }

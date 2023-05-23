@@ -98,62 +98,62 @@ const ReservationScreen = () => {
           data={reservationData}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.reservationCard,
+    <TouchableOpacity
+      style={[
+        styles.reservationCard,
                 item.expiredStatus ? styles.expiredCard : styles.validCard,
-              ]}
-              onPress={() =>
+      ]}
+      onPress={() =>
                 item.expiredStatus
-                  ? alert('Reservation expired')
-                  : navigation.navigate('QrCpdeReservation', {
+          ? alert('Reservation expired')
+          : navigation.navigate('QrCpdeReservation', {
                       qrData: item,
-                    })
-              }
-            >
-              <View style={styles.cardContent}>
-                <View>
-                  <Image
-                    style={styles.cardImage}
-                    source={require('../../assets/image/vo.jpg')}
-                  />
-                </View>
+            })
+      }
+    >
+      <View style={styles.cardContent}>
+        <View>
+          <Image
+            style={styles.cardImage}
+            source={require('../../assets/image/vo.jpg')}
+          />
+        </View>
 
-                <View style={styles.cardDetails}>
-                  <Text style={styles.storeName}>
+        <View style={styles.cardDetails}>
+          <Text style={styles.storeName}>
                     {item.voucher.store.store_name}
-                  </Text>
+          </Text>
                   <Text style={styles.couponName}>{item.voucher?.name_V}</Text>
-                  <View style={styles.discountContainer}>
-                    <View
-                      style={[
-                        styles.discount,
-                        {
+          <View style={styles.discountContainer}>
+            <View
+              style={[
+                styles.discount,
+                {
                           backgroundColor: item.expiredStatus
-                            ? '#BEBEBE'
-                            : Colors.red,
-                        },
-                      ]}
-                    >
-                      <Text style={styles.discountText}>
+                    ? '#BEBEBE'
+                    : Colors.red,
+                },
+              ]}
+            >
+              <Text style={styles.discountText}>
                         {item.voucher?.discount}%
-                      </Text>
-                    </View>
+              </Text>
+            </View>
                     <View
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
-                      <View style={{}} />
-                      <TouchableOpacity
+              <View style={{}} />
+    <TouchableOpacity
                         style={[styles.deleteButton, { marginLeft: 70 }]}
                         onPress={() => handleDeleteReservation(item.id)}
-                      >
-                        <MaterialCommunityIcons
-                          name="delete-outline"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
+    >
+      <MaterialCommunityIcons
+        name="delete-outline"
+        size={24}
+        color="black"
+      />
+    </TouchableOpacity>
+      </View>
                   </View>
                 </View>
               </View>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   alertText: {
-    color: '#FF0000',
+    color: Colors.lightRed,
     fontSize: 14,
     marginTop: 5,
   },

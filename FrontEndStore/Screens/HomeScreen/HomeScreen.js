@@ -1,47 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { ListItem, SearchBar, Button } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
-
-const data = [
-  {
-    id: 1,
-    name_V: 'Voucher 1',
-    description: 'Description du voucher 1',
-    validity_date: new Date(),
-    available_vouchers: 10,
-    discount: 20,
-    is_available: true,
-  },
-  {
-    id: 2,
-    name_V: 'Voucher 2',
-    description: 'Description du voucher 2',
-    validity_date: new Date(),
-    available_vouchers: 5,
-    discount: 10,
-    is_available: false,
-  },
-  // Ajoutez d'autres objets de voucher ici
-];
-
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+import { AuthContext } from '../../context/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const HomeScreen = () => {
   const [searchText, setSearchText] = useState('');
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const store = authCtx.store;
+  const id = store._id;
+  const fetchData = async () => {
+    try {
+      console.log(id);
+      const response = await axios.get(`${baseUrl}/vouchers/byStoreId/${id}`);
+      const vouchers = response.data.vouchers;
+      setFilteredData(vouchers);
+      setIsLoading(false);
+      console.log('vouchers', vouchers);
+      await AsyncStorage.setItem('vouchers', JSON.stringify(vouchers));
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSearch = (text) => {
     setSearchText(text);
-    const filteredItems = data.filter(
+    const filteredItems = filteredData.filter(
       (item) =>
         item.name_V.toLowerCase().includes(text.toLowerCase()) ||
-        item.validity_date.toDateString().includes(text)
+        item.validity_date.includes(text)
     );
     setFilteredData(filteredItems);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const updatedData = filteredData.filter((item) => item.id !== id);
     setFilteredData(updatedData);
+  
+    await AsyncStorage.setItem('vouchers', JSON.stringify(updatedData));
   };
 
   const renderItem = ({ item }) => {
@@ -100,10 +106,10 @@ const HomeScreen = () => {
               >
                 Disponibles : {item.available_vouchers}
               </Text>
-              <Text style={styles.itemDetailText}>
-                Validité : {item.validity_date.toDateString()}
-              </Text>
             </View>
+            <Text style={styles.itemDetailText}>
+              Validité : {item.validity_date.slice(0, 10)}
+            </Text>
             <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
           </ListItem.Content>
         </ListItem>
@@ -117,6 +123,11 @@ const HomeScreen = () => {
     </View>
   );
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await fetchData();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Inbox</Text>
@@ -127,14 +138,24 @@ const HomeScreen = () => {
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.searchBarInputContainer}
       />
-      {filteredData.length === 0 ? (
+      {isLoading ? (
+        <Text>Chargement en cours...</Text>
+      ) : filteredData.length === 0 ? (
         renderEmptyResult()
       ) : (
-        <FlatList
-          data={filteredData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.name_V}
-        />
+        <>
+          <FlatList
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+          <Button
+            title="Actualiser"
+            onPress={handleRefresh}
+            containerStyle={styles.refreshButtonContainer}
+            buttonStyle={styles.refreshButton}
+          />
+        </>
       )}
     </View>
   );
@@ -187,6 +208,13 @@ const styles = StyleSheet.create({
   emptyResultText: {
     fontSize: 16,
     fontStyle: 'italic',
+  },
+  refreshButtonContainer: {
+    marginTop: 16,
+    alignSelf: 'center',
+  },
+  refreshButton: {
+    backgroundColor: '#FFC107',
   },
 });
 

@@ -30,6 +30,9 @@ import { baseUrl } from '../../config/config';
 import Slider from '@react-native-community/slider';
 import { StoreContext } from '../../context/StoreProvider';
 import { CategoryContext } from '../../context/CtegoryProvider';
+import randomcolor from 'randomcolor';
+import { LinearProgress } from 'react-native-elements';
+
 const MapScreen = () => {
   const navigation = useNavigation();
   const [circleRadius, setCircleRadius] = useState(100);
@@ -66,27 +69,29 @@ const MapScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       const renderMarkers = () => {
-        const categoryColors = {}; // Couleurs des catégories
         const newMarkers = [];
+        const addedMarkerIds = [];
 
-        categories.categories.forEach((category, index) => {
-          categoryColors[category._id] = `#${index
-            .toString(16)
-            .padStart(6, '0')}`; // Attribution d'une couleur unique à chaque catégorie
+        categories.categories.forEach((category) => {
+          const categoryColor = randomcolor();
 
           category.subcategories.forEach((subcategory) => {
             subcategory.stores.forEach((store) => {
               store.locations.forEach((location) => {
-                newMarkers.push({
-                  id: location._id,
-                  coordinate: {
-                    latitude: location.coordinates[1],
-                    longitude: location.coordinates[0],
-                  },
-                  title: store.store_name,
-                  description: store.email,
-                  color: categoryColors[category._id], // Utilisation de la couleur de la catégorie correspondante
-                });
+                if (!addedMarkerIds.includes(location._id)) {
+                  newMarkers.push({
+                    id: location._id,
+                    coordinate: {
+                      latitude: location.coordinates[1],
+                      longitude: location.coordinates[0],
+                    },
+                    title: store.store_name,
+                    description: category.category_name,
+                    color: categoryColor,
+                  });
+
+                  addedMarkerIds.push(location._id);
+                }
               });
             });
           });
@@ -106,7 +111,7 @@ const MapScreen = () => {
   );
 
   const handelBackPressed = () => {
-    navigation.navigate('Home');
+    navigation.goBack();
   };
   console.log(markers);
   const handleCircleRadiusChange = (value) => {
@@ -148,8 +153,9 @@ const MapScreen = () => {
 
       <View style={styles.contentContainer}>
         {isLoading ? (
-          <BlurView intensity={500} tint="dark" style={styles.loadingIndicator}>
-            <ActivityIndicator size="100%" color="white" />
+          <BlurView intensity={50} tint="dark" style={styles.loadingIndicator}>
+            <LinearProgress color="#FAF7F4" style={styles.progressBar} />
+            <Text style={styles.loadingText}>Chargement en cours...</Text>
           </BlurView>
         ) : (
           <MapView
@@ -240,6 +246,16 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  loadingIndicator: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginBottom: 10,
+    color: 'white',
+    fontSize: 16,
+  },
   backButton: {
     position: 'absolute',
     top: 40,
@@ -288,5 +304,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  progressBar: {
+    width: '60%',
   },
 });

@@ -21,7 +21,10 @@ import { CategoryContext } from '../../context/CtegoryProvider';
 import { StoreContext } from '../../context/StoreProvider';
 import { Colors } from '../../constants/Colors';
 import { useNavigation } from '@react-navigation/native';
-const Search = () => {
+import { Box, Flex, Pressable } from 'native-base';
+import { HamburgerIcon, Menu } from 'native-base';
+
+const Search = ({ handleCategoryChange }) => {
   const [searchValue, setSearchValue] = useState('');
   const { categories } = useContext(CategoryContext);
   const { stores } = useContext(StoreContext);
@@ -82,13 +85,62 @@ const Search = () => {
 
   return (
     <View style={styles.container}>
-      <SearchBar
-        placeholder="Chercher votre réduction 10%"
-        onChangeText={handleSearchChange}
-        value={searchValue}
-        containerStyle={styles.searchBarContainer}
-        inputContainerStyle={styles.searchBarInputContainer}
-      />
+      <Flex
+        justifyContent="space-around"
+        flexDirection={'row'}
+        style={styles.header}
+        alignItems={'center'}
+      >
+        <SearchBar
+          placeholder="Chercher votre réduction"
+          onChangeText={handleSearchChange}
+          value={searchValue}
+          containerStyle={styles.searchBarContainer}
+          inputContainerStyle={styles.searchBarInputContainer}
+        />
+        <Box>
+          <Menu
+            shadow={2}
+            w="190"
+            trigger={(triggerProps) => {
+              return (
+                <Pressable
+                  accessibilityLabel="Choose Category"
+                  {...triggerProps}
+                >
+                  <View style={{ alignItems: 'center' }}>
+                    <HamburgerIcon size={28} color={Colors.background} />
+                    <Text
+                      style={{
+                        fontFamily: 'inter',
+                        alignItems: 'center',
+                        fontSize: 10,
+                        color: Colors.background,
+                        fontWeight: '600',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      Catégories
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            }}
+          >
+            <Menu.Item onPress={() => handleCategoryChange(null)}>
+              Sélectionnez une catégorie
+            </Menu.Item>
+            {categories.categories.map((category) => (
+              <Menu.Item
+                key={category._id}
+                onPress={() => handleCategoryChange(category.category_name)}
+              >
+                {category.category_name}
+              </Menu.Item>
+            ))}
+          </Menu>
+        </Box>
+      </Flex>
 
       {renderList()}
     </View>
@@ -97,10 +149,14 @@ const Search = () => {
 
 const styles = StyleSheet.create({
   container: { padding: 8 },
+  header: {
+    marginBottom: 10,
+  },
   searchBarContainer: {
     backgroundColor: '#FAF7F4',
     borderTopWidth: 0,
     borderBottomWidth: 0,
+    width: '70%',
   },
   searchBarInputContainer: {
     backgroundColor: '#FAF7F4',

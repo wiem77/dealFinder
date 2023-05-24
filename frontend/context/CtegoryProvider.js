@@ -46,11 +46,20 @@ export const CategoryProvider = ({ children }) => {
       .catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => {
+    if (categories) {
+      AsyncStorage.setItem('categories', JSON.stringify(categories))
+        .then(() => console.log('Data updated in AsyncStorage'))
+        .catch((error) => console.error(error));
+    }
+  }, [categories]);
+
   function RemoveCat() {
     setCategories(null);
     AsyncStorage.removeItem('categories');
     console.log('deleted Cat');
   }
+
   return (
     <CategoryContext.Provider value={{ categories, RemoveCat }}>
       {children}

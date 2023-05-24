@@ -9,26 +9,35 @@ import {
   ActivityIndicator,
   ImageBackground,
 } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from 'react';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 const { width, height } = Dimensions.get('window');
 import TabNavigation from '../../navigation/TabNavigtaion';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import axios from 'axios';
 import { BlurView } from 'expo-blur';
 import { baseUrl } from '../../config/config';
 import Slider from '@react-native-community/slider';
+import { StoreContext } from '../../context/StoreProvider';
+import { CategoryContext } from '../../context/CtegoryProvider';
 const MapScreen = () => {
   const navigation = useNavigation();
   const [circleRadius, setCircleRadius] = useState(100);
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [stores, setStores] = useState([]);
+  const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
+  const { categories } = useContext(CategoryContext);
 
   useEffect(() => {
     (async () => {
@@ -51,21 +60,55 @@ const MapScreen = () => {
       } finally {
         setIsLoading(false);
       }
-
-      try {
-        const response = await axios.get(
-          `${baseUrl}/store/getAllStoreWithLocations`
-        );
-        setStores(response.data);
-      } catch (error) {
-        console.log(error);
-      }
     })();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const renderMarkers = () => {
+        const categoryColors = {}; // Couleurs des catégories
+        const newMarkers = [];
+
+        categories.categories.forEach((category, index) => {
+          categoryColors[category._id] = `#${index
+            .toString(16)
+            .padStart(6, '0')}`; // Attribution d'une couleur unique à chaque catégorie
+
+          category.subcategories.forEach((subcategory) => {
+            subcategory.stores.forEach((store) => {
+              store.locations.forEach((location) => {
+                newMarkers.push({
+                  id: location._id,
+                  coordinate: {
+                    latitude: location.coordinates[1],
+                    longitude: location.coordinates[0],
+                  },
+                  title: store.store_name,
+                  description: store.email,
+                  color: categoryColors[category._id], // Utilisation de la couleur de la catégorie correspondante
+                });
+              });
+            });
+          });
+        });
+
+        return newMarkers;
+      };
+
+      const updatedMarkers = renderMarkers();
+      setMarkers(updatedMarkers);
+      console.log(updatedMarkers);
+
+      return () => {
+        // Fonction de nettoyage
+      };
+    }, [categories])
+  );
 
   const handelBackPressed = () => {
     navigation.navigate('Home');
   };
+  console.log(markers);
   const handleCircleRadiusChange = (value) => {
     setCircleRadius(value);
     console.log('value', value);
@@ -74,7 +117,7 @@ const MapScreen = () => {
       const zoomLevel = Math.log2(
         (360 * ((circleRadius / 1000) * 2 * Math.PI)) / 256
       );
-      const zoomFactor = Math.max(zoomLevel, -8); // Valeur minimale de zoom pour éviter un zoom excessif
+      const zoomFactor = Math.max(zoomLevel, -8);
       const deltaFactor = Math.exp(zoomFactor * Math.LN2);
       const region = {
         ...currentRegion,
@@ -140,20 +183,17 @@ const MapScreen = () => {
                   strokeColor="rgba(0, 0, 255, 0.3)"
                   fillColor="rgba(0, 0, 255, 0.05)"
                 />
-
-                {stores.map((store) => (
-                  <Marker
-                    key={store._id}
-                    coordinate={{
-                      latitude: store.locations[0].coordinates[1],
-                      longitude: store.locations[0].coordinates[0],
-                    }}
-                    title={store.store_name}
-                    description={store.email}
-                  />
-                ))}
               </>
             )}
+            {markers.map((marker) => (
+              <Marker
+                key={marker.id}
+                coordinate={marker.coordinate}
+                title={marker.title}
+                description={marker.description}
+                pinColor={marker.color}
+              />
+            ))}
           </MapView>
         )}
         <View style={styles.circleButtonsContainer}>

@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   ImageBackground,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 const { width, height } = Dimensions.get('window');
@@ -21,13 +21,14 @@ import { AntDesign, Entypo } from '@expo/vector-icons';
 import axios from 'axios';
 import { BlurView } from 'expo-blur';
 import { baseUrl } from '../../config/config';
+import Slider from '@react-native-community/slider';
 const MapScreen = () => {
   const navigation = useNavigation();
-  const [circleRadius, setCircleRadius] = useState(500);
+  const [circleRadius, setCircleRadius] = useState(100);
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [stores, setStores] = useState([]);
- 
+  const mapRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -65,13 +66,22 @@ const MapScreen = () => {
   const handelBackPressed = () => {
     navigation.navigate('Home');
   };
-  const handleIncreaseCircle = () => {
-    setCircleRadius(circleRadius + 100);
-  };
-
-  const handleDecreaseCircle = () => {
-    if (circleRadius > 100) {
-      setCircleRadius(circleRadius - 100);
+  const handleCircleRadiusChange = (value) => {
+    setCircleRadius(value);
+    console.log('value', value);
+    if (mapRef.current) {
+      const currentRegion = mapRef.current.props.initialRegion;
+      const zoomLevel = Math.log2(
+        (360 * ((circleRadius / 1000) * 2 * Math.PI)) / 256
+      );
+      const zoomFactor = Math.max(zoomLevel, -8); // Valeur minimale de zoom pour éviter un zoom excessif
+      const deltaFactor = Math.exp(zoomFactor * Math.LN2);
+      const region = {
+        ...currentRegion,
+        latitudeDelta: currentRegion.latitudeDelta * deltaFactor,
+        longitudeDelta: currentRegion.longitudeDelta * deltaFactor,
+      };
+      mapRef.current.animateToRegion(region, 500);
     }
   };
 
@@ -100,10 +110,11 @@ const MapScreen = () => {
           </BlurView>
         ) : (
           <MapView
+            ref={mapRef}
             style={{ flex: 1 }}
             initialRegion={{
-              latitude: location?.coords.latitude ?? 35.8288,
-              longitude: location?.coords.longitude ?? 10.6407,
+              latitude: location?.coords.latitude || 35.8288,
+              longitude: location?.coords.longitude || 10.6407,
               latitudeDelta: 0.015,
               longitudeDelta: 0.0121,
             }}
@@ -129,6 +140,7 @@ const MapScreen = () => {
                   strokeColor="rgba(0, 0, 255, 0.3)"
                   fillColor="rgba(0, 0, 255, 0.05)"
                 />
+
                 {stores.map((store) => (
                   <Marker
                     key={store._id}
@@ -145,18 +157,17 @@ const MapScreen = () => {
           </MapView>
         )}
         <View style={styles.circleButtonsContainer}>
-          <TouchableOpacity
-            style={styles.circleButton}
-            onPress={handleIncreaseCircle}
-          >
-            <AntDesign name="plus" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.circleButton}
-            onPress={handleDecreaseCircle}
-          >
-            <AntDesign name="minus" size={24} color="white" />
-          </TouchableOpacity>
+          <Slider
+            style={styles.slider}
+            minimumValue={100}
+            maximumValue={1000}
+            step={100}
+            value={circleRadius}
+            onValueChange={handleCircleRadiusChange}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#000000"
+            thumbTintColor="#FFFFFF"
+          />
         </View>
       </View>
     </View>
@@ -164,19 +175,19 @@ const MapScreen = () => {
 };
 
 export default MapScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF5F5',
   },
-
   contentContainer: {
     flex: 1,
     marginTop: '0%',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     overflow: 'hidden',
-    backgroundColor: '#fff', // Ajout de la couleur de fond
+    backgroundColor: '#fff',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -189,7 +200,6 @@ const styles = StyleSheet.create({
       },
     }),
   },
-
   backButton: {
     position: 'absolute',
     top: 40,
@@ -206,7 +216,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -223,13 +232,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: 80,
+    width: 200, // Adjust this value as needed
     height: 50,
     backgroundColor: '#0008',
     borderRadius: 25,
     paddingHorizontal: 10,
   },
-
+  slider: {
+    flex: 1,
+  },
   circleButton: {
     width: 30,
     height: 30,

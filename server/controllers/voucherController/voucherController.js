@@ -3,15 +3,12 @@ const Store = require('../../models/StoreModel');
 const Voucher = require('../../models/VoucherModel');
 module.exports.createVoucher = async (req, res) => {
   try {
-    const {
-      name_V,
-      description,
-      validity_date,
-      available_vouchers,
-      discount,
-      storeId,
-    } = req.body;
-
+    const { name_V, description, validity_date, available_vouchers, discount } =
+      req.body;
+    const storeId = req.params.storeId;
+    console.log(req.body);
+    console.log(req.body.validity_date);
+    console.log(storeId);
     if (
       !name_V ||
       !description ||
@@ -159,12 +156,15 @@ module.exports.findVouchers = async (req, res) => {
 };
 module.exports.findVouchersByStoreId = async (req, res) => {
   try {
-    const { storeId } = req.params.id;
+    console.log('hani jyyyt');
+    const storeId = req.params.id;
+    console.log(storeId);
     const vouchers = await Voucher.find({ store: storeId })
       .populate('store', 'store_name')
       .lean();
 
     res.status(200).json({ vouchers });
+    console.log('vouchers', vouchers);
   } catch (error) {
     console.log(error);
     res.status(500).json({

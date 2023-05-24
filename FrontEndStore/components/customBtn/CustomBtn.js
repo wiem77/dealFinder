@@ -24,10 +24,10 @@ const CustomBtn = ({
       style={[styles.container, styles[`container_${type}`]]}
       underlayColor="None"
     >
+      <Text style={[styles.text, styles[`text_${type}`]]}>{text}</Text>
       {!isIconEmpty && (
         <Ionicons name={nameIcon} size={sizeIcon} color={colorIcon} />
       )}
-      <Text style={[styles.text, styles[`text_${type}`]]}>{text}</Text>
     </TouchableOpacity>
   );
 };
@@ -144,7 +144,8 @@ const styles = StyleSheet.create({
   },
   text_REDBTN: {
     color: Colors.white,
-    marginLeft: 10,
+    marginRight: 10,
+
     fontWeight: 'bold',
     textAlign: 'center',
   },

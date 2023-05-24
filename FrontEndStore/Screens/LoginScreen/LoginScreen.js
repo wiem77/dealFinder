@@ -64,33 +64,35 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-      </View>
-      <View style={styles.content}>
-        <View style={styles.WelcomeContainer}>
-          <Text style={styles.subtitle}>
-            Entrez votre Code d'inscription pour vous connecter.
-          </Text>
+      <View style={{ marginTop: -200 }}>
+        <View style={styles.logoContainer}>
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
         </View>
-        <View style={styles.inputWrapper}>
-          <Custominput
-            iconName="lock"
-            placeHolder="Code "
-            name={'accesscode'}
-            control={control}
-            secureTextEntry={true}
-            rules={{
-              required: "le code d'acces et requis",
-            }}
-          />
+        <View style={styles.content}>
+          <View style={styles.WelcomeContainer}>
+            <Text style={styles.subtitle}>
+              Entrez votre Code d'inscription pour vous connecter.
+            </Text>
+          </View>
+          <View style={styles.inputWrapper}>
+            <Custominput
+              iconName="lock"
+              placeHolder="Code "
+              name={'accesscode'}
+              control={control}
+              secureTextEntry={true}
+              rules={{
+                required: "le code d'acces et requis",
+              }}
+            />
 
-          <CustomBtn
-            style={{ marginTop: 50 }}
-            text={'Se Connecter '}
-            type="PRIMARY"
-            onPress={handleSubmit(OnSignInPressed)}
-          />
+            <CustomBtn
+              style={{ marginTop: 50 }}
+              text={'Se Connecter '}
+              type="REDBTN"
+              onPress={handleSubmit(OnSignInPressed)}
+            />
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -101,22 +103,26 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#FBF5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
-    marginTop: -50,
     justifyContent: 'center',
     alignItems: 'center',
+    // width: '100%',
+    marginTop: -50,
   },
   logoContainer: {
+    marginTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp('10%'),
+    // marginTop: hp('10%'),
     marginBottom: hp('5%'),
   },
   logo: {
-    width: wp('60%'),
-    height: hp('25%'),
+    width: wp('70%'),
+    height: hp('20%'),
   },
   inputWrapper: {
     width: '100%',
@@ -139,5 +145,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: FontSize.small,
     color: Colors.black,
+    textAlign: 'center',
   },
 });

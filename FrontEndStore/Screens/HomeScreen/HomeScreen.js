@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-import { ListItem, SearchBar, Button } from 'react-native-elements';
+import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
+import { ListItem, SearchBar, Button, Icon } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { AuthContext } from '../../context/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors } from '../../constants/Colors';
+import {
+  SpeedDialComponent,
+  SpeedDialContent,
+} from '../../components/SpeedDeal/SpeedDeal';
 const HomeScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [showAll, setShowAll] = useState(true);
   const authCtx = useContext(AuthContext);
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
   const token = authCtx.token;
   const store = authCtx.store;
-  const id = store._id;
+  const id = store?._id;
   const fetchData = async () => {
     try {
       console.log(id);
@@ -32,43 +40,102 @@ const HomeScreen = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await fetchData();
+  };
 
   const handleSearch = (text) => {
     setSearchText(text);
     const filteredItems = filteredData.filter(
       (item) =>
-        item.name_V.toLowerCase().includes(text.toLowerCase()) ||
-        item.validity_date.includes(text)
+        item.name_V.toLowerCase().includes(text.toLowerCase().trim()) ||
+        item.discount.toString().includes(text)
     );
     setFilteredData(filteredItems);
   };
 
   const handleDelete = async (id) => {
-    const updatedData = filteredData.filter((item) => item.id !== id);
-    setFilteredData(updatedData);
-  
-    await AsyncStorage.setItem('vouchers', JSON.stringify(updatedData));
+    console.log(id);
+
+    Alert.alert(
+      'Confirmation',
+      'Êtes-vous sûr de vouloir supprimer ce voucher ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const config = {
+                headers: {
+                  'x-access-token': token,
+                },
+              };
+
+              await axios.delete(
+                `${baseUrl}/vouchers/deleteVoucher/${id}`,
+                config
+              );
+
+              const updatedData = filteredData.filter((item) => item.id !== id);
+              setFilteredData(updatedData);
+              await AsyncStorage.setItem(
+                'vouchers',
+                JSON.stringify(updatedData)
+              );
+
+              Alert.alert('Succès', 'Le voucher a été supprimé avec succès.');
+            } catch (error) {
+              console.log(error);
+
+              Alert.alert(
+                'Erreur',
+                "Une erreur s'est produite lors de la suppression du voucher."
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+  const handleFilter = () => {
+    if (showAll) {
+      const filteredItems = filteredData.filter((item) => item.is_available);
+      setFilteredData(filteredItems);
+    } else {
+      fetchData();
+    }
+    setShowAll(!showAll);
   };
 
   const renderItem = ({ item }) => {
     let discountColor;
     let availabilityColor;
+    let availabilityIcon;
     if (item.is_available) {
       if (item.discount === 10) discountColor = '#FFC107';
       else if (item.discount === 20) discountColor = '#FF5722';
       else if (item.discount === 30) discountColor = '#E91E63';
       else if (item.discount === 40) discountColor = '#9C27B0';
       availabilityColor = item.available_vouchers > 0 ? '#000000' : '#808080';
+      availabilityIcon = (
+        <Icon name="check-circle" type="font-awesome" color="#00C853" />
+      );
     } else {
       discountColor = '#808080';
       availabilityColor = '#808080';
+      availabilityIcon = (
+        <Icon name="times-circle" type="font-awesome" color="#F44336" />
+      );
     }
 
     const swipeoutBtns = [
       {
         text: 'Supprimer',
         backgroundColor: '#FF0000',
-        onPress: () => handleDelete(item.id),
+        onPress: () => handleDelete(item._id),
       },
     ];
 
@@ -92,25 +159,44 @@ const HomeScreen = () => {
             </Text>
           </View>
           <ListItem.Content>
-            <ListItem.Title>{item.name_V}</ListItem.Title>
+            <ListItem.Title
+              style={{
+                fontFamily: 'inter',
+                fontSize: 20,
+                color: Colors.darkred,
+              }}
+            >
+              {item.name_V}
+            </ListItem.Title>
             <View style={styles.itemDetailsContainer}>
-              <Text
+              <View></View>
+              <View
                 style={[
                   styles.itemDetailText,
                   {
                     color: availabilityColor,
-                    textAlign: 'right',
+                    textAlign: 'center',
+                    justifyContent: 'center',
                     marginRight: 16,
                   },
                 ]}
               >
-                Disponibles : {item.available_vouchers}
+                <Text style={styles.labelText}> Disponibles :</Text>
+                <Text style={styles.infoText}> {item.available_vouchers}</Text>
+                <Text style={{ marginTop: -3 }}> {availabilityIcon}</Text>
+              </View>
+            </View>
+            <View style={styles.itemDetailText}>
+              <Text style={styles.labelText}> Date d'éxpirastion :</Text>
+              <Text style={styles.infoText}>
+                {item.validity_date.slice(0, 10)}
               </Text>
             </View>
-            <Text style={styles.itemDetailText}>
-              Validité : {item.validity_date.slice(0, 10)}
-            </Text>
-            <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
+            {/* <ListItem.Subtitle
+              style={{ fontFamily: 'inter', color: Colors.text, fontSize: 15 }}
+            >
+              {item.description}
+            </ListItem.Subtitle> */}
           </ListItem.Content>
         </ListItem>
       </Swipeout>
@@ -119,25 +205,47 @@ const HomeScreen = () => {
 
   const renderEmptyResult = () => (
     <View style={styles.emptyResultContainer}>
-      <Text style={styles.emptyResultText}>Aucun résultat trouvé</Text>
+      <Text style={styles.emptyResultText}>
+        {showAll
+          ? 'Aucun résultat trouvé'
+          : "Il n'y a pas de coupon non valides"}
+      </Text>
     </View>
   );
 
-  const handleRefresh = async () => {
-    setIsLoading(true);
-    await fetchData();
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Inbox</Text>
+      <View style={styles.header}>
+        <Icon
+          name="refresh"
+          type="material-community"
+          size={24}
+          onPress={handleRefresh}
+          containerStyle={styles.refreshIconContainer}
+        />
+        <Text style={styles.heading}>Coupons</Text>
+      </View>
       <SearchBar
-        placeholder="Rechercher par nom ou validité"
+        placeholder="Rechercher par nom ou remise"
         value={searchText}
         onChangeText={handleSearch}
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.searchBarInputContainer}
       />
+      <View style={styles.filterContainer}>
+        <Icon
+          name={showAll ? 'filter' : 'filter-remove'}
+          type="material-community"
+          size={24}
+          onPress={handleFilter}
+          containerStyle={styles.filterIconContainer}
+        />
+        <Text style={styles.filterText}>
+          {showAll
+            ? 'Filtrer les coupons valides'
+            : 'Afficher tous les coupons'}
+        </Text>
+      </View>
       {isLoading ? (
         <Text>Chargement en cours...</Text>
       ) : filteredData.length === 0 ? (
@@ -147,16 +255,11 @@ const HomeScreen = () => {
           <FlatList
             data={filteredData}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-          <Button
-            title="Actualiser"
-            onPress={handleRefresh}
-            containerStyle={styles.refreshButtonContainer}
-            buttonStyle={styles.refreshButton}
+            keyExtractor={(item) => item._id}
           />
         </>
       )}
+      <SpeedDialComponent />
     </View>
   );
 };
@@ -167,10 +270,25 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#FBF5F5',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   heading: {
+    flex: 1,
     fontSize: 24,
     fontWeight: 'bold',
-    paddingBottom: 12,
+    marginLeft: 8,
+  },
+  refreshIconContainer: {
+    marginLeft: -8,
+  },
+  filterButtonContainer: {
+    marginLeft: 8,
+  },
+  filterButton: {
+    backgroundColor: '#FFC107',
   },
   searchBarContainer: {
     backgroundColor: 'transparent',
@@ -179,7 +297,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   searchBarInputContainer: {
-    backgroundColor: '#EDEDED',
+    backgroundColor: '#fff',
+    borderRadius: 5,
   },
   discountContainer: {
     alignSelf: 'flex-start',
@@ -192,14 +311,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+
   itemDetailsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center', // Ajout de cette ligne
     marginTop: 3,
   },
+
   itemDetailText: {
-    fontSize: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
+  labelText: { fontSize: 18, fontFamily: 'inter', color: Colors.black },
+  infoText: { fontSize: 18, fontFamily: 'inter', color: Colors.text },
   emptyResultContainer: {
     flex: 1,
     alignItems: 'center',
@@ -209,12 +333,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: 'italic',
   },
-  refreshButtonContainer: {
-    marginTop: 16,
-    alignSelf: 'center',
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: '3%',
   },
-  refreshButton: {
-    backgroundColor: '#FFC107',
+  filterIconContainer: {
+    marginRight: 8,
+  },
+  filterText: {
+    fontSize: 16,
+    fontFamily: 'inter',
   },
 });
 

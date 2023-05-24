@@ -14,10 +14,32 @@ import SuccessVerification from './Screens/sucessScreen/SucessVerification';
 import IconButton from './components/iconButton/IconBtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
+import DrawerNavigation from './navigation/DrawerNavigation';
+import { NativeBaseProvider, extendTheme } from 'native-base';
+import HomeScreen from './Screens/HomeScreen/HomeScreen';
+import AddCoupons from './Screens/AddCoupons/AddCoupons';
+import { SpeedDialContent } from './components/SpeedDeal/SpeedDeal';
 const Stack = createNativeStackNavigator();
 // SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+  const SpeedDialComponent = () => {
+    const authCtx = useContext(AuthContext);
+
+    const handleLogout = () => {
+      authCtx.logout();
+    };
+
+    return (
+      <SpeedDialContent
+        isOpen={speedDialOpen}
+        onOpen={() => setSpeedDialOpen(true)}
+        onClose={() => setSpeedDialOpen(false)}
+      />
+    );
+  };
   function Root() {
     const [isTryingLogIn, setIsTryingLogIn] = useState(true);
     const authCtx = useContext(AuthContext);
@@ -76,8 +98,23 @@ export default function App() {
   }
   function AuthenticatedStack() {
     const authCtx = useContext(AuthContext);
+
     return (
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Drawer" component={DrawerNavigation} />
+        <Stack.Screen
+          name="Speed"
+          component={SpeedDialComponent}
+          options={({ navigation }) => ({
+            headerRight: () => (
+              <SpeedDialContent
+                isOpen={false}
+                onOpen={() => navigation.openDrawer()}
+                onClose={() => navigation.closeDrawer()}
+              />
+            ),
+          })}
+        />
         <Stack.Screen
           name="ScanQr"
           component={ScanQrScreen}
@@ -92,11 +129,13 @@ export default function App() {
             ),
           }}
         />
+        <Stack.Screen name="AddCoupon" component={AddCoupons} />
         <Stack.Screen name="Success" component={SuccessVerification} />
         <Stack.Screen name="Verif" component={VerificationScreen} />
       </Stack.Navigator>
     );
   }
+
   function Navigation() {
     const authCtx = useContext(AuthContext);
     return (
@@ -107,8 +146,10 @@ export default function App() {
     );
   }
   return (
-    <AuthProvider>
-      <Root />
-    </AuthProvider>
+    <NativeBaseProvider>
+      <AuthProvider>
+        <Root />
+      </AuthProvider>
+    </NativeBaseProvider>
   );
 }

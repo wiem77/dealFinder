@@ -34,42 +34,6 @@ const showAlert = (title, message) => {
 const SuccessVerification = ({ route }) => {
   const { data } = route.params;
 
-  //   __v: 0,
-  //   _id: '645e56a0392671ae367aa9b2',
-  //   archived: true,
-  //   createdAt: '2023-05-12T15:09:20.373Z',
-  //   expiredStatus: false,
-  //   expiry: '2023-05-12T15:11:20.373Z',
-  //   reservationCode: 8787,
-  //   updatedAt: '2023-05-12T15:10:12.375Z',
-  //   used: true,
-  //   user: {
-  //     __v: 10,
-  //     _id: '64521faf355648a452bd8a9e',
-  //     archivedVouchers: [Array],
-  //     email: 'user+a6o6lzki@example.com',
-  //     location: '64521faf355648a452bd8a9b',
-  //     nom: 'guest1',
-  //     prenom: 'guest',
-  //     telephone: '+13639112359',
-  //   },
-  //   voucher: {
-  //     __v: 0,
-  //     _id: '645b95e654fc20e9082437f7',
-  //     available_vouchers: 19,
-  //     createdAt: '2023-05-10T13:02:30.747Z',
-  //     description:
-  //       'Coupon de réduction de 10% sur  tous achat superireur a  200t Dt',
-  //     discount: 10,
-  //     is_available: true,
-  //     name_V: 'happy life 20%',
-  //     qrcodes: [Array],
-  //     updatedAt: '2023-05-12T15:09:20.452Z',
-  //     validity_date: '2023-07-10T00:00:00.000Z',
-  //   },
-  //   vouchers_incremented: false,
-  // };
-
   const voucherName = data?.data?.voucher?.name_V;
 
   console.log(voucherName);

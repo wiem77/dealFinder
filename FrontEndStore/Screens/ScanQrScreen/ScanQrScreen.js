@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { AuthContext } from '../../context/AuthProvider';
+import { SpeedDialComponent } from '../../components/SpeedDeal/SpeedDeal';
 const ScanQrScreen = () => {
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
@@ -155,12 +156,22 @@ const ScanQrScreen = () => {
   } else {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.barcodebox}>
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={styles.barcodeScanner}
-          />
+        <View style={styles.contentContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={30} color="black" />
+          </TouchableOpacity>
+
+          <View style={styles.barcodebox}>
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+              style={styles.barcodeScanner}
+            />
+          </View>
         </View>
+
         <Text style={styles.maintext}>Scanner le code QR pour commencer</Text>
       </SafeAreaView>
     );
@@ -176,53 +187,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scanResultContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scanResultBox: {
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    padding: 20,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-  },
-  scanResultText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: Colors.text,
-  },
-  verifyBtn: {
-    backgroundColor: Colors.green,
-    borderRadius: 10,
-    paddingHorizontal: 50,
-    paddingVertical: 10,
-    elevation: 3,
-  },
-  verifyBtnText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  loadingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    marginLeft: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  barcodebox: {
+  contentContainer: {
     flex: 1,
     width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barcodebox: {
+    width: width * 0.8,
+    height: height * 0.5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#000000',
@@ -238,54 +211,10 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginTop: 20,
   },
-  scanAgainBtn: {
-    marginTop: 10,
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1,
   },
 });
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: Colors.backgroundWhite,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   maintext: {
-//     fontSize: 16,
-//     margin: 20,
-//   },
-//   barcodebox: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     height: height / 2.5,
-//     width: width / 1.5,
-//     overflow: 'hidden',
-//     borderRadius: 30,
-//     backgroundColor: 'tomato',
-//   },
-//   barcodeScanner: {
-//     height: height / 2.5,
-//     width: width / 1.5,
-//   },
-//   verifyBtn: {
-//     backgroundColor: Colors.primary,
-//     borderRadius: 10,
-//     padding: 10,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     marginTop: 20,
-//   },
-//   verifyBtnText: {
-//     color: Colors.green,
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-//   loadingIndicator: {
-//     marginTop: 10,
-//     alignItems: 'center',
-//   },
-//   loadingText: {
-//     color: Colors.text,
-//     marginTop: 10,
-//     fontSize: 16,
-//   },
-// });

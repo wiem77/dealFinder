@@ -7,10 +7,11 @@ const {
   findVouchersByStoreId,
   findVoucherWithId,
 } = require('../../controllers/voucherController/voucherController');
+const { auth } = require('../../middleWare/auth');
 const router = express.Router();
 
-//root:http://localhost:4000/api/vouchers/addVoucher
-router.post('/addVoucher', createVoucher);
+//root:http://localhost:4000/api/vouchers/addVoucher/:storeId'
+router.post('/addVoucher/:storeId', createVoucher);
 
 //root:http://localhost:4000/api/vouchers/updateVoucher/:id
 router.put('/updateVoucher/:id', updateVoucher);

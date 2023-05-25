@@ -10,6 +10,8 @@ const sendEmail = require('../../utils/generatEmailValidation');
 
 const generateStoreToken = require('../../utils/generateStoreToken');
 const StoreToken = require('../../models/StoreToken');
+
+const Rating = require('../../models/RatingsModel');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 exports.addStore = async (req, res, next) => {
   console.log('add2...');
@@ -140,6 +142,7 @@ exports.deleteLocationForStore = async (req, res, next) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+
 exports.getAllStores = async (req, res) => {
   console.log('get All');
   try {
@@ -156,12 +159,48 @@ exports.getAllStores = async (req, res) => {
       .populate('vouchers')
       .lean();
 
+    // Calcul du rating pour chaque store
+    for (let i = 0; i < stores.length; i++) {
+      const store = stores[i];
+      const ratings = await Rating.find({ store: store._id }).lean();
+      const totalLikes = ratings.filter((rating) => rating.like === 1).length;
+      const totalDislikes = ratings.filter(
+        (rating) => rating.like === -1
+      ).length;
+      const rating = calculateRating(totalLikes, totalDislikes);
+      store.rating = rating;
+    }
+
     res.status(200).json(stores);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Error getting all stores.' });
   }
 };
+
+function calculateRating(totalLikes, totalDislikes) {
+  const totalRatings = totalLikes + totalDislikes;
+  if (totalRatings === 0) {
+    return 0;
+  }
+
+  const positiveRatio = totalLikes / totalRatings;
+  const rating = positiveRatio * 5;
+
+  return Math.round(rating * 10) / 10;
+}
+
+function calculateRating(totalLikes, totalDislikes) {
+  const totalRatings = totalLikes + totalDislikes;
+  if (totalRatings === 0) {
+    return 0;
+  }
+
+  const positiveRatio = totalLikes / totalRatings;
+  const rating = positiveRatio * 5;
+
+  return Math.round(rating * 10) / 10;
+}
 
 module.exports.getOneStore = (req, res) => {
   console.log('ONE Store..');

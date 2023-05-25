@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,16 @@ import {
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
+import { AuthContext } from '../../context/AuthProvider';
 
 const HistoryScreen = () => {
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
+  console.log('user', user);
+  user.usedVouchers.map((usedVoucher) => {
+    console.log(usedVoucher);
+  });
   const [vouchers, setVouchers] = useState([
     {
       id: 1,

@@ -1,4 +1,4 @@
-export const baseUrl = 'http://192.168.1.28:4000/api';
+export const baseUrl = 'http://192.168.1.30:4000/api';
 export const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 export const PWD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 export const MAPBOX8_KEY =

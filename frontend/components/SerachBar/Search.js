@@ -148,7 +148,7 @@ const Search = ({ handleCategoryChange }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 8 },
+  container: { padding: 4 },
   header: {
     marginBottom: 10,
   },

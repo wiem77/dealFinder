@@ -49,10 +49,10 @@ module.exports.verifyCodeReservation = async (req, res) => {
 
     await reservation.save();
 
-    const user = await User.findById(reservation.user._id);
-    user.reservedVouchers.pull(reservation._id);
-    user.usedVouchers.push(reservation._id);
-    await user.save();
+    // const user = await User.findById(reservation.user._id);
+    // user.reservedVouchers.pull(reservation._id);
+    // user.usedVouchers.push(reservation._id);
+    // await user.save();
 
     return res.status(201).json({
       message: 'Réservation valider ',

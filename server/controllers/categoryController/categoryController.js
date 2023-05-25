@@ -131,9 +131,6 @@ module.exports.getAllCategories = (req, res) => {
             model: 'Location',
           },
         ],
-        match: {
-          vouchers: { $gt: [] }, // Condition pour vérifier si le tableau des vouchers n'est pas vide
-        },
       },
     })
     .populate('category_image')

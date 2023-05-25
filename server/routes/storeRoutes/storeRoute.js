@@ -12,6 +12,7 @@ const {
   logout,
 } = require('../../controllers/storeController/storeController');
 const { validateLocations } = require('../../utils/ValidationSchema');
+const { updateStoreRating } = require('../../utils/setStoreRating');
 const uploader = require('../../config/multerConfig');
 const { auth } = require('../../middleWare/auth');
 const router = express.Router();

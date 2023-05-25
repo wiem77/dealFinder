@@ -52,10 +52,10 @@ const storeSchema = new mongoose.Schema({
 
   rating: {
     type: Number,
-    min: [0, 'Rating cannot be less than 0'],
-    max: [5, 'Rating cannot be more than 5'],
+
     default: 0,
   },
+
   accesscode: {
     type: String,
     unique: true,

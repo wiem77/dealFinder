@@ -65,12 +65,12 @@ const UserSchema = new mongoose.Schema({
       ref: 'Reservation',
     },
   ],
-  usedVouchers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Reservation',
-    },
-  ],
+  // usedVouchers: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: 'Reservation',
+  //   },
+  // ],
 
   verified: Boolean,
 });

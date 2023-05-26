@@ -10,6 +10,7 @@ const locationSchema = new mongoose.Schema({
   coordinates: {
     type: [Number],
     required: true,
+    index: '2dsphere',
   },
   formattedAddress: {
     type: String,
@@ -30,6 +31,10 @@ const locationSchema = new mongoose.Schema({
   store: {
     type: Schema.Types.ObjectId,
     ref: 'Store',
+  },
+  distance: {
+    type: Number,
+    default: 0,
   },
 });
 

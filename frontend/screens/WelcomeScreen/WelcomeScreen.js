@@ -22,14 +22,7 @@ const WelcomeScreen = () => {
   const [locationRegion, setLocationRegion] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const OnLoginPressed = () => {
-    navigation.navigate('LoginIn');
-  };
-
-  const OnSignUpPressed = () => {
-    navigation.navigate('SignUp');
-  };
-  const guestPressed = async () => {
+  const handleLocationPermission = async () => {
     setLoading(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -37,63 +30,68 @@ const WelcomeScreen = () => {
       setLoading(false);
       return;
     }
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    let geocode = await Location.reverseGeocodeAsync({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
-    setLocationName(geocode[0].city);
-    setLocationRegion(geocode[0].region);
 
-    axios
-      .post(`${baseUrl}/guest/newGuest`, {
-        type: 'Point',
-        coordinates: [location.coords.longitude, location.coords.latitude],
-        formattedAddress: `${geocode[0].city}, ${geocode[0].region}`,
-        city: geocode[0].city,
-        country: geocode[0].country,
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setLoading(false);
-        navigation.navigate('Home');
-      });
+    setLoading(false);
+  };
+
+  const OnLoginPressed = () => {
+    handleLocationPermission();
+    navigation.navigate('LoginIn');
+  };
+
+  const OnSignUpPressed = () => {
+    handleLocationPermission();
+    navigation.navigate('SignUp');
+  };
+
+  const guestPressed = () => {
+    handleLocationPermission();
+    navigation.navigate('Home');
   };
 
   if (loading) {
     return <Loading />;
   }
   return (
-    <>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#FBF5F5',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <View style={styles.headerContainer}>
-        <Image
-          resizeMode="contain"
-          source={require('../../assets/image/DealFinderRed.png')}
-        />
-        <Text style={styles.subtitle}>
-          Découvrez les promotions locales qui correspondent à vos intérêts.
-        </Text>
+        <View style={{ alignItems: 'center', marginTop: 1 }}>
+          <Image
+            resizeMode="contain"
+            source={require('../../assets/image/DealFinderRed.png')}
+            style={styles.logo}
+          />
+          <Text style={styles.subtitle}>
+            Découvrez les promotions locales qui correspondent à vos intérêts.
+          </Text>
+        </View>
+
         <View style={styles.btnContainer}>
-          <CustomBtn text={'Se Connecter '} onPress={OnLoginPressed} />
           <CustomBtn
-            text={'Continuer en tant que visiteur'}
-            onPress={guestPressed}
+            text={'Se Connecter '}
+            onPress={OnLoginPressed}
             type="SECONDARY"
           />
           <CustomBtn
-            text={'crée un compte  '}
+            text={'Continuer en tant que visiteur'}
+            onPress={guestPressed}
+            type="REDBTN4"
+          />
+          <CustomBtn
+            text={'Crée un compte  '}
             onPress={OnSignUpPressed}
             type="SECONDARY"
           />
         </View>
       </View>
-    </>
+    </View>
   );
 };
 
@@ -102,10 +100,11 @@ export default WelcomeScreen;
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: Colors.backgroundWhite,
-    width: wp('84%'),
-    left: wp('7%'),
-    top: hp('22.2%'),
-    position: 'relative',
+    // marginTop: '50%',
+    // width: wp('84%'),
+    // left: wp('7%'),
+    // top: hp('22.2%'),
+    // position: 'absolute',
   },
   subtitle: {
     marginVertical: '5%',

@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
           width: 0,
           height: 10,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
         shadowRadius: 10,
       },
       android: {
@@ -91,6 +91,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  container_REDBTN4: {
+    backgroundColor: Colors.background,
+
+    borderRadius: 5,
+    paddingVertical: 10,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   container_WHITE3: {
     backgroundColor: Colors.backgroundWhite,
     width: wp('70%'),
@@ -116,12 +125,12 @@ const styles = StyleSheet.create({
   container_SECONDARY: {
     backgroundColor: Colors.white,
     borderColor: Colors.black,
-    borderRadius: 8,
+    borderRadius: 5,
     borderWidth: 1,
     overflow: 'hidden',
     shadowOffset: {
       width: 1,
-      height: 4,
+      height: 3,
     },
     shadowOpacity: 0.25,
     shadowRadius: 9,

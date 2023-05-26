@@ -12,11 +12,14 @@ import CustomBtn from '../../components/customBtn/CustomBtn';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthProvider';
+import { LocationContext } from '../../context/LocationProvider';
 import { login } from '../../util/auth';
 
 const LoginScreen = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const authCtx = useContext(AuthContext);
+  const locCtx = useContext(LocationContext);
+  console.log('locCtx', locCtx.location);
   const navigation = useNavigation();
   const showAlert = (title, message) => {
     Alert.alert(
@@ -56,34 +59,38 @@ const LoginScreen = () => {
           </Text>
         </View>
         <View style={styles.inputWrapper}>
-          <Custominput
-            iconName="email"
-            placeHolder="email"
-            name={'email'}
-            control={control}
-            secureTextEntry={false}
-            rules={{
-              required: 'Email est requis',
-              pattern: {
-                value: EMAIL_REGEX,
-                message: 'Email invalide',
-              },
-            }}
-          />
-          <Custominput
-            iconName="lock"
-            placeHolder=" Mot de passe "
-            name={'pwd'}
-            control={control}
-            secureTextEntry={true}
-            rules={{
-              required: 'Le  mot de passe  est requis',
-            }}
-          />
+          <View style={{ marginBottom: '7%' }}>
+            <Custominput
+              iconName="email"
+              placeHolder="email"
+              name={'email'}
+              control={control}
+              secureTextEntry={false}
+              rules={{
+                required: 'Email est requis',
+                pattern: {
+                  value: EMAIL_REGEX,
+                  message: 'Email invalide',
+                },
+              }}
+            />
+          </View>
+          <View style={{ marginBottom: '7%' }}>
+            <Custominput
+              iconName="lock"
+              placeHolder=" Mot de passe "
+              name={'pwd'}
+              control={control}
+              secureTextEntry={true}
+              rules={{
+                required: 'Le  mot de passe  est requis',
+              }}
+            />
+          </View>
 
           <CustomBtn
             text={'Se Connecter '}
-            type="PRIMARY"
+            type="REDBTN4"
             onPress={handleSubmit(OnSignInPressed)}
           />
         </View>
@@ -98,7 +105,7 @@ const LoginScreen = () => {
         <CustomBtn
           text={'crée un compte'}
           onPress={() => navigation.navigate('SignUp')}
-          type="SECONDARY"
+          // type="SECONDARY"
         />
       </View>
     </SafeAreaView>
@@ -110,10 +117,11 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: '#FBF5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
-    marginTop: '20%',
     justifyContent: 'center',
     alignItems: 'center',
   },

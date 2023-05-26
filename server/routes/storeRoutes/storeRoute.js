@@ -10,6 +10,7 @@ const {
   deleteLocationForStore,
   loginStore,
   logout,
+  getStoreImages,
 } = require('../../controllers/storeController/storeController');
 const { validateLocations } = require('../../utils/ValidationSchema');
 const { updateStoreRating } = require('../../utils/setStoreRating');
@@ -41,4 +42,6 @@ router.get('/findOneStore/:name', getStoreByName);
 router.get('/findOneStoreById/:id', getOneStore);
 //root:http://localhost:4000/api/store/stores/:storeId/locations/:locationId
 router.delete('/stores/:storeId/locations/:locationId', deleteLocationForStore);
+//root:http://localhost:4000/api/store/stores/:storeId/images
+router.get('/stores/:storeId/images', getStoreImages);
 module.exports = router;

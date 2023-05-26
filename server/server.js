@@ -4,6 +4,7 @@ const {
   updateExpiredReservations,
 } = require('./utils/deleteExpiredRservation');
 const cors = require('cors');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes/autrh');
@@ -20,14 +21,25 @@ require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 const Reservation = require('./models/ReservationModel');
 const { generateQrCode } = require('./utils/generateQrCode');
+const Location = require('./models/LocationModel');
 const app = express();
+// Location.collection.createIndex(
+//   { coordinates: '2dsphere' },
+//   (error, result) => {
+//     if (error) {
+//       console.log("Erreur lors de la création de l'index géospatial :", error);
+//     } else {
+//       console.log('Index géospatial créé avec succès :', result);
+//     }
+//   }
+// );
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 dbConnect();
 
 app.use(
-  cors('exp://192.168.1.30:19000')
+  cors('exp://192.168.8.101:19000')
   // cors({
   //   origin: ['http://localhost:3000', 'exp://192.168.8.123:19000'],
   //   optionsSuccessStatus: 200,
@@ -47,6 +59,7 @@ let data = {
 // let stringdata = JS ON.stringify(data);
 // generateQrCode(stringdata);
 app.use(cookieParser());
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/api', authRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api', uploadRoutes);

@@ -5,6 +5,8 @@ import {
   Alert,
   SafeAreaView,
   TouchableOpacity,
+  ActivityIndicatorBase,
+  ActivityIndicator,
 } from 'react-native';
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -45,18 +47,11 @@ const HomeScreen = () => {
   const [showNewItems, setShowNewItems] = useState(true);
 
   const { stores } = useContext(StoreContext);
-  const { categories } = useContext(CategoryContext);
+  const { categories, isLoading, isInitialLoading } =
+    useContext(CategoryContext);
   const authCtx = useContext(AuthContext);
   const user = authCtx.user;
 
-  const handleStoreSelected = (store_id) => {
-    console.log('store_id', store_id);
-    console.log('store_id', store_id);
-    const selectedStore = stores?.find((store) => store._id === store_id);
-    console.log('selectedStore', selectedStore);
-
-    navigation.navigate('Store', { selectedStore: selectedStore });
-  };
   const navigation = useNavigation();
   const handleFavorite = async (userId, storeId, isFavorite, storeName) => {
     console.log(userId, storeId, isFavorite, storeName);
@@ -91,9 +86,23 @@ const HomeScreen = () => {
       </TouchableOpacity>
     );
   };
+  // if (isInitialLoading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
+
+  // if (!categories) {
+  //   return <Text>Chargement des catégories...</Text>;
+  // }
+
   return (
     <>
-      <CategoryList categories={categories} showNewItems={showNewItems} />
+      {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
+      {/* {!isLoading && categories === null && (
+        <Text>Chargement des catégories...</Text>
+      )} */}
+      {categories && (
+        <CategoryList categories={categories} showNewItems={showNewItems} />
+      )}
     </>
   );
 };

@@ -25,6 +25,7 @@ import ContactScreen from '../screens/contactScreen/ContactScreen';
 import TabNavigation from './TabNavigtaion';
 import { CategoryContext } from '../context/CtegoryProvider';
 import { StoreContext, StoresProvider } from '../context/StoreProvider';
+import StoreImages from '../screens/TestScreen';
 
 const DrawerContent = (props) => {
   const authCtx = useContext(AuthContext);
@@ -124,6 +125,16 @@ const DrawerNavigation = () => {
         component={ContactScreen}
         options={{
           drawerLabel: 'Nous contacter',
+          drawerIcon: ({ color, size }) => (
+            <Icon name="information-circle-outline" size={30} color="black" />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="StoreImages"
+        component={StoreImages}
+        options={{
+          drawerLabel: 'Storeimage',
           drawerIcon: ({ color, size }) => (
             <Icon name="information-circle-outline" size={30} color="black" />
           ),

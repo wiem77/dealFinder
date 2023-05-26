@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -34,6 +34,7 @@ import { FontSize } from '../../constants/FontSize';
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import Loading2 from '../../components/loading2/Loading2';
+import { LocationContext } from '../../context/LocationProvider';
 
 const SignUpScreen = () => {
   const [location, setLocation] = useState(null);
@@ -41,24 +42,40 @@ const SignUpScreen = () => {
   const [locationRegion, setLocationRegion] = useState(null);
   const [locationCountry, setLocationCountry] = useState(null);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      let geocode = await Location.reverseGeocodeAsync({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-      setLocationName(geocode[0].city);
-      setLocationRegion(geocode[0].region);
-      setLocationCountry(geocode[0].country);
-    })();
-  }, []);
+  const swiperRef = useRef(null);
+  const [swiperIndex, setSwiperIndex] = useState(0);
+  const locCtx = useContext(LocationContext);
+  console.log('locCtx', locCtx.locationName);
+  const goToNextStep = () => {
+    if (swiperRef.current) {
+      swiperRef.current.scrollBy(1);
+    }
+  };
+
+  const goToPreviousStep = () => {
+    if (swiperRef.current) {
+      swiperRef.current.scrollBy(-1);
+    }
+  };
+
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       console.log('Permission to access location was denied');
+  //       return;
+  //     }
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     setLocation(location);
+  //     let geocode = await Location.reverseGeocodeAsync({
+  //       latitude: location.coords.latitude,
+  //       longitude: location.coords.longitude,
+  //     });
+  //     setLocationName(geocode[0].city);
+  //     setLocationRegion(geocode[0].region);
+  //     setLocationCountry(geocode[0].country);
+  //   })();
+  // }, []);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
 
@@ -113,10 +130,10 @@ const SignUpScreen = () => {
         age: selectedAge,
         roles: 'consommateur',
         type: 'Point',
-        coordinates: [location.coords.longitude, location.coords.latitude],
-        formattedAddress: `${locationName}, ${locationRegion}`,
-        city: locationName,
-        country: locationCountry,
+        coordinates: [locCtx.location.longitude, locCtx.location.latitude],
+        formattedAddress: `${locCtx.locationName}, ${locCtx.locationRegion}`,
+        city: locCtx.locationName,
+        // country: locationCountry,
       };
       console.log(ress);
 
@@ -171,18 +188,21 @@ const SignUpScreen = () => {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MaterialIcons name="location-on" size={24} color="black" />
-            {locationName && (
+            {locCtx.locationName && (
               <Text>
-                {locationName}, {locationRegion}
+                {locCtx.locationName}, {locCtx.locationRegion}
               </Text>
             )}
           </View>
         </View>
         <View style={{ height: '50%' }}>
           <Swiper
-            howsPagination={true}
+            ref={swiperRef}
+            index={swiperIndex}
+            showsPagination={true}
             activeDotColor="red"
             dotStyle={{ width: 10, height: 10 }}
+            scrollEnabled={false} // Désactiver le swipe manuel
           >
             <View>
               <View style={styles.textcontainer}>
@@ -362,6 +382,14 @@ const SignUpScreen = () => {
             onPress={handleSubmit(OnSignInPressed2)}
           />
         </View>
+        <TouchableOpacity onPress={goToNextStep}>
+          <MaterialIcons name="arrow-forward" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* Bouton étape précédente */}
+        <TouchableOpacity onPress={goToPreviousStep}>
+          <MaterialIcons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
         <View style={styles.textbtnContainer}>
           <Text style={styles.text}>Vous avez déjà un compte ?</Text>
           <TouchableOpacity onPress={onLoginPressed}>

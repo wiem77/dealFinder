@@ -133,13 +133,18 @@ module.exports.signIn = async (req, res) => {
   try {
     console.log('Looking up user...');
     const user = await User.findOne({ email: req.body.email })
-      .populate('favorite_stores', '-password -confirmpassword')
+      .populate('location')
+      .populate({
+        path: 'favorite_stores',
+        select: '_id store_name',
+      })
       .populate({
         path: 'reservedVouchers',
         select: 'qrCode expiry archived used',
         populate: {
           path: 'voucher',
           select: 'name_V discount is_available store',
+          populate: { path: 'store', select: 'store_name' },
         },
       })
       .populate({
@@ -149,15 +154,15 @@ module.exports.signIn = async (req, res) => {
           path: 'voucher',
           select: 'name_V discount is_available',
         },
-      })
-      .populate({
-        path: 'usedVouchers',
-        select: 'qrCode expiry archived used',
-        populate: {
-          path: 'voucher',
-          select: 'name_V discount is_available',
-        },
       });
+    // .populate({
+    //   path: 'usedVouchers',
+    //   select: 'qrCode expiry archived used',
+    //   populate: {
+    //     path: 'voucher',
+    //     select: 'name_V discount is_available',
+    //   },
+    // });
 
     if (!user) {
       console.log(user);
@@ -291,11 +296,9 @@ module.exports.updateUser = async (req, res) => {
       .status(200)
       .json({ message: 'Utilisateur mis à jour avec succès', user });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message:
-          "Une erreur est survenue lors de la mise à jour de l'utilisateur",
-      });
+    res.status(500).json({
+      message:
+        "Une erreur est survenue lors de la mise à jour de l'utilisateur",
+    });
   }
 };

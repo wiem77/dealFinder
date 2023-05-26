@@ -10,9 +10,14 @@ const sendEmail = require('../../utils/generatEmailValidation');
 
 const generateStoreToken = require('../../utils/generateStoreToken');
 const StoreToken = require('../../models/StoreToken');
+const crypto = require('crypto');
 
 const Rating = require('../../models/RatingsModel');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
+function generateAccessCode() {
+  const code = crypto.randomBytes(4).toString('hex'); // Génère un code hexadécimal de 8 caractères
+  return code.toUpperCase(); // Convertit le code en majuscules
+}
 exports.addStore = async (req, res, next) => {
   console.log('add2...');
   console.log(req.body);
@@ -39,13 +44,17 @@ exports.addStore = async (req, res, next) => {
       throw new Error('Logo required');
     }
     const fileName = req.file.filename;
+    const imagePath = `/public/image/${fileName}`;
+
+    console.log(`${req.protocol}://${req.get('host')}${imagePath}`);
 
     const media = new Media({
-      path: `${req.protocol}://${req.headers.host}/public/image/${fileName}`,
+      path: `${req.protocol}://${req.get('host')}${imagePath}`,
       extension: fileName.split('.').pop(),
     });
 
     await media.save();
+
     const locationDetails = await getLocationAdrs(coordinates);
     console.log('coordinates', locationDetails);
     const location = new Location({
@@ -64,6 +73,8 @@ exports.addStore = async (req, res, next) => {
       return res.status(400).send({ message: 'sub_categories is required' });
     }
 
+    const accessCode = generateAccessCode(); // Génère un accessCode unique
+
     const store = new Store({
       store_name: StoreName,
       phone: phone,
@@ -74,6 +85,7 @@ exports.addStore = async (req, res, next) => {
       subCategories: [subCategories],
       vouchers: [],
       store_image: [media._id],
+      accesscode: accessCode, // Ajoute l'accessCode au modèle Store
     });
     for (const subCategoryId of subCategories) {
       const subCategory = await SubCategory.findById(subCategoryId);
@@ -159,7 +171,6 @@ exports.getAllStores = async (req, res) => {
       .populate('vouchers')
       .lean();
 
-    // Calcul du rating pour chaque store
     for (let i = 0; i < stores.length; i++) {
       const store = stores[i];
       const ratings = await Rating.find({ store: store._id }).lean();
@@ -405,5 +416,24 @@ module.exports.logout = async (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
     res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+};
+module.exports.getStoreImages = async (req, res) => {
+  try {
+    const storeId = req.params.storeId;
+
+    // Recherche du magasin par ID
+    const store = await Store.findById(storeId).populate('store_image');
+
+    if (!store) {
+      return res.status(404).json({ error: 'Store not found' });
+    }
+
+    const imagePaths = store.store_image.map((media) => media.path);
+
+    res.json({ images: imagePaths });
+  } catch (error) {
+    console.error('Error fetching store images:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

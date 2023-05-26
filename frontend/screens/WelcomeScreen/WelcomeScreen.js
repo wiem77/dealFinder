@@ -8,22 +8,26 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import Loading from '../../components/loading/Loading';
+import { LocationContext } from '../../context/LocationProvider';
 
 const WelcomeScreen = () => {
-  const [location, setLocation] = useState(null);
-  const [locationName, setLocationName] = useState(null);
-  const [locationRegion, setLocationRegion] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const {
+    setLocation,
+    setLocationName,
+    setLocationRegion,
+    setAltitude,
+    setLongitude,
+  } = useContext(LocationContext);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const handleLocationPermission = async () => {
-    setLoading(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
@@ -31,8 +35,37 @@ const WelcomeScreen = () => {
       return;
     }
 
+    let currentLocation = await Location.getCurrentPositionAsync({});
+    setLocation(currentLocation);
+    console.log('location', currentLocation);
+
+    let { latitude, longitude, altitude } = currentLocation.coords;
+
+    let geocode = await Location.reverseGeocodeAsync({
+      latitude,
+      longitude,
+    });
+
+    let { city, region } = geocode[0];
+
+    setLocationName(city);
+    setLocationRegion(region);
+    setAltitude(altitude);
+    setLongitude(longitude);
+
     setLoading(false);
   };
+
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
+
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
 
   const OnLoginPressed = () => {
     handleLocationPermission();
@@ -52,6 +85,7 @@ const WelcomeScreen = () => {
   if (loading) {
     return <Loading />;
   }
+
   return (
     <View
       style={{

@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   function authenticate({ token, user }) {
-    console.log('test');
+  
     setAuthToken(token);
     setUserInfo(user);
 

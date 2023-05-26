@@ -8,6 +8,7 @@ import { StoresProvider } from './context/StoreProvider';
 import 'react-native-gesture-handler';
 import { CategoryProvider } from './context/CtegoryProvider';
 import { NativeBaseProvider, extendTheme } from 'native-base';
+import { LocationProvider } from './context/LocationProvider';
 export default function App() {
   const newColorTheme = {
     brand: {
@@ -23,14 +24,16 @@ export default function App() {
   }
   return (
     <NativeBaseProvider theme={theme}>
-      <StoresProvider>
-        <CategoryProvider>
-          <AuthProvider>
-            <StatusBar style="auto" />
-            <Navigation />
-          </AuthProvider>
-        </CategoryProvider>
-      </StoresProvider>
+      <LocationProvider>
+        <StoresProvider>
+          <CategoryProvider>
+            <AuthProvider>
+              <StatusBar style="auto" />
+              <Navigation />
+            </AuthProvider>
+          </CategoryProvider>
+        </StoresProvider>
+      </LocationProvider>
     </NativeBaseProvider>
   );
 }

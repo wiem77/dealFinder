@@ -5,11 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const CategoryContext = createContext();
 
 export const CategoryProvider = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // Nouvel état pour le chargement initial
   const [categories, setCategories] = useState();
-
   useEffect(() => {
     const fetchCategory = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(`${baseUrl}/category/getAllCategory`);
         const data = response.data;
 
@@ -24,6 +26,9 @@ export const CategoryProvider = ({ children }) => {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoading(false);
       }
     };
 
@@ -46,13 +51,14 @@ export const CategoryProvider = ({ children }) => {
       .catch((error) => console.error(error));
   }, []);
 
-  useEffect(() => {
-    if (categories) {
-      AsyncStorage.setItem('categories', JSON.stringify(categories))
-        .then(() => console.log('Data updated in AsyncStorage'))
-        .catch((error) => console.error(error));
-    }
-  }, [categories]);
+  function setCategoriesAndUpdateStorage(newCategories) {
+    AsyncStorage.setItem('categories', JSON.stringify(newCategories))
+      .then(() => {
+        console.log('Data updated in AsyncStorage');
+        setCategories(newCategories);
+      })
+      .catch((error) => console.error(error));
+  }
 
   function RemoveCat() {
     setCategories(null);
@@ -61,7 +67,15 @@ export const CategoryProvider = ({ children }) => {
   }
 
   return (
-    <CategoryContext.Provider value={{ categories, RemoveCat }}>
+    <CategoryContext.Provider
+      value={{
+        categories,
+        setCategories: setCategoriesAndUpdateStorage,
+        RemoveCat,
+        isLoading,
+        isInitialLoading,
+      }}
+    >
       {children}
     </CategoryContext.Provider>
   );

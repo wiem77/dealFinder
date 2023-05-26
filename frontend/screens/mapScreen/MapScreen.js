@@ -32,7 +32,7 @@ import { StoreContext } from '../../context/StoreProvider';
 import { CategoryContext } from '../../context/CtegoryProvider';
 import randomcolor from 'randomcolor';
 import { LinearProgress } from 'react-native-elements';
-
+import { LocationContext } from '../../context/LocationProvider';
 const MapScreen = () => {
   const navigation = useNavigation();
   const [circleRadius, setCircleRadius] = useState(100);
@@ -41,15 +41,11 @@ const MapScreen = () => {
   const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
   const { categories } = useContext(CategoryContext);
+  const locCtx = useContext(LocationContext);
+  console.log('locCtx', locCtx.location);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
-
+    const getLocation = async () => {
       try {
         let position = await Location.getCurrentPositionAsync({});
         if (position && position.coords) {
@@ -63,9 +59,21 @@ const MapScreen = () => {
       } finally {
         setIsLoading(false);
       }
-    })();
+    };
+
+    getLocation();
   }, []);
 
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+      }
+    };
+
+    requestLocationPermission();
+  }, []);
   useFocusEffect(
     React.useCallback(() => {
       const renderMarkers = () => {

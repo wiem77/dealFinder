@@ -27,12 +27,14 @@ import { baseUrl } from '../../config/config';
 import Loading from '../../components/loading/Loading';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
+import { combineImagePaths } from '../../util/CombinedPath';
 
 const { width, height } = Dimensions.get('window');
 const StoreScreen = ({ route }) => {
   const { selectedStore } = route.params;
+
   const voucherInfo = Object.values(selectedStore.vouchers);
-  console.log('storeid', selectedStore._id);
+  console.log('storeid', selectedStore.store_image);
   const [iconColor, setIconColor] = useState();
   const [stores, setStores] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
@@ -110,7 +112,7 @@ const StoreScreen = ({ route }) => {
         </SafeAreaView>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../../assets/image/Store1.png')}
+            source={combineImagePaths(selectedStore.store_image)}
             style={styles.storeImage}
           />
         </View>

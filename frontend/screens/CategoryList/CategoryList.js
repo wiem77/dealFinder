@@ -22,8 +22,11 @@ import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 
 import { Ionicons } from '@expo/vector-icons';
 import Search from '../../components/SerachBar/Search';
+import { serverIP } from '../../config/config';
+import { combineImagePaths } from '../../util/CombinedPath';
 
 export const CategoryList = ({ categories, showNewItems }) => {
+  console.log('categoriessss', categories);
   const { stores } = useContext(StoreContext);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -179,6 +182,7 @@ export const CategoryList = ({ categories, showNewItems }) => {
                     subCategory={
                       Object.values(item.sub_categories)[0].subCategory_name
                     }
+                    imageUri={combineImagePaths(item.store_image)}
                     onPressStore={() => handleStoreSelected(item._id)}
                     onPressFavorite={() =>
                       handleFavorite(

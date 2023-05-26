@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,69 +11,60 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
-  MaterialIcons,
 } from '@expo/vector-icons';
 
 import ViewMoreText from 'react-native-view-more-text';
+import { useNavigation } from '@react-navigation/native';
 
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 
-import Loading from '../../components/loading/Loading';
+import { Button } from 'native-base';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
+
 import { combineImagePaths } from '../../util/CombinedPath';
+import { FavoritesContext } from '../../context/FavoriteProvider';
 
 const { width, height } = Dimensions.get('window');
-import { Icon, useDisclose, Toast, Button } from 'native-base';
-import CustomStagger from '../../components/CustomStager/CustomStager';
+
 const StoreScreen = ({ route }) => {
   const { selectedStore } = route.params;
-
   const storeName = selectedStore.store_name;
   const formattedStoreName =
     storeName.charAt(0).toUpperCase() + storeName.slice(1).toLowerCase();
   const voucherInfo = Object.values(selectedStore.vouchers);
-  console.log('storeid', selectedStore.store_image);
-  const items = [
-    {
-      color: 'indigo.500',
-      iconFamily: MaterialIcons,
-      iconName: 'location-pin',
-      label: 'Emplacement',
-    },
-    {
-      color: 'yellow.400',
-      iconFamily: MaterialCommunityIcons,
-      iconName: 'microphone',
-      label: 'Microphone',
-    },
-  ];
-  const [stores, setStores] = useState({});
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
   const [websiteVisible, setWebsiteVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isFilled, setIsFilled] = useState(false);
-  const { isOpen, onToggle } = useDisclose();
-  const handleClick = () => {
-    setIsFilled(!isFilled);
-  };
+  const { favorites, addToFavorites, removeFromFavorites } =
+    useContext(FavoritesContext);
 
-  const iconColor = isFilled ? Colors.lightRed2 : 'black';
+  const iconColor = favorites.includes(selectedStore)
+    ? Colors.lightRed2
+    : 'black';
   const navigation = useNavigation();
 
   const handelBackPressed = () => {
     navigation.goBack();
   };
-  const handleAddToFavorites = () => {};
+
+  const handleClick = () => {
+    if (favorites.includes(selectedStore)) {
+      removeFromFavorites(selectedStore);
+    } else {
+      addToFavorites(selectedStore);
+    }
+    setIsFilled((prevIsFilled) => !prevIsFilled);
+  };
 
   const handelVoirPlus = (voucherIdToFind) => {
     const selectedVoucher = voucherInfo.find(
@@ -113,9 +104,6 @@ const StoreScreen = ({ route }) => {
 
   return (
     <>
-      {/* {isLoading ? (
-        <Loading />
-      ) : ( */}
       <View style={styles.container}>
         <SafeAreaView>
           <TouchableOpacity>
@@ -351,7 +339,6 @@ const StoreScreen = ({ route }) => {
           <ActivityIndicator size="large" color={Colors.black} />
         )}
       </View>
-      {/* )} */}
     </>
   );
 };

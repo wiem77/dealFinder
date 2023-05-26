@@ -1,20 +1,17 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { baseUrl } from '../config/config';
+import axios from 'axios';
+import { AuthContext } from './AuthProvider';
 const FavoritesContext = createContext();
 
 const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load favorites from AsyncStorage on component mount
     loadFavorites();
   }, []);
-
-  useEffect(() => {
-    // Save favorites to AsyncStorage whenever it changes
-    saveFavorites();
-  }, [favorites]);
 
   const loadFavorites = async () => {
     try {
@@ -23,31 +20,61 @@ const FavoritesProvider = ({ children }) => {
         setFavorites(JSON.parse(storedFavorites));
       }
     } catch (error) {
-      console.log('Error loading favorites from AsyncStorage:', error);
+      console.error('Error loading favorites from AsyncStorage:', error);
     }
+    setIsLoading(false);
   };
 
-  const saveFavorites = async () => {
+  const addToFavorites = async (storeId, token, userID) => {
+    const newFavorites = [...favorites, storeId];
+    setFavorites(newFavorites);
     try {
-      await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+      if (token) {
+        await axios.put(
+          `${baseUrl}/users/${userID}/favorite-stores/${storeId}`,
+          { favorites: newFavorites },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+      }
     } catch (error) {
-      console.log('Error saving favorites to AsyncStorage:', error);
+      console.error('Error saving favorites:', error);
     }
   };
 
-  const addToFavorites = (item) => {
-    setFavorites((prevFavorites) => [...prevFavorites, item]);
-  };
+  const removeFromFavorites = async (storeId, token, userID) => {
+    if (favorites.includes(storeId)) {
+      const newFavorites = favorites.filter((favorite) => favorite !== storeId);
+      setFavorites(newFavorites);
 
-  const removeFromFavorites = (item) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((favorite) => favorite.id !== item.id)
-    );
+      try {
+        if (token) {
+          await axios.put(
+            `${baseUrl}/users/${userID}/favorite-stores/${storeId}`,
+            { favorites: newFavorites },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        } else {
+          await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+        }
+      } catch (error) {
+        console.error('Error saving favorites:', error);
+      }
+    } else {
+      console.warn("Le magasin n'est pas présent dans les favoris.");
+    }
   };
-  console.log(favorites);
+  console.log('favorites', favorites);
   return (
     <FavoritesContext.Provider
-      value={{ favorites, addToFavorites, removeFromFavorites }}
+      value={{
+        favorites,
+        addToFavorites,
+        removeFromFavorites,
+
+        isLoading,
+      }}
     >
       {children}
     </FavoritesContext.Provider>

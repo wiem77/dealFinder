@@ -3,13 +3,14 @@ const router = express.Router();
 const {
   addToFavoriteStores,
   removeFromFavoriteStores,
+  updateFavorites,
 } = require('../../controllers/favoritesController/Favorites');
 const {
   newRating,
 } = require('../../controllers/userController/userController');
 const updateStoreRating = require('../../utils/setStoreRating');
 //http://localhost:4000/api/users/:userID/favorite-stores/:storeId
-router.post('/:userID/favorite-stores/:storeId', addToFavoriteStores);
+router.put('/:userID/favorite-stores/:storeId', updateFavorites);
 //http://localhost:4000/api/users/:userID/favorite-stores/:storeId
 router.delete(
   '/:userID/deletefavorite-stores/:storeId',

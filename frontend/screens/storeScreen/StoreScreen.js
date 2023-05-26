@@ -30,6 +30,7 @@ import { FontSize } from '../../constants/FontSize';
 
 import { combineImagePaths } from '../../util/CombinedPath';
 import { FavoritesContext } from '../../context/FavoriteProvider';
+import { AuthContext } from '../../context/AuthProvider';
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,7 +48,9 @@ const StoreScreen = ({ route }) => {
   const [isFilled, setIsFilled] = useState(false);
   const { favorites, addToFavorites, removeFromFavorites } =
     useContext(FavoritesContext);
-
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const userID = authCtx.user._id;
   const iconColor = favorites.includes(selectedStore)
     ? Colors.lightRed2
     : 'black';
@@ -59,9 +62,9 @@ const StoreScreen = ({ route }) => {
 
   const handleClick = () => {
     if (favorites.includes(selectedStore)) {
-      removeFromFavorites(selectedStore);
+      removeFromFavorites(selectedStore._id, token, userID);
     } else {
-      addToFavorites(selectedStore);
+      addToFavorites(selectedStore._id, token, userID);
     }
     setIsFilled((prevIsFilled) => !prevIsFilled);
   };

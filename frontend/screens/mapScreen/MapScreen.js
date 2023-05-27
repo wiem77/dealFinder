@@ -45,6 +45,16 @@ const MapScreen = () => {
   console.log('locCtx', locCtx.location);
 
   useEffect(() => {
+    const requestLocationPermission = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+      }
+    };
+
+    requestLocationPermission();
+  }, []);
+  useEffect(() => {
     const getLocation = async () => {
       try {
         let position = await Location.getCurrentPositionAsync({});
@@ -64,16 +74,6 @@ const MapScreen = () => {
     getLocation();
   }, []);
 
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-      }
-    };
-
-    requestLocationPermission();
-  }, []);
   useFocusEffect(
     React.useCallback(() => {
       const renderMarkers = () => {

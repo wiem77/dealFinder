@@ -33,11 +33,11 @@ export default function VerticalStoreCard({
       voucher,
     });
   };
-
+  console.log(imageUri);
   return (
     <TouchableOpacity onPress={onPressStore}>
       <View style={styles.container}>
-        <ImageBackground source={uri} style={styles.imageBackground}>
+        <ImageBackground source={imageUri} style={styles.imageBackground}>
           <View style={styles.overlay}>
             <View
               style={{ flexDirection: 'row', justifyContent: 'space-between' }}

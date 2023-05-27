@@ -44,7 +44,7 @@ export default StoreCard2 = ({ store, onRemoveFavorite }) => {
           />
         </View>
         <View style={styles.storeInfoContainer}>
-          <Text style={styles.storeName}>{store.name}</Text>
+          <Text style={styles.storeName}>{store.store_name}</Text>
           <View style={styles.storeLocationContainer}>
             <MaterialIcons name="location-on" size={14} color={Colors.grey} />
             <Text style={styles.storeLocationText}>{store.distance}</Text>

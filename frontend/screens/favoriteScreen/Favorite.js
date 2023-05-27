@@ -16,28 +16,16 @@ import Colors from '../../constants/Colors';
 
 import Imgtest from '../../assets/image/Store1.png';
 import { AuthContext } from '../../context/AuthProvider';
+import { FavoritesContext } from '../../context/FavoriteProvider';
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.9;
 
 const Favorite = () => {
   const [favoriteStores, setFavoriteStores] = useState([]);
   const authCtx = useContext(AuthContext);
-
+  const favCtx = useContext(FavoritesContext);
   const user = authCtx.user;
-  console.log('userFavorites', user.favorite_stores);
-  // useEffect(() => {
-  //   const storeData = route.params?.storeData;
-  //   if (storeData) {
-  //     setFavoriteStores([...favoriteStores, storeData]);
-  //   }
-  // }, [route.params?.storeData]);
-
-  // // handle removing a store from favorites
-  // const handleRemoveFavorite = (storeId) => {
-  //   setFavoriteStores((prevStores) =>
-  //     prevStores.filter((store) => store.id !== storeId)
-  //   );
-  // };
+  console.log('userFavorites', favCtx.favorites);
 
   return (
     <View style={styles.container}>
@@ -55,18 +43,18 @@ const Favorite = () => {
       </SafeAreaView>
 
       <View style={styles.contentContainer}>
-        {favoriteStores.length === 0 ? (
+        {favCtx.favorites.length === 0 ? (
           <Text style={styles.noFavoritesText}>Pas de favoris</Text>
         ) : (
           <FlatList
-            data={favoriteStores}
+            data={favCtx.favorites}
             renderItem={({ item }) => (
               <StoreCard2
                 store={item}
-                onRemoveFavorite={handleRemoveFavorite}
+                // onRemoveFavorite={handleRemoveFavorite}
               />
             )}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item._id}
             contentContainerStyle={{ paddingBottom: 20 }}
           />
         )}

@@ -9,28 +9,23 @@ import 'react-native-gesture-handler';
 import { CategoryProvider } from './context/CtegoryProvider';
 import { NativeBaseProvider, extendTheme } from 'native-base';
 import { LocationProvider } from './context/LocationProvider';
+import { FavoritesProvider } from './context/FavoriteProvider';
 export default function App() {
-  const newColorTheme = {
-    brand: {
-      900: '#8287af',
-      800: '#7c83db',
-      700: '#b3bef6',
-    },
-  };
-  const theme = extendTheme({ colors: newColorTheme });
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
   return (
-    <NativeBaseProvider theme={theme}>
+    <NativeBaseProvider>
       <LocationProvider>
         <StoresProvider>
           <CategoryProvider>
-            <AuthProvider>
-              <StatusBar style="auto" />
-              <Navigation />
-            </AuthProvider>
+            <FavoritesProvider>
+              <AuthProvider>
+                <StatusBar style="auto" />
+                <Navigation />
+              </AuthProvider>
+            </FavoritesProvider>
           </CategoryProvider>
         </StoresProvider>
       </LocationProvider>

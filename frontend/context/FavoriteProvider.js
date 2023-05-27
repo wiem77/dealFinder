@@ -26,20 +26,22 @@ const FavoritesProvider = ({ children }) => {
   };
 
   const addToFavorites = async (storeId, token, userID) => {
-    const newFavorites = [...favorites, storeId];
-    setFavorites(newFavorites);
-    try {
-      if (token) {
-        await axios.put(
-          `${baseUrl}/users/${userID}/favorite-stores/${storeId}`,
-          { favorites: newFavorites },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+    if (!favorites.includes(storeId)) {
+      const newFavorites = [...favorites, storeId];
+      setFavorites(newFavorites);
+      try {
+        if (token) {
+          await axios.put(
+            `${baseUrl}/users/${userID}/favorite-stores/${storeId}`,
+            { favorites: newFavorites },
+            { headers: { 'x-access-token': token } }
+          );
+        } else {
+          await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+        }
+      } catch (error) {
+        console.error('Error saving favorites:', error);
       }
-    } catch (error) {
-      console.error('Error saving favorites:', error);
     }
   };
 
@@ -47,13 +49,12 @@ const FavoritesProvider = ({ children }) => {
     if (favorites.includes(storeId)) {
       const newFavorites = favorites.filter((favorite) => favorite !== storeId);
       setFavorites(newFavorites);
-
       try {
         if (token) {
           await axios.put(
             `${baseUrl}/users/${userID}/favorite-stores/${storeId}`,
             { favorites: newFavorites },
-            { headers: { Authorization: `Bearer ${token}` } }
+            { headers: { 'x-access-token': token } }
           );
         } else {
           await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
@@ -65,6 +66,7 @@ const FavoritesProvider = ({ children }) => {
       console.warn("Le magasin n'est pas présent dans les favoris.");
     }
   };
+
   console.log('favorites', favorites);
   return (
     <FavoritesContext.Provider

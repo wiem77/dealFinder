@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
-import { InputLabel, Select, TextField } from '@mui/material';
+import { IconButton, InputLabel, Select, TextField } from '@mui/material';
 import { Formik } from 'formik';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -56,9 +56,9 @@ function ModalStore({ style, data, id }) {
 
   return (
     <div>
-      <Button onClick={() => handleOpen(id)}>
+      <IconButton onClick={() => handleOpen(id)}>
         <VisibilityIcon style={{ color: 'black' }} />
-      </Button>
+      </IconButton>
       <Modal
         open={open}
         onClose={handleClose}

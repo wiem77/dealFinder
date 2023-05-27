@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Topbar from './scenes/global/Topbar';
 import Sidebar from './scenes/global/Sidebar';
 import Dashboard from './scenes/dashboard';
@@ -21,41 +21,32 @@ import { Login } from './Login';
 import SubCategory from './scenes/subCategory';
 import CategoryForm from './scenes/catForm';
 import { AuthContext } from './context/AuthProvider';
+import AdminLayout from './layout/AdminLayout';
+import Test from './Test';
 
 function App() {
   const [theme, colorMode] = useMode();
-  const [isSidebar, setIsSidebar] = useState(true);
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const { isAuthenticated } = useContext(AuthContext);
+
+  const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    if (authCtx.isAuthenticated) {
+      navigate('/');
+    } else navigate('/Login');
+  }, [authCtx]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar isSidebar={isSidebar} />
-          <main className="content">
-            <Topbar setIsSidebar={setIsSidebar} />
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/Login" element={<Login />} />
-              <Route path="/SubCategory" element={<SubCategory />} />
-              <Route path="/boutiques" element={<Store />} />
-              <Route path="/category" element={<Category />} />
-              <Route path="/Addcategory" element={<CategoryForm />} />
-              <Route path="/coupons" element={<Invoices />} />
-              <Route path="/form" element={<Form />} />
-              <Route path="/bar" element={<Bar />} />
-              <Route path="/pie" element={<Pie />} />
-              <Route path="/line" element={<Line />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/geography" element={<Geography />} />
-              <Route path="/AjoutBoutique" element={<StoreForm />} />
-            </Routes>
-          </main>
+          <Routes>
+            <Route path="*" element={<AdminLayout />} />
+            <Route path="/Login" element={<Login />} />
+          </Routes>
         </div>
       </ThemeProvider>
     </ColorModeContext.Provider>

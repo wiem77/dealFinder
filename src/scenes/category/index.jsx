@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 
-import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { tokens } from '../../theme';
 import Header from '../../components/Header';
@@ -20,9 +20,7 @@ import { baseUrl } from '../../config/config';
 
 import { useEffect, useState } from 'react';
 import EditCategory from '../../components/EditCategory';
-import ShowStoreV from '../../components/ShowStoreV';
-import DeleteVfromStore from '../../components/deleteModels/deleteVfromStore';
-import AddVoucher from '../../components/AddVoucher';
+
 import AddSubCatModal from '../../components/AddSubCatModal';
 import DeletesCatfromCat from '../../components/deleteModels/deleteSubCatfromCat';
 import ModalSubCat from '../../components/showDetails/ModalSubCat';
@@ -92,7 +90,7 @@ const Category = () => {
       let subcategoriesNames;
       console.log('category', category);
       if (category.subcategories && category.subcategories?.length > 0) {
-        subcategoriesNames = category.subcategories.map(
+        subcategoriesNames = category.subcategories?.map(
           (subCategory) => subCategory
         );
       }
@@ -101,10 +99,7 @@ const Category = () => {
           ? subcategoriesNames?.length
           : 0;
       const nbCatt = nbCat > 0 ? `${nbCat} ` : 'pas de sous_catégories';
-      console.log(
-        'subcategoriesNamessss123',
-        subcategoriesNames[0].subCategory_name
-      );
+
       return {
         id: category.id,
         _id: category._id,
@@ -138,7 +133,20 @@ const Category = () => {
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: '_id', headerName: 'Registrar ID' },
+    {
+      field: 'image',
+      headerName: 'Image',
+      flex: 1,
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Image"
+          style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+        />
+      ),
+      valueGetter: (params) => params.row.category_image,
+    },
+
     {
       field: 'category_name',
       headerName: 'Nom_Catégories',
@@ -196,8 +204,17 @@ const Category = () => {
           {params.row.subcategories && params.row.subcategories.length > 0 ? (
             <Typography>{params.row.subcategories.length}</Typography>
           ) : (
-            <Typography>pas de sous_catégories</Typography>
+            <>
+              <Typography>pas de sous_catégories</Typography>
+              <AddSubCatModal
+                data={params.row}
+                id={params.row._id}
+                style={style}
+                sub={params.row.subcategories}
+              />
+            </>
           )}
+
           {params.row.nbCatt !== 'pas de sous_catégories' && (
             <>
               <DeletesCatfromCat
@@ -226,7 +243,7 @@ const Category = () => {
 
     {
       field: 'test',
-      headerName: 'Actions',
+      headerName: 'Action',
       flex: 1,
       renderCell: (params) => (
         <Box
@@ -248,11 +265,13 @@ const Category = () => {
       ),
     },
   ];
-
   return (
     <>
       <Box m="20px">
-        <Header title="Catégories" subtitle="Liste des catégories disponible" />
+        <Header
+          title="Catégories"
+          subtitle="Liste des catégories disponibles"
+        />
 
         <Box
           m="40px 0 0 0"
@@ -281,16 +300,23 @@ const Category = () => {
             '& .MuiCheckbox-root': {
               color: `${colors.greenAccent[200]} !important`,
             },
-            '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-              color: `${colors.grey[100]} !important`,
-            },
           }}
         >
-          <CategoryForm />
           <DataGrid
             rows={categoryData}
             columns={columns}
-            components={{ Toolbar: GridToolbar }}
+            components={{
+              Toolbar: () => (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <GridToolbar />
+                  <CategoryForm />
+                </Box>
+              ),
+            }}
             getRowId={(row) => row._id}
           />
         </Box>

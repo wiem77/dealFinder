@@ -6,7 +6,7 @@ import Modal from '@mui/material/Modal';
 import { Add, Edit } from '@mui/icons-material';
 import axios from 'axios';
 import { baseUrl } from '../config/config';
-import { TextField } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import Header from './Header';
@@ -68,10 +68,17 @@ export default function AddVoucher({ style, idStore, data }) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box
+          sx={{
+            ...style,
+            overflow: 'auto',
+            padding: '20px',
+            maxHeight: '500px',
+          }}
+        >
           <Header
             title="Ajout d'un nouveaux coupon"
-            subtitle={data.storename + ' - ' + idStore}
+            subtitle={data.store_name}
           />
 
           <Formik

@@ -146,13 +146,17 @@ const StoreForm = () => {
   };
 
   return (
-    <Box m="70px" alignItems="center">
+    <Box>
       <Box display="flex" alignItems="center">
         <Button
           onClick={handleOpen}
-          color="primary"
+          variant="contained"
+          color="inherit"
           startIcon={<Add />}
-          sx={{ mr: 1 }}
+          sx={{
+            // mr: 1,
+            marginTop: '-10px',
+          }}
         >
           Ajouter une nouvelle Boutique
         </Button>

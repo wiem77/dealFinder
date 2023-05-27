@@ -76,14 +76,14 @@ const CategoryForm = () => {
   };
 
   return (
-    <Box m="20px" alignItems="center">
-    
+    <Box>
       <Box display="flex" alignItems="center">
         <Button
+          variant="contained"
+          color="inherit"
           onClick={handleOpen}
-          color="primary"
           startIcon={<Add />}
-          sx={{ mr: 1 }}
+          sx={{ marginTop: '-10px' }}
         >
           Ajouter une nouvelle catégorie
         </Button>

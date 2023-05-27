@@ -33,7 +33,6 @@ export default function EditCategory({ style, data, categoryId }) {
     category_name: data.category_name,
     category_image: data.category_image,
   };
-  console.log('data', data);
 
   const handleOpen = async (idCategory) => {
     setCategoryInfo(idCategory);
@@ -92,20 +91,15 @@ export default function EditCategory({ style, data, categoryId }) {
                   sx={{
                     '& > div': {
                       gridColumn: 'span 5',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     },
                   }}
                 >
                   <div>
-                    {console.log(data)}
-
                     <img
-                      //   src={
-                      //     'http://localhost:4000/123.png'
-                      //     // 'http://localhost:4000/123.png'
-                      //   }
-                      src={
-                        'DesktopAll/DealFinder/server/image/test-png-1683798150797.png'
-                      }
+                      src={data.category_image}
                       alt="Category Image"
                       style={{
                         borderRadius: '50%',
@@ -118,7 +112,7 @@ export default function EditCategory({ style, data, categoryId }) {
                     fullWidth
                     variant="filled"
                     type="text"
-                    label="Nom de la catégorie "
+                    label="Nom de la catégorie"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.category_name}

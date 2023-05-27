@@ -75,6 +75,12 @@ function EditLoc({ style, data, idStore }) {
   };
   const handleFormSubmit = async (values) => {
     try {
+      if (values.latitude === 0 || values.longitude === 0) {
+        showToastMessage(
+          'Erreur : Veuillez fournir des valeurs valides pour la latitude et la longitude.'
+        );
+        return;
+      }
       const response = await axios.post(
         `http://localhost:4000/api/admin/stores/${idStore}/newLocation`,
         {
@@ -142,7 +148,7 @@ function EditLoc({ style, data, idStore }) {
         >
           <Header
             title="Modifier Boutique"
-            subtitle={data.store_name + ' - ' + data._id}
+            subtitle={('Boutique', data.store_name)}
           />
 
           <Formik

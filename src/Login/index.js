@@ -18,11 +18,13 @@ import { baseUrl } from '../config/config';
 import axios from 'axios';
 import { login } from '../util/auth';
 import { AuthContext } from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 const checkoutSchema = yup.object().shape({
   email: yup.string().required('required'),
   password: yup.string().required('required'),
 });
 export const Login = () => {
+  const navigate = useNavigate();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const authCtx = useContext(AuthContext);
   const isNonMobile = useMediaQuery('(min-width:600px)');
@@ -30,6 +32,7 @@ export const Login = () => {
     email: '',
     password: '',
   };
+
   const handleFormSubmit = async (values) => {
     setIsAuthenticating(true);
     try {
@@ -39,6 +42,7 @@ export const Login = () => {
       const { token, user } = await login({ email, password });
       authCtx.authenticate({ token, user });
       console.log('Sign in successful');
+      navigate('/');
     } catch (error) {
       console.error(error);
       window.alert(`Error: ${error.response.data.message}`);
@@ -46,7 +50,12 @@ export const Login = () => {
   };
 
   return (
-    <Box m="20px" alignItems="center">
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      width="100%"
+    >
       <Box>
         <Header
           title="DealFinder Dashbord"

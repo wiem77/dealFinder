@@ -6,8 +6,10 @@ import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AuthContext } from '../../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Topbar = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
@@ -15,6 +17,7 @@ const Topbar = () => {
   const handleLogout = () => {
     authCtx.logout();
     console.log('logOut');
+    navigate('/Login');
   };
   return (
     <Box display="flex" justifyContent="space-between" p={2}>

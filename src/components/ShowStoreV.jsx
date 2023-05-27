@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  IconButton,
+  InputLabel,
+  Typography,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 
 import Modal from '@mui/material/Modal';
@@ -50,19 +56,26 @@ function ShowStoreV({ style, data, id }) {
   };
   return (
     <div>
-      <Button onClick={() => handleOpen(id)}>
+      <IconButton onClick={() => handleOpen(id)}>
         <VisibilityIcon style={{ color: 'black' }} />
-      </Button>
+      </IconButton>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box
+          sx={{
+            ...style,
+            overflow: 'auto',
+            padding: '20px',
+            maxHeight: '500px',
+          }}
+        >
           <Header
             title=" Liste des Coupons"
-            subtitle={'_idBoutique' + ' - ' + id}
+            subtitle={'Boutique' + ' - ' + data.store_name}
           />
           <Formik initialValues={initialValues}>
             {({ values, handleChange }) => (
@@ -77,25 +90,33 @@ function ShowStoreV({ style, data, id }) {
                     },
                   }}
                 >
-                  <Select
-                    fullWidth
-                    label="vouchers"
-                    onChange={(e) => {
-                      const selectedVoucher = voucherInfo.find(
-                        (voucher) => voucher.name_V === e.target.value
-                      );
-                      setSelectedCoupon(selectedVoucher);
-                      handleChange(e);
-                    }}
-                    sx={{ gridColumn: 'span 4' }}
-                  >
-                    {voucherInfo.map((voucher) => (
-                      <MenuItem key={voucher._idVoucher} value={voucher.name_V}>
-                        {voucher.name_V}
-                      </MenuItem>
-                    ))}
-                  </Select>
-
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel id="coupons-select-label">
+                      Liste des Coupons
+                    </InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="coupons-select-label"
+                      label="vouchers"
+                      onChange={(e) => {
+                        const selectedVoucher = voucherInfo.find(
+                          (voucher) => voucher.name_V === e.target.value
+                        );
+                        setSelectedCoupon(selectedVoucher);
+                        handleChange(e);
+                      }}
+                      sx={{ gridColumn: 'span 4' }}
+                    >
+                      {voucherInfo.map((voucher) => (
+                        <MenuItem
+                          key={voucher._idVoucher}
+                          value={voucher.name_V}
+                        >
+                          {voucher.name_V}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   {selectedCoupon && (
                     <>
                       <p

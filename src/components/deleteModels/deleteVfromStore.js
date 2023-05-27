@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Select, MenuItem, IconButton } from '@mui/material';
+import {
+  Box,
+  Select,
+  MenuItem,
+  IconButton,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -33,6 +40,13 @@ export default function DeleteVfromStore({ style, data, id }) {
     setOpen(true);
     console.log(voucherInfo);
   };
+  const handleRemoveCoupon = (coupon) => {
+    const updatedSelecCoupon = selectedCoupon.filter(
+      (cou) => cou.id !== coupon.id
+    );
+    setSelectedCoupon(updatedSelecCoupon);
+  };
+
   const handleDeleteStore = (voucher) => {
     const id = voucher.id;
     const name = voucher.name;
@@ -61,9 +75,9 @@ export default function DeleteVfromStore({ style, data, id }) {
   );
   return (
     <div>
-      <Button onClick={() => handleOpen(id)}>
+      <IconButton onClick={() => handleOpen(id)}>
         <Remove style={{ color: 'black' }} />
-      </Button>
+      </IconButton>
       <Modal
         open={open}
         onClose={handleClose}
@@ -71,10 +85,7 @@ export default function DeleteVfromStore({ style, data, id }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Header
-            title=" Liste des Coupons"
-            subtitle={'Sélectionner un coupon pour les supprimer' + ' - ' + id}
-          />
+          <Header title=" Liste des Coupons" subtitle={data.store_name} />
 
           <Formik>
             {({ values, handleChange }) => (
@@ -89,26 +100,35 @@ export default function DeleteVfromStore({ style, data, id }) {
                     },
                   }}
                 >
-                  <Select
-                    fullWidth
-                    label="Coupon"
-                    defaultValue="Coupon"
-                    multiple
-                    value={selectedCoupon}
-                    onChange={(event) => {
-                      setSelectedCoupon(event.target.value);
-                    }}
-                    sx={{ gridColumn: 'span 4' }}
-                  >
-                    {availableCoupons.map((voucher) => (
-                      <MenuItem
-                        key={voucher._idVoucher}
-                        value={{ id: voucher._idVoucher, name: voucher.name_V }}
-                      >
-                        {voucher.name_V}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel id="coupon-select-label">
+                      Sélectionner un Coupon pour le supprimer
+                    </InputLabel>
+                    <Select
+                      labelId="coupon-select-label"
+                      fullWidth
+                      label="Coupon"
+                      defaultValue="Coupon"
+                      multiple
+                      value={selectedCoupon}
+                      onChange={(event) => {
+                        setSelectedCoupon(event.target.value);
+                      }}
+                      sx={{ gridColumn: 'span 4' }}
+                    >
+                      {availableCoupons.map((voucher) => (
+                        <MenuItem
+                          key={voucher._idVoucher}
+                          value={{
+                            id: voucher._idVoucher,
+                            name: voucher.name_V,
+                          }}
+                        >
+                          {voucher.name_V}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   <Box
                     display="flex"
                     alignItems="center"
@@ -121,6 +141,13 @@ export default function DeleteVfromStore({ style, data, id }) {
                         <IconButton onClick={() => handleDeleteStore(v)}>
                           <Delete />
                         </IconButton>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleRemoveCoupon(v)}
+                        >
+                          Annuler
+                        </Button>
                       </Box>
                     ))}
                   </Box>

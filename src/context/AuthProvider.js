@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   }
-
+  console.log(userInfo);
   const value = {
     token: authToken,
     isAuthenticated: !!authToken,

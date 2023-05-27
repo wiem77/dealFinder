@@ -44,7 +44,10 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState('Tableaux de Board');
-  const { isAuthenticated } = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
+  // console.log(user?.picturePath.path);
   return (
     <Box
       sx={{
@@ -84,7 +87,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  ADMINIS
+                  ADMIN
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -95,17 +98,17 @@ const Sidebar = () => {
 
           {!isCollapsed && (
             <Box mb="25px">
-              {/* <Box display="flex" justifyContent="center" alignItems="center">
+              <Box display="flex" justifyContent="center" alignItems="center">
                 <img
                   alt="profile-user"
                   width="100px"
                   height="100px"
                   src={
-                    'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.iconfinder.com%2Ficons%2F1588014%2Fadmin_avatar_human_man_people_profile_user_icon&psig=AOvVaw0deW0csSjJ1euZTVKDm6R9&ust=1684581698401000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDN2v-hgf8CFQAAAAAdAAAAABAF'
+                    'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359554_640.png'
                   }
                   style={{ cursor: 'pointer', borderRadius: '50%' }}
                 />
-              </Box> */}
+              </Box>
               <Box textAlign="center">
                 <Typography
                   variant="h2"
@@ -113,10 +116,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: '10px 0 0 0' }}
                 >
-                  Ed Roh
+                  {user.nom} {user.prenom}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Fancy Admin
+                  {user.roles}
                 </Typography>
               </Box>
             </Box>
@@ -140,7 +143,7 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Utilisateurs"
-              to="/team"
+              to="/users"
               icon={<AccountCircle />}
               selected={selected}
               setSelected={setSelected}
@@ -189,46 +192,19 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Ajout Boutique"
-              to="/AjoutBoutique"
-              icon={<AddCircleOutlineIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
 
-            <Item
-              title="Notifications"
-              to="/notification"
-              icon={<NotificationsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
             <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: '15px 0 5px 20px' }}
             >
-              Charts
+              Statistiques
             </Typography>
-            <Item
-              title="Bar Chart"
-              to="/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
             <Item
               title="Pie Chart"
               to="/pie"
               icon={<PieChartOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/line"
-              icon={<TimelineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

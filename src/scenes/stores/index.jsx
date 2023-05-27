@@ -21,6 +21,7 @@ import AddVoucher from '../../components/AddVoucher';
 import ShowStoreV from '../../components/ShowStoreV';
 import DeleteVfromStore from '../../components/deleteModels/deleteVfromStore';
 import StoreForm from '../formStore';
+import EditLoc from '../../components/EditLLocation';
 
 const Store = () => {
   const theme = useTheme();
@@ -122,6 +123,7 @@ const Store = () => {
         name_V: voucherNames,
         locations: addresses,
         nbVoucher: nbVoucher,
+        store_image: store.store_image[0].path,
       };
     });
   };
@@ -146,8 +148,21 @@ const Store = () => {
   console.log('storesData', storesData);
 
   const columns = [
-    // { field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: '_id', headerName: 'Registrar ID' },
+    { field: 'id', headerName: 'ID', flex: 0.5 },
+    {
+      field: 'image',
+      headerName: 'Image',
+      flex: 1,
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Image"
+          style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+        />
+      ),
+      valueGetter: (params) => params.row.store_image,
+    },
+
     {
       field: 'store_name',
       headerName: 'Nom_boutique',
@@ -180,11 +195,11 @@ const Store = () => {
             width: '100%',
             textAlign: 'center',
             height: '100%',
-            // padding: '1px',
+
             boxSizing: 'border-box',
           }}
         >
-          <Typography>{params.row.nbVoucher}</Typography>
+          <text> {params.row.nbVoucher}</text>
           {params.row.nbVoucher > 0 && (
             <>
               <ShowStoreV data={params.row} id={params.row._id} style={style} />
@@ -203,6 +218,7 @@ const Store = () => {
         </Box>
       ),
     },
+
     // {
     //   field: 'nbVoucher',
     //   headerName: 'Sous_Catégories',
@@ -227,10 +243,11 @@ const Store = () => {
           }}
         >
           <ModalStore data={params.row} id={params.row._id} style={style} />
+          <EditLoc style={style} idStore={params.row._id} data={params.row} />
+          <EditStore style={style} idStore={params.row._id} data={params.row} />
           <IconButton onClick={() => handleDelete(params.row._id)}>
             <Delete />
           </IconButton>
-          <EditStore style={style} idStore={params.row._id} data={params.row} />
         </Box>
       ),
     },
@@ -272,11 +289,21 @@ const Store = () => {
             },
           }}
         >
-          <StoreForm />
           <DataGrid
             rows={storesData}
             columns={columns}
-            components={{ Toolbar: GridToolbar }}
+            components={{
+              Toolbar: () => (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <GridToolbar />
+                  <StoreForm />
+                </Box>
+              ),
+            }}
             getRowId={(row) => row._id}
           />
         </Box>

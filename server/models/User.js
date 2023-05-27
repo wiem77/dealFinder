@@ -49,7 +49,7 @@ const UserSchema = new mongoose.Schema({
   favorite_stores: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Favorite',
+      ref: 'Favorites',
     },
   ],
 

@@ -159,6 +159,11 @@ module.exports.getAllCategories = (req, res) => {
             path: 'locations',
             model: 'Location',
           },
+          {
+            path: 'store_image',
+            model: 'Media',
+            select: '_id path',
+          },
         ],
       },
     })

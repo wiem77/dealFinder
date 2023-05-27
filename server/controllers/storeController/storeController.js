@@ -169,6 +169,10 @@ exports.getAllStores = async (req, res) => {
         select: 'subCategory_name category',
       })
       .populate('vouchers')
+      .populate({
+        path: 'store_image',
+        select: '_id path',
+      })
       .lean();
 
     for (let i = 0; i < stores.length; i++) {

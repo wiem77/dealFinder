@@ -22,7 +22,7 @@ module.exports.verifyCodeReservation = async (req, res) => {
     })
       .populate(
         'user',
-        '-password -confirmpassword -picturePath -roles -favorite_stores -reservedVouchers -usedVouchers'
+        '-password -confirmpassword -picturePath -roles -favorite_stores -reservedVouchers '
       )
       .populate('voucher', '-store');
 
@@ -100,27 +100,28 @@ module.exports.createReservation = async (req, res) => {
     }
 
     const user = await User.findById(userId)
-      .populate('reservedVouchers usedVouchers')
+      .populate('reservedVouchers')
       .exec();
     console.log('user', user);
 
     const isReserved = user.reservedVouchers.find(
       (r) => r.voucher.toString() === voucherId
     );
+    console.log('tetstst');
     if (isReserved) {
       return res
         .status(400)
         .json({ message: 'Voucher already reserved by this user.' });
     }
 
-    const isUsed = user.usedVouchers.find(
-      (r) => r.voucher.toString() === voucherId
-    );
-    if (isUsed) {
-      return res.status(400).json({
-        message: 'You cannot reserve a coupon you have already used.',
-      });
-    }
+    // const isUsed = user.usedVouchers.find(
+    //   (r) => r.voucher.toString() === voucherId
+    // );
+    // if (isUsed) {
+    //   return res.status(400).json({
+    //     message: 'You cannot reserve a coupon you have already used.',
+    //   });
+    // }
 
     const reservationCode = await generateReservationCode();
     let stringdata = JSON.stringify(reservationCode);

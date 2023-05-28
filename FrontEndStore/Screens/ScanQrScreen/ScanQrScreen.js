@@ -20,7 +20,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { AuthContext } from '../../context/AuthProvider';
-import { SpeedDialComponent } from '../../components/SpeedDeal/SpeedDeal';
+
+import { Icon } from 'react-native-elements';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 const ScanQrScreen = () => {
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
@@ -28,6 +34,11 @@ const ScanQrScreen = () => {
   const [text, setText] = useState();
   const [loading, setLoading] = useState(false);
   const authCtx = useContext(AuthContext);
+  const [reservationCode, setReservationCode] = useState();
+  const [name_v, setName_v] = useState();
+  const [validity_date, setValidity_date] = useState();
+  const [discount, setDiscount] = useState();
+  const [available, setAvailable] = useState();
   const token = authCtx.token;
   const store = authCtx.store;
   const handleVerifyCode = async ({ resCode }) => {
@@ -94,11 +105,25 @@ const ScanQrScreen = () => {
   const handleBarCodeScanned = ({ type, data }) => {
     console.log(data);
     setScanned(true);
-    const newData = data.replace(/"/g, '');
+    const newData = JSON.parse(data);
     console.log('newData', newData);
-    setText(newData);
+    setText(data);
+    setReservationCode(newData.reservationCode);
+    setName_v(newData.voucher.name_v);
+    const validityDate = new Date(newData.voucher.validity_date)
+      .toISOString()
+      .split('T')[0];
+    setValidity_date(validityDate);
+    setDiscount(newData.voucher.discount);
+    const availability = newData.voucher.is_available
+      ? 'Disponible'
+      : 'Non disponible';
+    setAvailable(availability);
+
     console.log(text);
   };
+
+  console.log(reservationCode, name_v, validity_date, discount, available);
 
   if (hasPermission === null) {
     return (
@@ -121,25 +146,61 @@ const ScanQrScreen = () => {
   if (scanned) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.scanResultContainer}>
-          <View style={styles.scanResultBox}>
-            <Text style={styles.scanResultText}>{text}</Text>
+        <View style={styles.tableContainer}>
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Réservation :</Text>
+            <Text style={styles.scanResultValue}>{reservationCode}</Text>
           </View>
-          <TouchableOpacity
-            style={styles.verifyBtn}
-            onPress={() => handleVerifyCode({ resCode: text })}
-            disabled={loading}
-          >
-            {loading ? (
-              <View style={styles.loadingIndicator}>
-                <ActivityIndicator size="large" color={Colors.text} />
-                <Text style={styles.loadingText}>Vérification en cours...</Text>
-              </View>
+          <View style={styles.separator} />
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Voucher :</Text>
+            <Text style={styles.scanResultValue}>{name_v}</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Date de validité :</Text>
+            <Text style={styles.scanResultValue}>{validity_date}</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Remise :</Text>
+            <Text style={styles.scanResultValue}>{discount}</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Disponibilité :</Text>
+            {available ? (
+              <Icon
+                name="check-circle"
+                type="font-awesome"
+                color="green"
+                size={18}
+              />
             ) : (
-              <Text style={styles.verifyBtnText}>Vérifier le code</Text>
+              <Icon
+                name="times-circle"
+                type="font-awesome"
+                color="red"
+                size={18}
+              />
             )}
-          </TouchableOpacity>
+          </View>
         </View>
+        <TouchableOpacity
+          style={styles.container_GREENBTN}
+          onPress={() => handleVerifyCode({ resCode: text })}
+          disabled={loading}
+        >
+          {loading ? (
+            <View style={styles.loadingIndicator}>
+              <ActivityIndicator size="large" color={Colors.text} />
+              <Text style={styles.loadingText}>Vérification en cours...</Text>
+            </View>
+          ) : (
+            <Text style={styles.verifyBtnText}>Vérifier le code</Text>
+          )}
+        </TouchableOpacity>
+
         <View style={{ marginBottom: '50%', marginTop: 1 }}>
           <CustomBtn
             style={styles.scanAgainBtn}
@@ -183,7 +244,7 @@ const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: '#FBF5F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -192,6 +253,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 20,
   },
   barcodebox: {
     width: width * 0.8,
@@ -216,5 +284,38 @@ const styles = StyleSheet.create({
     top: 20,
     left: 20,
     zIndex: 1,
+  },
+
+  container_GREENBTN: {
+    backgroundColor: Colors.green,
+    width: wp('40%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  verifyBtnText: {
+    color: Colors.white,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  scanResultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  scanResultLabel: {
+    fontWeight: 'bold',
+    marginRight: 10,
+  },
+  scanResultValue: {},
+  separator: {
+    height: 1,
+    backgroundColor: 'gray',
+    marginVertical: 5,
   },
 });

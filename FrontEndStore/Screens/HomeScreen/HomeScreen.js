@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Alert,
+  SafeAreaView,
+} from 'react-native';
 import { ListItem, SearchBar, Button, Icon } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
 import axios from 'axios';
@@ -119,6 +126,8 @@ const HomeScreen = () => {
       else if (item.discount === 20) discountColor = '#FF5722';
       else if (item.discount === 30) discountColor = '#E91E63';
       else if (item.discount === 40) discountColor = '#9C27B0';
+      else if (item.discount === 25) discountColor = '#9C27B0';
+      else if (item.discount === 15) discountColor = '#00C853';
       availabilityColor = item.available_vouchers > 0 ? '#000000' : '#808080';
       availabilityIcon = (
         <Icon name="check-circle" type="font-awesome" color="#00C853" />
@@ -215,16 +224,18 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Icon
-          name="refresh"
-          type="material-community"
-          size={24}
-          onPress={handleRefresh}
-          containerStyle={styles.refreshIconContainer}
-        />
-        <Text style={styles.heading}>Coupons</Text>
-      </View>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <Icon
+            name="refresh"
+            type="material-community"
+            size={24}
+            onPress={handleRefresh}
+            containerStyle={styles.refreshIconContainer}
+          />
+          <Text style={styles.heading}>Coupons</Text>
+        </View>
+      </SafeAreaView>
       <SearchBar
         placeholder="Rechercher par nom ou remise"
         value={searchText}

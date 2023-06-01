@@ -5,7 +5,7 @@ import {
   View,
   Dimensions,
   SafeAreaView,
-  ImageBackground,
+  Image,
   TouchableOpacity,
   Alert,
   Platform,
@@ -20,12 +20,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { AuthContext } from '../../context/AuthProvider';
-
+import logo from '../../assets/image/DealFinderRed.png';
 import { Icon } from 'react-native-elements';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { log } from 'react-native-reanimated';
 
 const ScanQrScreen = () => {
   const navigation = useNavigation();
@@ -42,6 +43,7 @@ const ScanQrScreen = () => {
   const token = authCtx.token;
   const store = authCtx.store;
   const handleVerifyCode = async ({ resCode }) => {
+    console.log(resCode);
     console.log(store);
     const store_id = store._id;
     console.log('store_id', store._id);
@@ -127,8 +129,8 @@ const ScanQrScreen = () => {
 
   if (hasPermission === null) {
     return (
-      <View>
-        <Text>Requesting For camera permission</Text>
+      <View style={styles.container}>
+        <Text>La permission et requis</Text>
       </View>
     );
   }
@@ -146,6 +148,9 @@ const ScanQrScreen = () => {
   if (scanned) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={{ marginVertical: '15%' }}>
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
+        </View>
         <View style={styles.tableContainer}>
           <View style={styles.scanResultItem}>
             <Text style={styles.scanResultLabel}>Réservation :</Text>
@@ -153,8 +158,14 @@ const ScanQrScreen = () => {
           </View>
           <View style={styles.separator} />
           <View style={styles.scanResultItem}>
-            <Text style={styles.scanResultLabel}>Voucher :</Text>
+            <Text style={styles.scanResultLabel}>Coupon :</Text>
             <Text style={styles.scanResultValue}>{name_v}</Text>
+          </View>
+
+          <View style={styles.separator} />
+          <View style={styles.scanResultItem}>
+            <Text style={styles.scanResultLabel}>Remise :</Text>
+            <Text style={styles.scanResultValue}>{discount}</Text>
           </View>
           <View style={styles.separator} />
           <View style={styles.scanResultItem}>
@@ -163,14 +174,10 @@ const ScanQrScreen = () => {
           </View>
           <View style={styles.separator} />
           <View style={styles.scanResultItem}>
-            <Text style={styles.scanResultLabel}>Remise :</Text>
-            <Text style={styles.scanResultValue}>{discount}</Text>
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.scanResultItem}>
             <Text style={styles.scanResultLabel}>Disponibilité :</Text>
             {available ? (
               <Icon
+                style={{ paddingLeft: 15 }}
                 name="check-circle"
                 type="font-awesome"
                 color="green"
@@ -178,6 +185,7 @@ const ScanQrScreen = () => {
               />
             ) : (
               <Icon
+                style={{ paddingLeft: 15 }}
                 name="times-circle"
                 type="font-awesome"
                 color="red"
@@ -188,7 +196,7 @@ const ScanQrScreen = () => {
         </View>
         <TouchableOpacity
           style={styles.container_GREENBTN}
-          onPress={() => handleVerifyCode({ resCode: text })}
+          onPress={() => handleVerifyCode({ resCode: reservationCode })}
           disabled={loading}
         >
           {loading ? (
@@ -197,7 +205,7 @@ const ScanQrScreen = () => {
               <Text style={styles.loadingText}>Vérification en cours...</Text>
             </View>
           ) : (
-            <Text style={styles.verifyBtnText}>Vérifier le code</Text>
+            <Text style={styles.verifyBtnText}>Valider le coupon</Text>
           )}
         </TouchableOpacity>
 
@@ -288,7 +296,7 @@ const styles = StyleSheet.create({
 
   container_GREENBTN: {
     backgroundColor: Colors.green,
-    width: wp('40%'),
+    width: wp('43%'),
     height: wp('12%'),
     borderRadius: 5,
     paddingVertical: 10,
@@ -306,13 +314,22 @@ const styles = StyleSheet.create({
   scanResultItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginVertical: 8,
+    marginLeft: 20,
+    fontFamily: 'poppins',
   },
   scanResultLabel: {
     fontWeight: 'bold',
-    marginRight: 10,
+    fontSize: 16,
+    fontFamily: 'poppins',
+    color: Colors.background,
   },
-  scanResultValue: {},
+  scanResultValue: {
+    width: '70%',
+    fontFamily: 'inter',
+    paddingLeft: 15,
+    fontSize: 16,
+  },
   separator: {
     height: 1,
     backgroundColor: 'gray',

@@ -26,7 +26,12 @@ const CustomBtn = ({
     >
       <Text style={[styles.text, styles[`text_${type}`]]}>{text}</Text>
       {!isIconEmpty && (
-        <Ionicons name={nameIcon} size={sizeIcon} color={colorIcon} />
+        <Ionicons
+          name={nameIcon}
+          size={sizeIcon}
+          color={colorIcon}
+          style={{ marginLeft: 15, marginTop: -1 }}
+        />
       )}
     </TouchableOpacity>
   );

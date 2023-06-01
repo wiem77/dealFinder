@@ -64,35 +64,33 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginTop: -200 }}>
+      <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} resizeMode="contain" />
         </View>
-        <View style={styles.content}>
-          <View style={styles.WelcomeContainer}>
-            <Text style={styles.subtitle}>
-              Entrez votre Code d'inscription pour vous connecter.
-            </Text>
-          </View>
-          <View style={styles.inputWrapper}>
-            <Custominput
-              iconName="lock"
-              placeHolder="Code "
-              name={'accesscode'}
-              control={control}
-              secureTextEntry={true}
-              rules={{
-                required: "le code d'acces et requis",
-              }}
-            />
-
-            <CustomBtn
-              style={{ marginTop: 50 }}
-              text={'Se Connecter '}
-              type="REDBTN"
-              onPress={handleSubmit(OnSignInPressed)}
-            />
-          </View>
+        <View style={styles.WelcomeContainer}>
+          <Text style={styles.subtitle}>
+            Entrez votre Code d'inscription pour vous connecter.
+          </Text>
+        </View>
+        <View style={styles.inputWrapper}>
+          <Custominput
+            iconName="lock"
+            placeHolder="Code"
+            name={'accesscode'}
+            control={control}
+            secureTextEntry={true}
+            rules={{
+              required: "le code d'acces et requis",
+            }}
+          />
+          <View style={{ marginTop: 20 }} />
+          <CustomBtn
+            style={{ marginTop: 20 }}
+            text={'Se Connecter'}
+            type="REDBTN"
+            onPress={handleSubmit(OnSignInPressed)}
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -104,47 +102,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF5F5',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
-    justifyContent: 'center',
     alignItems: 'center',
-    // width: '100%',
-    marginTop: -50,
   },
   logoContainer: {
-    marginTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: hp('10%'),
-    marginBottom: hp('5%'),
+    marginBottom: 20,
   },
   logo: {
-    width: wp('70%'),
-    height: hp('20%'),
+    width: '70%',
+    height: undefined,
+    aspectRatio: 3, // Modifiez l'aspect ratio selon vos besoins
   },
   inputWrapper: {
-    width: '100%',
+    width: '80%',
     paddingHorizontal: '10%',
+    marginTop: 20,
   },
   WelcomeContainer: {
     alignItems: 'center',
-    marginBottom: '5%',
-  },
-  title: {
-    fontFamily: 'poppins',
-    fontStyle: 'normal',
-    fontWeight: '600',
-    fontSize: FontSize.large,
+    marginBottom: 10,
   },
   subtitle: {
     width: 260,
     fontFamily: 'poppins',
     fontStyle: 'normal',
     fontWeight: '400',
-    fontSize: FontSize.small,
-    color: Colors.black,
+    fontSize: 16, // Modifiez la taille de police selon vos besoins
+    color: '#000000',
     textAlign: 'center',
   },
 });

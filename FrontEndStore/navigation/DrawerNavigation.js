@@ -61,7 +61,7 @@ const DrawerNavigation = () => {
         activeBackgroundColor: '#FBF5F5',
         inactiveBackgroundColor: 'black',
         labelStyle: { fontSize: 16, marginLeft: -10 },
-        headerShown: true,
+        headerShown: false,
         headerTitle: '',
         headerTintColor: Colors.background,
         drawerStyle: {
@@ -131,6 +131,7 @@ const styless = StyleSheet.create({
   },
   drawerItemLabel: {
     fontSize: 16,
+    // marginTop: '40%',
   },
 });
 

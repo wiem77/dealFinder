@@ -102,34 +102,10 @@ export default function App() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Drawer" component={DrawerNavigation} />
-        <Stack.Screen
-          name="Speed"
-          component={SpeedDialComponent}
-          options={({ navigation }) => ({
-            headerRight: () => (
-              <SpeedDialContent
-                isOpen={false}
-                onOpen={() => navigation.openDrawer()}
-                onClose={() => navigation.closeDrawer()}
-              />
-            ),
-          })}
-        />
-        <Stack.Screen
-          name="ScanQr"
-          component={ScanQrScreen}
-          options={{
-            headerRight: () => (
-              <IconButton
-                icon="exit"
-                color={'black'}
-                size={28}
-                onPress={authCtx.logout}
-              />
-            ),
-          }}
-        />
+        <Stack.Screen name="speedDeal" component={SpeedDialComponent} />
         <Stack.Screen name="AddCoupon" component={AddCoupons} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="ScanQr" component={ScanQrScreen} />
         <Stack.Screen name="Success" component={SuccessVerification} />
         <Stack.Screen name="Verif" component={VerificationScreen} />
       </Stack.Navigator>

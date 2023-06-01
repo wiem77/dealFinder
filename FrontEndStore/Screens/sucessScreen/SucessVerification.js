@@ -42,7 +42,7 @@ const SuccessVerification = ({ route }) => {
   const nbVoucher = data?.data?.voucher?.available_vouchers;
   const discount = data?.data?.voucher?.discount;
   const validity_date = data?.data?.voucher?.validity_date.slice(0, 10);
-  const userName = `${data?.data?.user?.prenom} , ${data?.data?.user?.nom} `;
+  const userName = `${data?.data?.user?.prenom} ${data?.data?.user?.nom} `;
   console.log('data', userName);
   const telephone = data?.data?.user?.telephone;
 
@@ -60,7 +60,7 @@ const SuccessVerification = ({ route }) => {
 
         <View style={styles.contentContainer}>
           <View>
-            <Text style={styles.detailles}>Coupon Valide</Text>
+            <Text style={styles.detailles}>Coupon validé</Text>
           </View>
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}
@@ -83,7 +83,7 @@ const SuccessVerification = ({ route }) => {
 
           <View style={{ flexDirection: 'row' }}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.voucherName}>Utilisateur information:</Text>
+              <Text style={styles.voucherName}>Détails du bénéficiaire :</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                 <Text style={styles.nbVoucher}>Nom : </Text>
                 <Text style={{ paddingHorizontal: 10, fontSize: 20 }}>
@@ -99,7 +99,7 @@ const SuccessVerification = ({ route }) => {
                   marginBottom: '6%',
                 }}
               >
-                <Text style={styles.nbVoucher}>télephone : </Text>
+                <Text style={styles.nbVoucher}>Télephone : </Text>
                 <Text
                   style={{
                     paddingHorizontal: 10,
@@ -116,79 +116,16 @@ const SuccessVerification = ({ route }) => {
           <View style={{ marginTop: '8%', marginBottom: '6%' }}>
             <CustomBtn
               style={{ marginTop: '6%' }}
-              text={'Retour a la page de Scan'}
-              onPress={() => navigation.navigate('ScanQr')}
+              text={"Retour à la page d'accueil"}
+              onPress={() => navigation.navigate('Home')}
               type="GREENBTN"
-              nameIcon={'barcode-outline'}
-              sizeIcon={25}
+              nameIcon={'home'}
+              sizeIcon={22}
               colorIcon={Colors.white}
             />
           </View>
         </View>
       </View>
-
-      {/* <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={require('../../assets/image/approved.png')}
-            style={styles.storeImage}
-            resizeMode="contain"
-          />
-        </View>
-
-        <View style={styles.contentContainer}>
-          <View>
-            <Text style={styles.detailles}>Coupon Valide</Text>
-          </View>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Text style={styles.voucherName}>{voucherName}</Text>
-            <Text style={styles.discountName}>Remise {discount}%</Text>
-          </View>
-
-          <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <Text style={styles.nbVoucher}>Nom : </Text>
-              <Text style={{ paddingHorizontal: 10, fontSize: 20 }}>
-                {userName}
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                marginTop: '6%',
-                marginBottom: '6%',
-              }}
-            >
-              <Text style={styles.nbVoucher}>télephone : </Text>
-              <Text
-                style={{
-                  paddingHorizontal: 10,
-                  fontSize: 18,
-
-                  fontStyle: 'italic',
-                }}
-              >
-                {telephone}
-              </Text>
-            </View>
-          </View>
-          <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-            <CustomBtn
-              style={{ marginTop: '6%' }}
-              text={'Retour a la page de Scan'}
-              onPress={() => navigation.navigate('ScanQr')}
-              type="GREENBTN"
-              nameIcon={'barcode-outline'}
-              sizeIcon={25}
-              colorIcon={Colors.white}
-            />
-          </View>
-        </View>
-      </View> */}
     </>
   );
 };

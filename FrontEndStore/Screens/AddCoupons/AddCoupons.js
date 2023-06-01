@@ -24,7 +24,7 @@ import {
   SpeedDialComponent,
   SpeedDialContent,
 } from '../../components/SpeedDeal/SpeedDeal';
-
+import { Ionicons } from '@expo/vector-icons';
 const AddCoupons = () => {
   const {
     control,
@@ -105,7 +105,15 @@ const AddCoupons = () => {
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Ajouter un coupon</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={styles.title}>Ajouter un coupon</Text>
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Nom du coupon</Text>
@@ -202,7 +210,9 @@ const AddCoupons = () => {
             >
               <Select.Item label="5%" value="5" />
               <Select.Item label="10%" value="10" />
+              <Select.Item label="15%" value="15" />
               <Select.Item label="20%" value="20" />
+              <Select.Item label="25%" value="25" />
               <Select.Item label="30%" value="30" />
               <Select.Item label="40%" value="40" />
             </Select>
@@ -242,12 +252,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
+
   inputContainer: {
     marginVertical: 10,
     width: '80%',
@@ -310,6 +315,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: '10%',
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: Colors.background,
+
+    marginBottom: 20,
+  },
+  icon: {
+    marginRight: 20,
   },
 });
 

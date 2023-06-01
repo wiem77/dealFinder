@@ -46,22 +46,15 @@ const WelcomeScreen = () => {
       longitude,
     });
 
-    let { city, region } = geocode[0];
-
-    setLocationName(city);
-    setLocationRegion(region);
-    setAltitude(altitude);
-    setLongitude(longitude);
+    // let { city, region } = geocode[0];
+    // console.log(city, region);
+    // setLocationName(city);
+    // setLocationRegion(region);
+    // setAltitude(altitude);
+    // setLongitude(longitude);
 
     setLoading(false);
   };
-
-  useEffect(() => {
-    handleLocationPermission();
-  }, []);
-  useEffect(() => {
-    handleLocationPermission();
-  }, []);
 
   useEffect(() => {
     handleLocationPermission();
@@ -114,7 +107,7 @@ const WelcomeScreen = () => {
             type="SECONDARY"
           />
           <CustomBtn
-            text={'Continuer en tant que visiteur'}
+            text={"Explorer en tant qu'invité"}
             onPress={guestPressed}
             type="REDBTN4"
           />

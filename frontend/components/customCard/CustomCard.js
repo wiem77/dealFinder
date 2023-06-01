@@ -6,36 +6,45 @@ import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
-export default CustomCard = ({ storeName, subCategory, distance, voucher }) => {
+export default CustomCard = ({
+  storeName,
+  subCategory,
+  distance,
+  voucher,
+  imageUri,
+  onPressStore,
+}) => {
   return (
-    <View style={styles.card}>
-      <View style={styles.storeInfo}>
-        <View style={styles.storeDetails}>
-          <View style={styles.storeLogo}>
-            <Image
-              source={require('../../assets/image/Sport.png')}
-              style={{ width: windowWidth * 0.3, height: windowWidth * 0.2 }}
-              resizeMode="cover"
-            />
-          </View>
-          <View style={styles.storeText}>
-            <Text style={styles.storeName}>{storeName}</Text>
-            <Text style={styles.storeSubCategory}>{subCategory}</Text>
-            <View style={styles.storeLocation}>
-              <Ionicons
-                name="location"
-                size={windowWidth * 0.04}
-                color={Colors.grey}
+    <TouchableOpacity onPress={onPressStore}>
+      <View style={styles.card}>
+        <View style={styles.storeInfo}>
+          <View style={styles.storeDetails}>
+            <View style={styles.storeLogo}>
+              <Image
+                source={imageUri}
+                style={{ width: windowWidth * 0.2, height: windowWidth * 0.2 }}
+                resizeMode="cover"
               />
-              <Text style={styles.storeDistance}>{distance}</Text>
+            </View>
+            <View style={styles.storeText}>
+              <Text style={styles.storeName}>{storeName}</Text>
+              <Text style={styles.storeSubCategory}>{subCategory}</Text>
+              <View style={styles.storeLocation}>
+                <Ionicons
+                  name="location"
+                  size={windowWidth * 0.04}
+                  color={Colors.grey}
+                />
+                <Text style={styles.storeDistance}>{distance}</Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={styles.voucherContainer}>
-          <Text style={styles.voucherText}>{voucher}</Text>
+          <View style={styles.voucherContainer}>
+            <Text style={styles.voucherText}>{voucher}</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -51,9 +60,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
-    marginVertical: windowWidth * 0.02,
-    marginHorizontal: windowWidth * 0.05,
-    padding: windowWidth * 0.06,
+    marginVertical: windowWidth * 0.01,
+    marginHorizontal: windowWidth * 0.02,
+    padding: windowWidth * 0.02,
   },
   storeInfo: {
     flexDirection: 'row',

@@ -12,6 +12,9 @@
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
+    "developer": {
+      "hideDeveloperMenu": true
+    },
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {

@@ -30,7 +30,6 @@ import axios from 'axios';
 import { CategoryContext } from '../../context/CtegoryProvider';
 
 import { CategoryList } from '../CategoryList/CategoryList';
-import { FlatList } from 'react-native-gesture-handler';
 
 const showAlert = (title, message) => {
   Alert.alert(
@@ -41,8 +40,6 @@ const showAlert = (title, message) => {
   );
 };
 const HomeScreen = () => {
-  const [locationName, setLocationName] = useState(null);
-  const [locationRegion, setLocationRegion] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showNewItems, setShowNewItems] = useState(true);
 
@@ -73,19 +70,7 @@ const HomeScreen = () => {
       showAlert(`error`, `${error.message}`);
     }
   };
-  const DrawerHeader = () => {
-    const navigation = useNavigation();
 
-    const handleDrawerOpen = () => {
-      navigation.openDrawer();
-    };
-
-    return (
-      <TouchableOpacity onPress={handleDrawerOpen}>
-        <AntDesign name="menuunfold" size={40} color="black" />
-      </TouchableOpacity>
-    );
-  };
   // if (isInitialLoading) {
   //   return <ActivityIndicator size="large" color="#0000ff" />;
   // }
@@ -118,133 +103,3 @@ const style = StyleSheet.create({
     marginBottom: 20,
   },
 });
-// return (
-//   <View style={{ backgroundColor: Colors.backgroundWhite, flex: 1 }}>
-//     <SafeAreaView>
-//       <View style={styles.header}>
-//         <MaterialIcons name="my-location" size={24} color={iconColor} />
-//         <Text style={styles.textLocation}>
-//           {locationName}, {locationRegion}
-//         </Text>
-//         <TouchableOpacity onPress={handleNAvigateProfilePressed}>
-//           <FontAwesome5 name="house-user" size={24} color="black" />
-//         </TouchableOpacity>
-//       </View>
-//     </SafeAreaView>
-//     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-//       <View style={{ flex: 1 }}>
-//         <View style={styles.search}>
-//           <TextInput
-//             style={{
-//               fontSize: FontSize.xsmall,
-//               fontWeight: '400',
-//             }}
-//             placeholder="Recherchez des offres de folie!"
-//           />
-//           <MaterialIcons name="search" size={24} color={Colors.red} />
-//         </View>
-//       </View>
-//       <MaterialIcons
-//         name="menu-book"
-//         size={45}
-//         color={Colors.red}
-//         style={{ marginVertical: '2%' }}
-//       />
-//     </View>
-//     <View style={{ marginVertical: '5%' }}>
-//       <Text style={styles.categoryName}>Nouveauté</Text>
-//       {stores && (
-//         <FlatList
-//           data={stores}
-//           keyExtractor={(item) => item._id}
-//           horizontal={true}
-//           showsHorizontalScrollIndicator={false}
-//           renderItem={({ item }) => (
-//             <CustomCard
-//               storeName={item.store_name}
-//               // distance={item.distance}
-//               distance={Object.values(item.locations)[0].city}
-//               voucher={Object.values(item.vouchers)[0].discount}
-//               subCategory={
-//                 Object.values(item.sub_categories)[0].subCategory_name
-//               }
-//               onPress={() => console.log('Store Pressed', item.store_name)}
-//             />
-//           )}
-//         />
-//       )}
-
-// <FlatList
-//   data={stores}
-//   keyExtractor={(item) => item._id}
-//   showsHorizontalScrollIndicator={false}
-//   renderItem={({ item }) => (
-//     <VerticalStoreCard
-//       key={item._id}
-//       storeName={item.store_name}
-//       // distance={item.distance}
-//       distance={Object.values(item.locations)[0].city}
-//       voucher={Object.values(item.vouchers)[0].discount}
-//       subCategory={
-//         Object.values(item.sub_categories)[0].subCategory_name
-//       }
-//       onPressStore={() => handleStoreSelected(item._id)}
-//       onPressFavorite={() =>
-//         handleFavorite(userId, item._id, isFavorite, item.store_name)
-//       }
-//     />
-//   )}
-// />
-//     </View>
-//   </View>
-// );
-// const styles = StyleSheet.create({
-// card: {
-//   height: 225,
-//   backgroundColor: Colors.text,
-
-//   marginHorizontal: 2,
-//   borderRadius: 10,
-//   marginBottom: 20,
-//   padding: 15,
-// },
-//   header: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-around',
-//     elevation: 5,
-//     shadowColor: '#000',
-//     backgroundColor: Colors.white,
-//     borderWidth: 1,
-//     borderColor: 'transparent',
-//     height: 50,
-//     alignItems: 'center',
-//     paddingVertical: 10,
-//   },
-//   textLocation: {
-//     color: Colors.red,
-//     fontFamily: 'inter',
-//     fontWeight: 'bold',
-//     fontSize: FontSize.small,
-//   },
-//   search: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     borderWidth: 1,
-//     marginVertical: '2%',
-
-//     padding: 10,
-//     paddingHorizontal: '10%',
-//     borderColor: Colors.darkred,
-//     backgroundColor: Colors.white,
-//     borderRadius: 7,
-//   },
-//   categoryName: {
-//     fontSize: FontSize.medium,
-//     color: Colors.black,
-//     marginHorizontal: 10,
-//     marginVertical: 5,
-//     fontWeight: '600',
-//     fontStyle: 'italic',
-//   },
-// });

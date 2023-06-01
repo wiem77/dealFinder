@@ -58,24 +58,24 @@ const SignUpScreen = () => {
     }
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       console.log('Permission to access location was denied');
-  //       return;
-  //     }
-  //     let location = await Location.getCurrentPositionAsync({});
-  //     setLocation(location);
-  //     let geocode = await Location.reverseGeocodeAsync({
-  //       latitude: location.coords.latitude,
-  //       longitude: location.coords.longitude,
-  //     });
-  //     setLocationName(geocode[0].city);
-  //     setLocationRegion(geocode[0].region);
-  //     setLocationCountry(geocode[0].country);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      let geocode = await Location.reverseGeocodeAsync({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      setLocationName(geocode[0].city);
+      setLocationRegion(geocode[0].region);
+      setLocationCountry(geocode[0].country);
+    })();
+  }, []);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
 
@@ -130,9 +130,9 @@ const SignUpScreen = () => {
         age: selectedAge,
         roles: 'consommateur',
         type: 'Point',
-        coordinates: [locCtx.location.longitude, locCtx.location.latitude],
-        formattedAddress: `${locCtx.locationName}, ${locCtx.locationRegion}`,
-        city: locCtx.locationName,
+        coordinates: [location?.coords.longitude, location?.coords.latitude],
+        formattedAddress: `${locationName}`,
+        city: locationName,
         // country: locationCountry,
       };
       console.log(ress);

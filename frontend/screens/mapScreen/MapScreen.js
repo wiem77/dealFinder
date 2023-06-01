@@ -35,7 +35,7 @@ import { LinearProgress } from 'react-native-elements';
 import { LocationContext } from '../../context/LocationProvider';
 const MapScreen = () => {
   const navigation = useNavigation();
-  const [circleRadius, setCircleRadius] = useState(100);
+  const [circleRadius, setCircleRadius] = useState(10000);
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [markers, setMarkers] = useState([]);

@@ -94,16 +94,16 @@ const LoginScreen = () => {
             onPress={handleSubmit(OnSignInPressed)}
           />
         </View>
-        <CustomBtn
+        {/* <CustomBtn
           text={'Mot Passe Oublié'}
           type="TERTIARY"
           onPress={() => console.log('test')}
-        />
+        /> */}
 
         <Text> ou bien</Text>
 
         <CustomBtn
-          text={'crée un compte'}
+          text={'Crée un compte'}
           onPress={() => navigation.navigate('SignUp')}
           // type="SECONDARY"
         />

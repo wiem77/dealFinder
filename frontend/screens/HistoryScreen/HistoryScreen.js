@@ -10,13 +10,36 @@ import { Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { AuthContext } from '../../context/AuthProvider';
 import { ListItem } from 'react-native-elements';
+const reservedVouchers = [
+  {
+    id: 1,
+    voucher: {
+      store: {
+        store_name: 'Technia',
+      },
+      name_V: 'Pc20',
+      discount: '20%',
+    },
+  },
+  {
+    id: 2,
+    voucher: {
+      store: {
+        store_name: 'Fatals',
+      },
+      name_V: 'Beauté10',
+      discount: '10%',
+    },
+  },
+];
 const HistoryScreen = () => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
   console.log('userrazerazeze', user);
-  const reservedVouchers = user.reservedVouchers;
+  // const reservedVouchers = user.reservedVouchers;
   const [voucherStates, setVoucherStates] = useState({});
+
   const handleLike = (id) => {
     setVoucherStates((prevState) => ({
       ...prevState,
@@ -37,6 +60,7 @@ const HistoryScreen = () => {
     }));
   };
 
+  console.log('reservedVouchers', reservedVouchers);
   const renderVoucherItem = ({ item }) => (
     <ListItem bottomDivider containerStyle={styles.voucherItem}>
       <ListItem.Content>
@@ -62,30 +86,30 @@ const HistoryScreen = () => {
             Noter la boutique:
           </Text>
           <TouchableOpacity onPress={() => handleLike(item.id)}>
-      {voucherStates.liked ? (
-        <Ionicons
-          name="thumbs-up"
-          size={24}
-          color="#4CAF50"  // Couleur verte pour le like
-          style={styles.button}
-        />
-      ) : (
-        <Ionicons
-          name="thumbs-up-outline"
-          size={24}
-          color="black"  // Couleur par défaut pour le like
-          style={styles.button}
-        />
-      )}
-    </TouchableOpacity>
-    <TouchableOpacity onPress={() => handleDislike(item.id)}>
-      <Ionicons
-        name="thumbs-down"
-        size={24}
-        color={voucherStates.disliked ? '#f44336' : '#9e9e9e'}  // Couleur rouge pour le dislike
-        style={styles.button}
-      />
-    </TouchableOpacity>
+            {voucherStates[item.id]?.liked ? (
+              <Ionicons
+                name="thumbs-up"
+                size={24}
+                color="#4CAF50" // Couleur verte pour le like
+                style={styles.button}
+              />
+            ) : (
+              <Ionicons
+                name="thumbs-up-outline"
+                size={24}
+                color="black" // Couleur par défaut pour le like
+                style={styles.button}
+              />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDislike(item.id)}>
+            <Ionicons
+              name="thumbs-down"
+              size={24}
+              color={voucherStates[item.id]?.disliked ? '#f44336' : '#9e9e9e'} // Couleur rouge pour le dislike
+              style={styles.button}
+            />
+          </TouchableOpacity>
         </View>
       </ListItem.Content>
     </ListItem>
@@ -120,7 +144,7 @@ const HistoryScreen = () => {
         data={reservedVouchers}
         renderItem={renderVoucherItem}
         ListEmptyComponent={renderEmptyList}
-        keyExtractor={(item) => item._id.toString()}
+        keyExtractor={(item) => item._id}
       />
     </View>
   );

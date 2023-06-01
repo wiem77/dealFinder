@@ -130,7 +130,7 @@ const Search = ({ handleCategoryChange, categories }) => {
             <Menu.Item onPress={() => handleCategoryChange(null)}>
               Sélectionnez une catégorie
             </Menu.Item>
-            {categories.categories.map((category) => (
+            {categories?.categories?.map((category) => (
               <Menu.Item
                 key={category._id}
                 onPress={() => handleCategoryChange(category.category_name)}

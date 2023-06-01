@@ -147,12 +147,8 @@ const VoucherScreen = ({ route }) => {
         </SafeAreaView>
         <View style={styles.imageContainer}>
           <Image
-            // source={require('../../assets/image/Store1.png')}
-            source={{
-              uri: 'http://localhost:4000/public/image/test-jfif-1683655628677.jpeg',
-            }}
-            style={styles.storeImage}
-            resizeMode="cover"
+            source={require('../../assets/cozy.png')}
+            style={{ width: 360, height: 260, resizeMode: 'contain' }}
           />
         </View>
         <View style={styles.contentContainer}>

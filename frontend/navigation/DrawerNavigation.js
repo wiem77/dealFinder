@@ -28,13 +28,21 @@ import { StoreContext, StoresProvider } from '../context/StoreProvider';
 import StoreImages from '../screens/TestScreen';
 
 const DrawerContent = (props) => {
+  const clearAsyncStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log('AsyncStorage cleared successfully.');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+    }
+  };
+
   const authCtx = useContext(AuthContext);
   const catCtx = useContext(CategoryContext);
   const storeCtx = useContext(StoreContext);
   const handleLogout = () => {
     authCtx.logout();
-    storeCtx.RemoveStore();
-    catCtx.RemoveCat();
+    clearAsyncStorage;
   };
 
   return (
@@ -58,6 +66,7 @@ const DrawerContent = (props) => {
         )}
         style={styless.drawerItem}
         labelStyle={styless.drawerItemLabel}
+        
       />
     </DrawerContentScrollView>
   );
@@ -97,6 +106,7 @@ const DrawerNavigation = () => {
               color="black"
             />
           ),
+          drawerItemStyle: { marginTop: '20%' },
         }}
       />
       <Drawer.Screen
@@ -107,6 +117,7 @@ const DrawerNavigation = () => {
           drawerIcon: ({ color, size }) => (
             <Icon name="menu" size={30} color="black" />
           ),
+          drawerItemStyle: { marginTop: '20%' },
         }}
       />
 
@@ -118,6 +129,7 @@ const DrawerNavigation = () => {
           drawerIcon: ({ color, size }) => (
             <Icon name="ios-person-circle-outline" size={30} color="black" />
           ),
+          drawerItemStyle: { marginTop: '20%' },
         }}
       />
       <Drawer.Screen
@@ -128,16 +140,7 @@ const DrawerNavigation = () => {
           drawerIcon: ({ color, size }) => (
             <Icon name="information-circle-outline" size={30} color="black" />
           ),
-        }}
-      />
-      <Drawer.Screen
-        name="StoreImages"
-        component={StoreImages}
-        options={{
-          drawerLabel: 'Storeimage',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="information-circle-outline" size={30} color="black" />
-          ),
+          drawerItemStyle: { marginTop: '20%' },
         }}
       />
     </Drawer.Navigator>

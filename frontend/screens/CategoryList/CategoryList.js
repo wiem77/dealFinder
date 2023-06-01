@@ -186,7 +186,10 @@ export const CategoryList = () => {
           </SafeAreaView>
 
           <View>
-            <Search handleCategoryChange={handleCategoryChange} />
+            <Search
+              handleCategoryChange={handleCategoryChange}
+              categories={categories}
+            />
             <View style={styles.content}>
               {selectedCategory ? (
                 <ScrollView

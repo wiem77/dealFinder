@@ -4,6 +4,7 @@ const User = require('../../models/User');
 const Reservation = require('../../models/ReservationModel');
 const { generateQrCode } = require('../../utils/generateQrCode');
 const generateReservationCode = require('../../utils/generateOTP');
+
 module.exports.verifyCodeReservation = async (req, res) => {
   const { resCode, store_id } = req.params;
   console.log(resCode, store_id);
@@ -182,12 +183,10 @@ module.exports.getReservationByCode = async (req, res) => {
     res.json({ reservation });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors de la récupération de la réservation",
-      });
+    res.status(500).json({
+      message:
+        "Une erreur s'est produite lors de la récupération de la réservation",
+    });
   }
 };
 // module.exports.createReservation = async (req, res) => {
@@ -326,6 +325,30 @@ module.exports.getReservationWithUserId = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error.' });
+  }
+};
+module.exports.getUserReservations = async (req, res) => {
+  const userId = req.params.userId;
+  console.log('tetedevdgck');
+  try {
+    const reservations = await Reservation.find({
+      user: userId,
+      $and: [{ used: true }],
+    }).populate({
+      path: 'voucher',
+      populate: {
+        path: 'store',
+        select: 'store_name store_image',
+      },
+    });
+
+    res.json(reservations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error:
+        "Une erreur est survenue lors de la récupération des réservations de l'utilisateur.",
+    });
   }
 };
 

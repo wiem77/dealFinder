@@ -5,38 +5,115 @@ import {
   FlatList,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 
 import { Colors } from '../../constants/Colors';
-import { FontSize } from '../../constants/FontSize';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { StoreContext } from '../../context/StoreProvider';
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import Search from '../../components/SerachBar/Search';
-import { serverIP } from '../../config/config';
+import { baseUrl } from '../../config/config';
 import { combineImagePaths } from '../../util/CombinedPath';
 
-export const CategoryList = ({ categories, showNewItems }) => {
-  console.log('categoriessss', categories);
-  const { stores } = useContext(StoreContext);
+import CustomCard from '../../components/customCard/CustomCard';
+import { AuthContext } from '../../context/AuthProvider';
+
+import axios from 'axios';
+
+export const CategoryList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedStores, setSelectedStores] = useState([]);
-  const [showPicker, setShowPicker] = useState(false);
+
+  const [categories, setCategories] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [stores, setStores] = useState();
+  const [isFetchingCategories, setIsFetchingCategories] = useState(false);
+  const [isFetchingStores, setIsFetchingStores] = useState(false);
   const navigation = useNavigation();
-  console.log('categroires', categories);
+  const userCtx = useContext(AuthContext);
+  const scrollViewRef = useRef(null);
+  const scrollToTop = () => {
+    scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+  };
+  const cityLocation = userCtx.user.location.city;
+  console.log(userCtx.user.location.coordinates[0]);
+  const laltitude = userCtx.user.location.coordinates[0];
+  const longitude = userCtx.user.location.coordinates[1];
+  const fetchCategories = async () => {
+    try {
+      setIsFetchingCategories(true);
+
+      const response = await axios.get(
+        `${baseUrl}/category/getAllCategory/${laltitude}/${longitude}/${cityLocation}`
+      );
+      const data = response.data;
+      setCategories(data);
+      console.log('Data fetched categories:', data);
+
+      if (data.length === 0) {
+        console.log('Les catégories sont vides.');
+      } else {
+        console.log('Les catégories ne sont pas vides.');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsFetchingCategories(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!isFetchingCategories) {
+      fetchCategories();
+    }
+  }, [categories]);
+  const fetchStores = async () => {
+    try {
+      setIsFetchingStores(true);
+
+      const response = await axios.get(`${baseUrl}/store/getNewStore`);
+      const data = response.data;
+      setStores(data);
+      console.log('Data fetched stores:', data);
+
+      if (data.length === 0) {
+        console.log('Les stores sont vides.');
+      } else {
+        console.log('Les stores ne sont pas vides.');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsFetchingStores(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStores();
+  }, []);
+
+  useEffect(() => {
+    if (!isFetchingStores) {
+      fetchStores();
+    }
+  }, [stores]);
+  console.log('stores,', stores);
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
-    setSelectedSubCategory(null);
 
     if (categoryValue) {
       const selectedCategoryObj = categories.categories.find(
@@ -44,15 +121,16 @@ export const CategoryList = ({ categories, showNewItems }) => {
       );
 
       if (selectedCategoryObj) {
-        setSelectedStores(
-          selectedCategoryObj.subcategories.flatMap(
-            (subCategory) => subCategory.stores
-          )
+        setSelectedSubCategory(
+          selectedCategoryObj.subcategories[0]?.subCategory_name
         );
+        setSelectedStores(selectedCategoryObj.subcategories[0]?.stores || []);
       }
     } else {
+      setSelectedSubCategory(null);
       setSelectedStores(stores);
     }
+    scrollToTop();
   };
 
   const handleSubCategoryChange = (subCategoryValue) => {
@@ -70,135 +148,213 @@ export const CategoryList = ({ categories, showNewItems }) => {
     }
   };
   const handleStoreSelected = (store_id) => {
-    const selectedStore = stores?.find((store) => store._id === store_id);
+    const selectedStore = categories.categories
+      .flatMap((category) => category.subcategories)
+      .flatMap((subCategory) => subCategory.stores)
+      .find((store) => store._id === store_id);
     console.log('selectedStore', selectedStore);
-
     navigation.navigate('Store', { selectedStore: selectedStore });
   };
-  console.log('selectedCategory', selectedCategory);
+
+  if (!categories && !stores) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={[styles.safeArea, { marginLeft: 20 }]}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.welcomeText}>Bienvenue</Text>
-            <Text style={styles.appName}>DealFinder</Text>
-          </View>
-          <View style={styles.iconContainer}>
-            {/* <Ionicons name="cart-outline" size={35} color="black" /> */}
-          </View>
-        </View>
-      </SafeAreaView>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="blue" />
+      ) : (
+        <>
+          <SafeAreaView style={[styles.safeArea, { marginLeft: 20 }]}>
+            <View style={styles.header}>
+              <View>
+                <Text style={styles.welcomeText}>Bienvenue</Text>
+                <Text style={styles.appName}>DealFinder</Text>
+              </View>
+              <View style={styles.iconContainer}>
+                <MaterialIcons name="location-city" size={30} color="black" />
+                <Text style={{ fontSize: 15, color: Colors.background }}>
+                  {cityLocation}
+                </Text>
+              </View>
+            </View>
+          </SafeAreaView>
 
-      <View>
-        <Search handleCategoryChange={handleCategoryChange} />
-        <View style={styles.content}>
-          {selectedCategory ? (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoryListContainer}
-            >
-              {categories.categories
-                .find((category) => category.category_name === selectedCategory)
-                .subcategories?.map((subCategory, index) => (
-                  <TouchableOpacity
-                    key={subCategory._id}
-                    activeOpacity={0.8}
-                    onPress={() =>
-                      handleSubCategoryChange(subCategory.subCategory_name)
-                    }
-                    style={[
-                      styles.categoryItem,
-                      selectedSubCategory === subCategory.subCategory_name &&
-                        styles.categoryItemSelected,
-                      index !== categories.length - 1 &&
-                        styles.categoryItemMargin,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.categoryText,
-                        selectedSubCategory === subCategory.subCategory_name &&
-                          styles.categoryTextSelected,
-                      ]}
-                    >
-                      {subCategory.subCategory_name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-            </ScrollView>
-          ) : (
-            selectedCategory === null &&
-            stores && (
-              <View style={styles.newItemsContainer}>
-                <Text style={styles.categoryName}>Nouveauté</Text>
-                <FlatList
-                  data={stores}
-                  keyExtractor={(item) => item._id}
+          <View>
+            <Search handleCategoryChange={handleCategoryChange} />
+            <View style={styles.content}>
+              {selectedCategory ? (
+                <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.newItemsList}
+                  contentContainerStyle={styles.categoryListContainer}
+                >
+                  {categories.categories
+                    .find(
+                      (category) => category.category_name === selectedCategory
+                    )
+                    .subcategories?.map((subCategory, index) => (
+                      <TouchableOpacity
+                        key={subCategory._id}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                          handleSubCategoryChange(subCategory.subCategory_name)
+                        }
+                        style={[
+                          styles.categoryItem,
+                          selectedSubCategory ===
+                            subCategory.subCategory_name &&
+                            styles.categoryItemSelected,
+                          index !== categories.length - 1 &&
+                            styles.categoryItemMargin,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.categoryText,
+                            selectedSubCategory ===
+                              subCategory.subCategory_name &&
+                              styles.categoryTextSelected,
+                          ]}
+                        >
+                          {subCategory.subCategory_name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                </ScrollView>
+              ) : (
+                selectedCategory === null &&
+                stores && (
+                  <ScrollView
+                    style={{
+                      flexGrow: 1,
+                    }}
+                  >
+                    <View>
+                      <View style={styles.newItemsContainer}>
+                        <Text style={styles.categoryName}>Nouveauté</Text>
+                        <FlatList
+                          data={stores.data}
+                          keyExtractor={(item) => item._id}
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          contentContainerStyle={styles.newItemsList}
+                          renderItem={({ item }) => (
+                            <CustomCard
+                              storeName={item.store_name}
+                              voucher={
+                                Object.values(item.vouchers)[0]?.discount
+                              }
+                              distance={Object.values(item.locations)[0].city}
+                              subCategory={
+                                Object.values(item.sub_categories)[0]
+                                  ?.subCategory_name
+                              }
+                              imageUri={combineImagePaths(item.store_image)}
+                              onPressStore={() => handleStoreSelected(item._id)}
+                            />
+                          )}
+                        />
+                      </View>
+                      {categories?.categories?.map((category) => {
+                        if (
+                          selectedCategory === null &&
+                          category.subcategories &&
+                          category.subcategories.length > 0
+                        ) {
+                          return (
+                            <View
+                              key={category.category_name}
+                              style={styles.newItemsContainer}
+                            >
+                              <Text style={styles.categoryName}>
+                                {category.category_name}
+                              </Text>
+                              <FlatList
+                                data={category.subcategories[0]?.stores}
+                                keyExtractor={(item) => item._id}
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.newItemsList}
+                                renderItem={({ item }) => (
+                                  <CustomCard
+                                    storeName={item.store_name}
+                                    voucher={
+                                      Object.values(item.vouchers)[0]?.discount
+                                    }
+                                    distance={
+                                      Object.values(item.locations)[0].city
+                                    }
+                                    subCategory={
+                                      Object.values(item.sub_categories)[0]
+                                        ?.subCategory_name
+                                    }
+                                    onPressStore={() =>
+                                      handleStoreSelected(item._id)
+                                    }
+                                    imageUri={combineImagePaths(
+                                      item.store_image
+                                    )}
+                                  />
+                                )}
+                              />
+                            </View>
+                          );
+                        }
+                      })}
+                    </View>
+                  </ScrollView>
+                )
+              )}
+              <View
+                style={[
+                  styles.flatListContainer,
+                  {
+                    flex: selectedCategory === null ? 1 : 0,
+                    marginTop: selectedCategory !== null ? '5%' : 15,
+                  },
+                ]}
+              >
+                <FlatList
+                  data={selectedStores}
+                  keyExtractor={(item) => item._id}
+                  showsVerticalScrollIndicator={false}
+                  numColumns={2}
+                  contentContainerStyle={styles.flatListContent}
                   renderItem={({ item }) => (
-                    <CustomCard
-                      storeName={item.store_name}
-                      distance={Object.values(item.locations)[0].city}
-                      voucher={Object.values(item.vouchers)[0]?.discount}
-                      subCategory={
-                        Object.values(item.sub_categories)[0]?.subCategory_name
-                      }
-                      onPress={() =>
-                        console.log('Store Pressed', item.store_name)
-                      }
-                    />
+                    <View style={styles.cardContainer}>
+                      <VerticalStoreCard
+                        key={item._id}
+                        storeName={item.store_name}
+                        distance={Object.values(item.locations)[0].city}
+                        voucher={Object.values(item.vouchers)[0]?.discount}
+                        subCategory={
+                          Object.values(item.sub_categories)[0].subCategory_name
+                        }
+                        imageUri={combineImagePaths(item.store_image)}
+                        onPressStore={() => handleStoreSelected(item._id)}
+                        onPressFavorite={() =>
+                          handleFavorite(
+                            userId,
+                            item._id,
+                            isFavorite,
+                            item.store_name
+                          )
+                        }
+                      />
+                    </View>
                   )}
                 />
               </View>
-            )
-          )}
-          <View
-            style={[
-              styles.flatListContainer,
-              {
-                flex: selectedCategory === null ? 1 : 0,
-                marginTop: selectedCategory !== null ? '5%' : 15,
-              },
-            ]}
-          >
-            <FlatList
-              data={selectedStores}
-              keyExtractor={(item) => item._id}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              contentContainerStyle={styles.flatListContent}
-              renderItem={({ item }) => (
-                <View style={styles.cardContainer}>
-                  <VerticalStoreCard
-                    key={item._id}
-                    storeName={item.store_name}
-                    distance={Object.values(item.locations)[0].city}
-                    voucher={Object.values(item.vouchers)[0]?.discount}
-                    subCategory={
-                      Object.values(item.sub_categories)[0].subCategory_name
-                    }
-                    imageUri={combineImagePaths(item.store_image)}
-                    onPressStore={() => handleStoreSelected(item._id)}
-                    onPressFavorite={() =>
-                      handleFavorite(
-                        userId,
-                        item._id,
-                        isFavorite,
-                        item.store_name
-                      )
-                    }
-                  />
-                </View>
-              )}
-            />
+            </View>
           </View>
-        </View>
-      </View>
+        </>
+      )}
     </View>
   );
 };
@@ -232,6 +388,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     paddingRight: 15,
+    alignItems: 'center',
   },
   content: {
     marginTop: -1,

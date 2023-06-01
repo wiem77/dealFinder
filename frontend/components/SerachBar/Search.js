@@ -24,9 +24,9 @@ import { useNavigation } from '@react-navigation/native';
 import { Box, Flex, Pressable } from 'native-base';
 import { HamburgerIcon, Menu } from 'native-base';
 
-const Search = ({ handleCategoryChange }) => {
+const Search = ({ handleCategoryChange, categories }) => {
   const [searchValue, setSearchValue] = useState('');
-  const { categories } = useContext(CategoryContext);
+
   const { stores } = useContext(StoreContext);
   const navigation = useNavigation();
   const handleSearchChange = (value) => {

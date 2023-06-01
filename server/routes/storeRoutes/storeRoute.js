@@ -11,6 +11,7 @@ const {
   loginStore,
   logout,
   getStoreImages,
+  getNewStoresOfWeek,
 } = require('../../controllers/storeController/storeController');
 const { validateLocations } = require('../../utils/ValidationSchema');
 const { updateStoreRating } = require('../../utils/setStoreRating');
@@ -24,6 +25,9 @@ router.post('/logout', auth, logout);
 //root:http://localhost:4000/api/store/addStore
 router.post('/addStore', uploader.single('image'), addStore);
 
+
+//root:http://localhost:4000/api/store/getNewStore
+router.get('/getNewStore', getNewStoresOfWeek);
 //root:http://localhost:4000/api/store/deleteStore/:id
 router.delete('/deleteStore/:id', deleteStore);
 

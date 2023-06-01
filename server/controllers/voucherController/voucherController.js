@@ -3,6 +3,7 @@ const Store = require('../../models/StoreModel');
 const Voucher = require('../../models/VoucherModel');
 module.exports.createVoucher = async (req, res) => {
   try {
+    console.log('tetstt');
     const { name_V, description, validity_date, available_vouchers, discount } =
       req.body;
     const storeId = req.params.storeId;

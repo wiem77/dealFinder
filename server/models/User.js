@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
   confirmpassword: {
     type: String,
   },
-  picturePath: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Media' }],
+  picturePath: { type: mongoose.Schema.Types.ObjectId, ref: 'Media' },
 
   age: {
     type: Number,

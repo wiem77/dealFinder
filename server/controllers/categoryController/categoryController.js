@@ -201,9 +201,7 @@ module.exports.findCategory = (req, res) => {
 };
 
 module.exports.getAllCategoryWithLoc = (req, res) => {
-  console.log('get all categorieslog....');
-
-  const { latitude, longitude } = req.params; // Obtenir les coordonnées de localisation de l'utilisateur depuis les query parameters
+  const { latitude, longitude } = req.params;
   console.log('latitude', latitude, 'longitude', longitude);
   if (!latitude || !longitude) {
     return res
@@ -226,6 +224,11 @@ module.exports.getAllCategoryWithLoc = (req, res) => {
             path: 'locations',
             model: 'Location',
           },
+          {
+            path: 'store_image', // Champ de store_image dans le modèle Store
+            model: 'Media',
+            select: '_id path',
+          },
         ],
       },
     })
@@ -244,9 +247,7 @@ module.exports.getAllCategoryWithLoc = (req, res) => {
                 );
                 console.log('distance', distance);
                 location.distance = distance;
-
-                // Filtrer les magasins en fonction de la distance maximale souhaitée (par exemple, 10 km)
-                const maxDistance = 10; // Distance maximale en kilomètres
+                const maxDistance = 9;
                 return distance <= maxDistance;
               });
             });

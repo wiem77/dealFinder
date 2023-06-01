@@ -105,7 +105,7 @@ exports.addStore = async (req, res, next) => {
       .populate('locations')
       .populate('sub_categories');
 
-    const emailText = `Bonjour ${savedStore.store_name},\n\nNous sommes ravis de vous informer que votre boutique a été ajoutée à notre application. Nous espérons que notre application vous sera utile pour développer votre activité. N'hésitez pas à nous contacter si vous avez des questions ou des commentaires.\n\nCordialement,\nL'équipe de l'application`;
+    const emailText = `Bonjour ${savedStore.store_name},\n\nNous sommes ravis de vous informer que votre boutique a été ajoutée à notre application. Nous espérons que notre application vous sera utile pour développer votre activité. N'hésitez pas à nous contacter si vous avez des questions ou des commentaires.\n\nCordialement,\n L'équipe de DealFinder`;
     console.log('emailText', emailText);
 
     await sendEmail(
@@ -154,7 +154,40 @@ exports.deleteLocationForStore = async (req, res, next) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+exports.getNewStoresOfWeek = async (req, res) => {
+  try {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+    const newStores = await Store.find({ createdAt: { $gte: oneWeekAgo } })
+      .populate('locations', 'formattedAddress city zipcode coordinates')
+      .populate({
+        path: 'sub_categories',
+        populate: {
+          path: 'category',
+          select: 'category_name',
+        },
+        select: 'subCategory_name category',
+      })
+      .populate('vouchers')
+      .populate({
+        path: 'store_image',
+        select: '_id path',
+      })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: newStores.length,
+      data: newStores,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+    });
+  }
+};
 exports.getAllStores = async (req, res) => {
   console.log('get All');
   try {

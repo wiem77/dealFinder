@@ -107,24 +107,26 @@ module.exports.createReservation = async (req, res) => {
     const isReserved = user.reservedVouchers.find(
       (r) => r.voucher.toString() === voucherId
     );
-    console.log('tetstst');
+
     if (isReserved) {
       return res
         .status(400)
         .json({ message: 'Voucher already reserved by this user.' });
     }
 
-    // const isUsed = user.usedVouchers.find(
-    //   (r) => r.voucher.toString() === voucherId
-    // );
-    // if (isUsed) {
-    //   return res.status(400).json({
-    //     message: 'You cannot reserve a coupon you have already used.',
-    //   });
-    // }
-
     const reservationCode = await generateReservationCode();
-    let stringdata = JSON.stringify(reservationCode);
+    let voucherData = {
+      name_v: voucher.name_V,
+      validity_date: voucher.validity_date,
+      discount: voucher.discount,
+      is_available: voucher.is_available,
+    };
+
+    let stringdata = JSON.stringify({
+      reservationCode,
+      voucher: voucherData,
+    });
+
     generateQrCode(stringdata, async (err, url) => {
       if (err) {
         console.error(err);
@@ -162,7 +164,32 @@ module.exports.createReservation = async (req, res) => {
     return res.status(500).json({ message: 'Server error.' });
   }
 };
+module.exports.getReservationByCode = async (req, res) => {
+  const { reservationCode } = req.params;
 
+  try {
+    const reservation = await Reservation.findOne({ reservationCode })
+      .populate(
+        'voucher',
+        'name_V description validity_date available_vouchers discount is_available'
+      )
+      .exec();
+
+    if (!reservation) {
+      return res.status(404).json({ message: 'Réservation introuvable' });
+    }
+
+    res.json({ reservation });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message:
+          "Une erreur s'est produite lors de la récupération de la réservation",
+      });
+  }
+};
 // module.exports.createReservation = async (req, res) => {
 //   const { userId, voucherId } = req.params;
 //   console.log('userId ', userId);
@@ -361,7 +388,6 @@ exports.resetArchivedReservations = async (req, res) => {
 };
 
 module.exports.getAllReservationByIDUSer = async (req, res) => {
-  console.log('resssssssssssssssssssssssss');
   const userId = req.params.userId;
   console.log('userId', userId);
   try {

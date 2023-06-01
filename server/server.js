@@ -17,6 +17,7 @@ const locationRoutes = require('./routes/locationRoutes/location');
 const voucherRoutes = require('./routes/voucherRoutes/voucherRoutes');
 const reservationRoutes = require('./routes/reservationRoute/reservationRoute');
 const userRoutes = require('./routes/userRoutes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes/AdminRoutes');
 require('dotenv').config({ path: './config/.env' });
 const dbConnect = require('./config/connectDb');
 const Reservation = require('./models/ReservationModel');
@@ -39,7 +40,7 @@ app.use(bodyParser.json());
 dbConnect();
 
 app.use(
-  cors('exp://192.168.8.101:19000')
+  cors(['exp://192.168.1.7:19000', 'http://localhost:3000'])
   // cors({
   //   origin: ['http://localhost:3000', 'exp://192.168.8.123:19000'],
   //   optionsSuccessStatus: 200,
@@ -65,6 +66,7 @@ app.use('/api', uploadRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api/guest', guestRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use('/api/category', categoryRoutes);
 app.use('/api/store', storeRoutes);

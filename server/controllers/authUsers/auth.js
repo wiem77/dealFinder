@@ -55,7 +55,7 @@ module.exports.signUp = async (req, res) => {
       picturePath = [media._id];
       console.log('media', media);
     } else {
-      picturePath = [{ _id: '64451df21d60f6c16d318204' }];
+      picturePath;
     }
 
     const location = new Location({
@@ -99,10 +99,14 @@ module.exports.signUp = async (req, res) => {
     await otpVerification.save();
     console.log('test', otpVerification);
     const emailText = `Bonjour ${newUser.prenom} ${newUser.nom},
-    Nous vous remercions de vous être inscrit à notre application. Afin de vérifier votre adresse e-mail, veuillez entrer le code de vérification suivant : \x1b${otpNumber}\x1b
-    Si vous avez des questions ou des préoccupations, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.
-    Cordialement,
-    L'équipe de l'application.`;
+
+Nous vous remercions de vous être inscrit à notre application. Afin de vérifier votre adresse e-mail, veuillez entrer le code de vérification suivant : ${otpNumber}
+
+Si vous avez des questions ou des préoccupations, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.
+
+Cordialement,
+DealFinder`;
+
     console.log('emailText', emailText);
     try {
       await sendEmail(
@@ -154,6 +158,10 @@ module.exports.signIn = async (req, res) => {
           path: 'voucher',
           select: 'name_V discount is_available',
         },
+      })
+      .populate({
+        path: 'picturePath',
+        select: '_id path',
       });
     // .populate({
     //   path: 'usedVouchers',

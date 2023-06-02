@@ -53,7 +53,8 @@ const HistoryScreen = () => {
       const fetchData = async () => {
         try {
           const storedData = await AsyncStorage.getItem('historyData');
-          if (storedData) {
+          console.log('storedData1', storedData);
+          if (!storedData) {
             const response = await axios.get(
               `${baseUrl}/reservation/userReservation/usedTrue/${user._id}`,
               {
@@ -63,10 +64,11 @@ const HistoryScreen = () => {
               }
             );
             const data = response.data;
+            console.log('data12', data);
             await AsyncStorage.setItem('historyData', JSON.stringify(data));
             setHistoryData(data);
           } else {
-            setHistoryData([]);
+            setHistoryData(JSON.parse(storedData));
           }
         } catch (error) {
           console.error(error);

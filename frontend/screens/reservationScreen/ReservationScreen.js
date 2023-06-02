@@ -31,27 +31,20 @@ const ReservationScreen = () => {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          console.log('reservationUse', user);
           const storedData = await AsyncStorage.getItem('reservationData');
-          if (storedData) {
+          console.log('storedData1', storedData);
+          if (!storedData) {
             const response = await axios.get(
-              `${baseUrl}/reservation/user/${user._id}/allReservation`,
-              {
-                headers: {
-                  'x-access-token': token,
-                },
-              }
+              `${baseUrl}/reservation/user/${user._id}/allReservation`
             );
-
+            console.log('storedData2', storedData);
             const data = response.data.data;
             console.log('reservationUse ', data);
-
-            await AsyncStorage.setItem('reservationData', JSON.stringify(data));
-
+            console.log('dataaaa', data);
             setReservationData(data);
+            await AsyncStorage.setItem('reservationData', JSON.stringify(data));
           } else {
-            setReservationData(JSON.parse(storedData));
-            console.log('resssss ');
+            setReservationData([]);
           }
         } catch (error) {
           console.error(error);
@@ -63,6 +56,7 @@ const ReservationScreen = () => {
       fetchData();
     }, [])
   );
+
   const handleDeleteReservation = async (reservationId) => {
     try {
       await axios.delete(
@@ -161,22 +155,22 @@ const ReservationScreen = () => {
                     >
                       <Text style={styles.discountText}>
                         {item.voucher?.discount}%
-                      </Text>
+                  </Text>
                     </View>
                     <View
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
                       <View style={{}} />
-                      <TouchableOpacity
+                  <TouchableOpacity
                         style={[styles.deleteButton, { marginLeft: 70 }]}
-                        onPress={() => handleDeleteReservation(item._id)}
-                      >
+                    onPress={() => handleDeleteReservation(item._id)}
+                  >
                         <MaterialCommunityIcons
                           name="delete-outline"
                           size={24}
                           color="black"
                         />
-                      </TouchableOpacity>
+                  </TouchableOpacity>
                     </View>
                   </View>
                 </View>

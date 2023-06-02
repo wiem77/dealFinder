@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  SafeAreaView,
+  Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5, Foundation } from '@expo/vector-icons';
@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { useFocusEffect } from '@react-navigation/native';
+import Loading2 from '../../components/loading2/Loading2';
 const ReservationScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [reservationData, setReservationData] = useState([]);
@@ -25,6 +26,7 @@ const ReservationScreen = () => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchData = async () => {
@@ -40,7 +42,7 @@ const ReservationScreen = () => {
                 },
               }
             );
-            console.log('dataaaaaa ');
+
             const data = response.data.data;
             console.log('reservationUse ', data);
 
@@ -61,11 +63,31 @@ const ReservationScreen = () => {
       fetchData();
     }, [])
   );
-
-  const handleDeleteReservation = (id) => {
-    const newData = reservationData.filter((item) => item.id !== _id);
-    setReservationData(newData);
+  const handleDeleteReservation = async (reservationId) => {
+    try {
+      await axios.delete(
+        `${baseUrl}/reservation/delete/reservation/${reservationId}`
+      );
+      const newData = reservationData.filter(
+        (item) => item._id !== reservationId
+      );
+      setReservationData(newData);
+      Alert.alert(
+        'Suppression réussie',
+        'La réservation a été supprimée avec succès.'
+      );
+    } catch (error) {
+      console.error(
+        'Erreur lors de la suppression de la réservation:',
+        error.message
+      );
+      Alert.alert(
+        'Erreur',
+        "Une erreur s'est produite lors de la suppression de la réservation."
+      );
+    }
   };
+
   const renderEmptyListComponent = () => {
     return (
       <View style={styles.emptyListContainer}>
@@ -93,7 +115,9 @@ const ReservationScreen = () => {
           style={styles.iconContainer}
         />
       </View>
-      {reservationData.length > 0 ? (
+      {isLoading ? (
+        <Loading2 />
+      ) : reservationData.length > 0 ? (
         <FlatList
           data={reservationData}
           keyExtractor={(item) => item._id.toString()}

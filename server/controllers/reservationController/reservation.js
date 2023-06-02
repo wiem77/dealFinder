@@ -329,7 +329,7 @@ module.exports.getReservationWithUserId = async (req, res) => {
 };
 module.exports.getUserReservations = async (req, res) => {
   const userId = req.params.userId;
-  console.log('tetedevdgck');
+
   try {
     const reservations = await Reservation.find({
       user: userId,
@@ -444,5 +444,40 @@ module.exports.getAllReservationByIDUSer = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erreur du serveur.' });
+  }
+};
+module.exports.deleteReservation = async (req, res) => {
+  const reservationId = req.params.reservationId;
+  try {
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      throw new Error('Réservation introuvable');
+    }
+
+    await Reservation.deleteOne({ _id: reservationId });
+
+    await User.findByIdAndUpdate(reservation.user, {
+      $pull: { reservedVouchers: reservationId },
+    });
+
+    if (reservation.archived) {
+      await User.findByIdAndUpdate(reservation.user, {
+        $pull: { archivedVouchers: reservationId },
+      });
+    } else {
+      await Voucher.findByIdAndUpdate(reservation.voucher, {
+        $inc: { available_vouchers: 1 },
+      });
+    }
+
+    console.log('Réservation supprimée avec succès');
+    res.status(200).json({ success: true, data: reservation });
+  } catch (error) {
+    console.error(
+      'Erreur lors de la suppression de la réservation:',
+      error.message
+    );
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 };

@@ -7,6 +7,7 @@ const {
   getAllReservationByIDUSer,
   getReservationByCode,
   getUserReservations,
+  deleteReservation,
 } = require('../../controllers/reservationController/reservation');
 const { auth } = require('../../middleWare/auth');
 const router = express.Router();
@@ -21,7 +22,7 @@ router.get(
   '/userReservation/codeReseravtion/:reservationCode',
   getReservationByCode
 );
-//root:http://localhost:4000/api/reservation/userReservation/:userId
+//root:http://localhost:4000/api/reservation/userReservation/usedTrue/:userId
 router.get('/userReservation/usedTrue/:userId', getUserReservations);
 //root:http://localhost:4000/api/reservation/users/:userId/resetArchivedReservations/:reservationId
 router.put(
@@ -32,6 +33,8 @@ router.put(
 //root:http://localhost:4000/api/reservation/verify/:resCode/:store_id
 router.get('/verify/:resCode/:store_id', verifyCodeReservation);
 
+//root:http://localhost:4000/api/reservation/delete/reservation/:reservationId
+router.delete('/delete/reservation/:reservationId', deleteReservation);
 //root:http://localhost:4000/api/reservation/user/:userId/allReservation
 router.get('/user/:userId/allReservation', getAllReservationByIDUSer);
 module.exports = router;

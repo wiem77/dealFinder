@@ -45,10 +45,10 @@ export const CategoryList = () => {
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
   };
-  const cityLocation = userCtx.user.location.city;
-  console.log(userCtx.user.location.coordinates[0]);
-  const laltitude = userCtx.user.location.coordinates[0];
-  const longitude = userCtx.user.location.coordinates[1];
+  const cityLocation = userCtx?.user?.location?.city;
+  console.log(userCtx?.user?.location.coordinates[0]);
+  const laltitude = userCtx.user?.location?.coordinates[0];
+  const longitude = userCtx.user?.location?.coordinates[1];
   const fetchCategories = async () => {
     try {
       setIsFetchingCategories(true);
@@ -253,7 +253,7 @@ export const CategoryList = () => {
                               voucher={
                                 Object.values(item.vouchers)[0]?.discount
                               }
-                              distance={Object.values(item.locations)[0].city}
+                              distance={Object.values(item.locations)[0]?.city}
                               subCategory={
                                 Object.values(item.sub_categories)[0]
                                   ?.subCategory_name

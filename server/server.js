@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 dbConnect();
 
 app.use(
-  cors(['exp://192.168.1.7:19000', 'http://localhost:3000'])
+  cors(['exp://192.168.1.5:19000', 'http://localhost:3000'])
   // cors({
   //   origin: ['http://localhost:3000', 'exp://192.168.8.123:19000'],
   //   optionsSuccessStatus: 200,

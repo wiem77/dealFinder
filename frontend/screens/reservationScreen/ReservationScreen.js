@@ -44,7 +44,7 @@ const ReservationScreen = () => {
             setReservationData(data);
             await AsyncStorage.setItem('reservationData', JSON.stringify(data));
           } else {
-            setReservationData([]);
+            setReservationData(JSON.parse(storedData));
           }
         } catch (error) {
           console.error(error);
@@ -155,22 +155,22 @@ const ReservationScreen = () => {
                     >
                       <Text style={styles.discountText}>
                         {item.voucher?.discount}%
-                  </Text>
+                      </Text>
                     </View>
                     <View
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
                       <View style={{}} />
-                  <TouchableOpacity
+                      <TouchableOpacity
                         style={[styles.deleteButton, { marginLeft: 70 }]}
-                    onPress={() => handleDeleteReservation(item._id)}
-                  >
+                        onPress={() => handleDeleteReservation(item._id)}
+                      >
                         <MaterialCommunityIcons
                           name="delete-outline"
                           size={24}
                           color="black"
                         />
-                  </TouchableOpacity>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 </View>

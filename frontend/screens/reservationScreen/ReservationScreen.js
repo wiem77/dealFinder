@@ -32,15 +32,15 @@ const ReservationScreen = () => {
       const fetchData = async () => {
         try {
           const storedData = await AsyncStorage.getItem('reservationData');
-          console.log('storedData1', storedData);
-          if (!storedData) {
+       
+          if (storedData) {
             const response = await axios.get(
               `${baseUrl}/reservation/user/${user._id}/allReservation`
             );
-            console.log('storedData2', storedData);
+            
             const data = response.data.data;
             console.log('reservationUse ', data);
-            console.log('dataaaa', data);
+         
             setReservationData(data);
             await AsyncStorage.setItem('reservationData', JSON.stringify(data));
           } else {

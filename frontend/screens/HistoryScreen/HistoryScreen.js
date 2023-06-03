@@ -15,37 +15,16 @@ import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import { useFocusEffect } from '@react-navigation/native';
 import { useState } from 'react';
-import { useEffect } from 'react';
+
 import Loading2 from '../../components/loading2/Loading2';
-const reservedVouchers = [
-  {
-    id: 1,
-    voucher: {
-      store: {
-        store_name: 'Technia',
-      },
-      name_V: 'Pc20',
-      discount: '20%',
-    },
-  },
-  {
-    id: 2,
-    voucher: {
-      store: {
-        store_name: 'Fatals',
-      },
-      name_V: 'Beauté10',
-      discount: '10%',
-    },
-  },
-];
+
 const HistoryScreen = () => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
 
   const [voucherStates, setVoucherStates] = useState({});
-  const [historyData, setHistoryData] = useState();
+  const [historyData, setHistoryData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
@@ -54,7 +33,7 @@ const HistoryScreen = () => {
         try {
           const storedData = await AsyncStorage.getItem('historyData');
           console.log('storedData1', storedData);
-          if (!storedData) {
+          if (storedData) {
             const response = await axios.get(
               `${baseUrl}/reservation/userReservation/usedTrue/${user._id}`,
               {
@@ -100,7 +79,6 @@ const HistoryScreen = () => {
           },
         }
       );
-      console.log('test1');
     } catch (error) {
       console.error(error);
     }
@@ -125,7 +103,6 @@ const HistoryScreen = () => {
           },
         }
       );
-      console.log('test');
     } catch (error) {
       console.error(error);
     }
@@ -251,7 +228,7 @@ const HistoryScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Historique des Vouchers Utilisés</Text>
+      <Text style={styles.title}>Historique des coupons utilisés</Text>
       <View style={{ marginTop: 16 }}></View>
       <FlatList
         data={historyData}

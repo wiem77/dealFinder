@@ -47,6 +47,7 @@ const VoucherScreen = ({ route }) => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
+  const [hasToken, setHasToken] = useState(false);
   if (token != null) {
     console.log('test');
   } else {
@@ -55,7 +56,13 @@ const VoucherScreen = ({ route }) => {
   const handelBackPressed = () => {
     navigation.goBack();
   };
-
+  useEffect(() => {
+    if (token) {
+      setHasToken(true);
+    } else {
+      setHasToken(false);
+    }
+  }, [token]);
   const handleReservationPressed = async () => {
     if (token) {
       const voucherId = selectedVoucher._id;
@@ -72,8 +79,6 @@ const VoucherScreen = ({ route }) => {
         );
         setQrCodeData(response?.data?.data);
         const qrData = response?.data?.data;
-        console.log('test1', response?.data?.data);
-        console.log('test2', response?.data);
 
         Alert.alert(
           'Félicitations',
@@ -221,17 +226,7 @@ const VoucherScreen = ({ route }) => {
             />
           </View>
 
-          {/* <View style={styles.similareOffres}>
-          <View style={{marginBottom:'6%',marginTop:'6%'}}>
-            <FlatList
-              horizontal
-              data={DATA}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        </View> */}
+         
         </View>
       </View>
       {/* )} */}

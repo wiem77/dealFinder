@@ -16,6 +16,7 @@ import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
+  Entypo,
 } from '@expo/vector-icons';
 
 import ViewMoreText from 'react-native-view-more-text';
@@ -31,7 +32,7 @@ import { FontSize } from '../../constants/FontSize';
 import { combineImagePaths } from '../../util/CombinedPath';
 import { FavoritesContext } from '../../context/FavoriteProvider';
 import { AuthContext } from '../../context/AuthProvider';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 
 const StoreScreen = ({ route }) => {
@@ -45,28 +46,65 @@ const StoreScreen = ({ route }) => {
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
   const [websiteVisible, setWebsiteVisible] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
-  const { favorites, addToFavorites, removeFromFavorites } =
-    useContext(FavoritesContext);
+  const favoritesContext = useContext(FavoritesContext);
+  const { favorites, addToFavorites, removeFromFavorites } = favoritesContext;
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const userID = authCtx.user._id;
-  const iconColor = favorites.includes(selectedStore)
-    ? Colors.lightRed2
-    : 'black';
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const storedFavorites = await AsyncStorage.getItem('favorites');
+        if (storedFavorites) {
+          const parsedFavorites = JSON.parse(storedFavorites);
+          if (parsedFavorites.includes(selectedStore)) {
+            setIsFavorite(true);
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching favorites:', error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  useEffect(() => {
+    const updateFavorites = async () => {
+      try {
+        const storedFavorites = await AsyncStorage.getItem('favorites');
+        const parsedFavorites = storedFavorites
+          ? JSON.parse(storedFavorites)
+          : [];
+        if (isFavorite && !parsedFavorites.includes(selectedStore)) {
+          parsedFavorites.push(selectedStore);
+          await AsyncStorage.setItem(
+            'favorites',
+            JSON.stringify(parsedFavorites)
+          );
+        } else if (!isFavorite && parsedFavorites.includes(selectedStore)) {
+          const updatedFavorites = parsedFavorites.filter(
+            (store) => store !== selectedStore
+          );
+          await AsyncStorage.setItem(
+            'favorites',
+            JSON.stringify(updatedFavorites)
+          );
+        }
+      } catch (error) {
+        console.log('Error updating favorites:', error);
+      }
+    };
+
+    updateFavorites();
+  }, [isFavorite, selectedStore]);
+
   const navigation = useNavigation();
 
   const handelBackPressed = () => {
     navigation.goBack();
-  };
-
-  const handleClick = () => {
-    if (favorites.includes(selectedStore)) {
-      removeFromFavorites(selectedStore._id, token, userID);
-    } else {
-      addToFavorites(selectedStore._id, token, userID);
-    }
-    setIsFilled((prevIsFilled) => !prevIsFilled);
   };
 
   const handelVoirPlus = (voucherIdToFind) => {
@@ -105,7 +143,21 @@ const StoreScreen = ({ route }) => {
       Voir moins
     </Text>
   );
-
+  const handleFavoriteClick = async () => {
+    try {
+      if (favorites.includes(selectedStore)) {
+        removeFromFavorites(selectedStore);
+        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+      } else {
+        addToFavorites(selectedStore);
+        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+      }
+      await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+    } catch (error) {
+      console.log('Error handling favorite:', error);
+    }
+  };
+  const iconColor = isFavorite ? Colors.lightRed2 : 'black';
   return (
     <>
       <View style={styles.container}>
@@ -147,10 +199,10 @@ const StoreScreen = ({ route }) => {
               {formattedStoreName}
             </Text>
             <MaterialCommunityIcons
-              name={isFilled ? 'cards-heart' : 'cards-heart-outline'}
+              name={isFavorite ? 'cards-heart' : 'cards-heart-outline'}
               size={30}
               color={iconColor}
-              onPress={handleClick}
+              onPress={handleFavoriteClick}
             />
           </View>
 

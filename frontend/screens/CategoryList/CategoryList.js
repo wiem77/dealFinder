@@ -268,85 +268,91 @@ export const CategoryList = () => {
               ) : (
                 selectedCategory === null &&
                 stores && (
-                  <ScrollView
-                    style={{
-                      flexGrow: 1,
-                    }}
-                  >
-                    <View>
-                      <View style={styles.newItemsContainer}>
-                        <Text style={styles.categoryName}>Nouveauté</Text>
-                        <FlatList
-                          data={stores.data}
-                          keyExtractor={(item) => item._id}
-                          horizontal
-                          showsHorizontalScrollIndicator={false}
-                          contentContainerStyle={styles.newItemsList}
-                          renderItem={({ item }) => (
-                            <CustomCard
-                              storeName={item.store_name}
-                              voucher={
-                                Object.values(item.vouchers)[0]?.discount
-                              }
-                              distance={Object.values(item.locations)[0]?.city}
-                              subCategory={
-                                Object.values(item.sub_categories)[0]
-                                  ?.subCategory_name
-                              }
-                              imageUri={combineImagePaths(item.store_image)}
-                              onPressStore={() => handleStoreSelected(item._id)}
-                            />
-                          )}
-                        />
-                      </View>
-                      {categories?.categories?.map((category) => {
-                        if (
-                          selectedCategory === null &&
-                          category.subcategories &&
-                          category.subcategories.length > 0
-                        ) {
-                          return (
-                            <View
-                              key={category.category_name}
-                              style={styles.newItemsContainer}
-                            >
-                              <Text style={styles.categoryName}>
-                                {category.category_name}
-                              </Text>
-                              <FlatList
-                                data={category.subcategories[0]?.stores}
-                                keyExtractor={(item) => item._id}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.newItemsList}
-                                renderItem={({ item }) => (
-                                  <CustomCard
-                                    storeName={item.store_name}
-                                    voucher={
-                                      Object.values(item.vouchers)[0]?.discount
-                                    }
-                                    distance={
-                                      Object.values(item.locations)[0].city
-                                    }
-                                    subCategory={
-                                      Object.values(item.sub_categories)[0]
-                                        ?.subCategory_name
-                                    }
-                                    onPressStore={() =>
-                                      handleStoreSelected(item._id)
-                                    }
-                                    imageUri={combineImagePaths(
-                                      item.store_image
-                                    )}
-                                  />
-                                )}
+                  <View style={{ flexGrow: 1, marginBottom: '40%' }}>
+                    <ScrollView
+                      contentContainerStyle={{ paddingBottom: '70%' }}
+                      showsVerticalScrollIndicator={true}
+                    >
+                      <View>
+                        <View style={styles.newItemsContainer}>
+                          <Text style={styles.categoryName}>Nouveauté</Text>
+                          <FlatList
+                            data={stores.data}
+                            keyExtractor={(item) => item._id}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.newItemsList}
+                            renderItem={({ item }) => (
+                              <CustomCard
+                                storeName={item.store_name}
+                                voucher={
+                                  Object.values(item.vouchers)[0]?.discount
+                                }
+                                distance={
+                                  Object.values(item.locations)[0]?.city
+                                }
+                                subCategory={
+                                  Object.values(item.sub_categories)[0]
+                                    ?.subCategory_name
+                                }
+                                imageUri={combineImagePaths(item.store_image)}
+                                onPressStore={() =>
+                                  handleStoreSelected(item._id)
+                                }
                               />
-                            </View>
-                          );
-                        }
-                      })}
-                    </View>
-                  </ScrollView>
+                            )}
+                          />
+                        </View>
+                        {categories?.categories?.map((category) => {
+                          if (
+                            selectedCategory === null &&
+                            category.subcategories &&
+                            category.subcategories.length > 0
+                          ) {
+                            return (
+                              <View
+                                key={category.category_name}
+                                style={styles.newItemsContainer}
+                              >
+                                <Text style={styles.categoryName}>
+                                  {category.category_name}
+                                </Text>
+                                <FlatList
+                                  data={category.subcategories[0]?.stores}
+                                  keyExtractor={(item) => item._id}
+                                  horizontal
+                                  showsHorizontalScrollIndicator={false}
+                                  contentContainerStyle={styles.newItemsList}
+                                  renderItem={({ item }) => (
+                                    <CustomCard
+                                      storeName={item.store_name}
+                                      voucher={
+                                        Object.values(item.vouchers)[0]
+                                          ?.discount
+                                      }
+                                      distance={
+                                        Object.values(item.locations)[0].city
+                                      }
+                                      subCategory={
+                                        Object.values(item.sub_categories)[0]
+                                          ?.subCategory_name
+                                      }
+                                      onPressStore={() =>
+                                        handleStoreSelected(item._id)
+                                      }
+                                      imageUri={combineImagePaths(
+                                        item.store_image
+                                      )}
+                                    />
+                                  )}
+                                />
+                              </View>
+                            );
+                          }
+                        })}
+                      </View>
+                    </ScrollView>
+                  </View>
                 )
               )}
               <View

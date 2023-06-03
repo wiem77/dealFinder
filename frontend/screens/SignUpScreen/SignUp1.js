@@ -49,7 +49,7 @@ const SignUpScreen = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors: formErrors }, // Renommer errors en formErrors
+    formState: { errors: formErrors },
     watch,
     trigger,
   } = useForm();
@@ -61,7 +61,7 @@ const SignUpScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
-  const [swiperIndex, setSwiperIndex] = useState(0);
+
   const locCtx = useContext(LocationContext);
   console.log('locCtx', locCtx.locationName);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -108,6 +108,7 @@ const SignUpScreen = () => {
       if (currentIndex === 0) {
         await trigger(['nom', 'prenom']);
         const isNomPrenomValid = !formErrors.nom && !formErrors.prenom;
+        console.log(isNomPrenomValid);
         if (isNomPrenomValid) {
           setCurrentIndex((prevIndex) => prevIndex + 1);
           setErrors({});
@@ -115,9 +116,11 @@ const SignUpScreen = () => {
           Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
         }
       } else if (currentIndex === 1) {
-        if (selectedOption !== '' && selectedAge !== '') {
+        if (selectedOption != null && selectedAge != null) {
           setCurrentIndex((prevIndex) => prevIndex + 1);
           setErrors({});
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
         }
       } else if (currentIndex === 2) {
         await trigger(['email', 'phone']);
@@ -257,16 +260,33 @@ const SignUpScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="location-on" size={24} color="black" />
-            {locCtx.locationName && (
-              <Text>
-                {locCtx.locationName}, {locCtx.locationRegion}
-              </Text>
-            )}
-          </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '35%',
+            // marginVertical: '15%',
+          }}
+        >
+          <MaterialIcons
+            name="location-on"
+            size={30}
+            color={Colors.background}
+          />
+          {locationName && (
+            <Text
+              style={{
+                fontFamily: 'inter',
+                fontSize: 18,
+                color: Colors.black,
+              }}
+            >
+              {locationName}, {locationRegion}
+            </Text>
+          )}
         </View>
+
         <View style={{ height: '40%' }}>
           {/* <LinearProgress
             value={(currentIndex + 1) / 5}
@@ -274,7 +294,7 @@ const SignUpScreen = () => {
             bg="gray.200"
           /> */}
           {currentIndex === 0 && (
-            <View>
+            <View style={styles.textcontainer}>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>
                   Créez un compte et devenez membre de DealFinder dès maintenant
@@ -353,7 +373,7 @@ const SignUpScreen = () => {
           )}
 
           {currentIndex === 2 && (
-            <View>
+            <View style={{ paddingHorizontal: hp('2%') }}>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>Étape 3:</Text>
                 <Text style={styles.subtitle}>
@@ -396,7 +416,7 @@ const SignUpScreen = () => {
           )}
 
           {currentIndex === 3 && (
-            <View style={styles.inputWrapper}>
+            <View style={{ paddingHorizontal: hp('2%') }}>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>Étape 4:</Text>
                 <Text style={styles.subtitle}>
@@ -404,7 +424,7 @@ const SignUpScreen = () => {
                   ci-dessous :
                 </Text>
               </View>
-              <View style={{ marginTop: '12%' }}>
+              <View style={styles.inputWrapper}>
                 <Custominput
                   name="password"
                   control={control}
@@ -443,7 +463,7 @@ const SignUpScreen = () => {
           )}
 
           {currentIndex === 4 && (
-            <View>
+            <View style={{ paddingHorizontal: hp('2%') }}>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>Dernière étape:</Text>
                 <Text style={styles.subtitle}>Téléchargez votre image :</Text>
@@ -531,9 +551,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   header: {
-    alignItems: 'flex-start',
-    paddingLeft: '1%',
-    marginVertical: '15%',
+    // marginVertical: '15%',
   },
   textcontainer: {
     paddingHorizontal: hp('2%'),

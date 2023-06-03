@@ -104,15 +104,15 @@ exports.updateFavorites = async (req, res) => {
   }
 };
 
-// exports.getAllFavorites = async (req, res) => {
-//   const { userID } = req.params;
-//   try {
-//     const user = await User.find(userID, { favorite_stores });
-//     res
-//       .status(200)
-//       .json({ success: true, favorite_stores: user.favorite_stores });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({ message: 'server error', error });
-//   }
-// };
+exports.getAllFavorites = async (req, res) => {
+  const { userID } = req.params;
+  console.log(userID);
+  try {
+    const user = await User.findById(userID).populate('favorite_stores');
+    console.log(user);
+    res.status(200).json({ success: true, favorite_stores: user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: 'server error', error });
+  }
+};

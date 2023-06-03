@@ -70,7 +70,7 @@ module.exports.resendVerificationEmail = async (req, res) => {
     await otpVerification.save();
 
     const emailText = `Bonjour ${user.prenom},${user.nom},\n\nMerci de vous être enregistré sur notre application. Veuillez saisir ce code ${otpNumber} dans le champ pour vérifier votre adresse e-mail:\n\nCordialement,\nL'équipe de l'application`;
-
+    console.log(emailText);
     await sendEmail(email, 'Veuillez vérifier votre adresse e-mail', emailText);
 
     return res.send({ message: 'Verification email sent successfully' });

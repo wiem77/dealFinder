@@ -4,6 +4,7 @@ const {
   addToFavoriteStores,
   removeFromFavoriteStores,
   updateFavorites,
+  getAllFavorites,
 } = require('../../controllers/favoritesController/Favorites');
 const {
   newRating,
@@ -19,4 +20,6 @@ router.delete(
 );
 //http://localhost:4000/api/users/newRating/:userId/:storeId
 router.post('/newRating/:userId/:storeId', newRating);
+//http://localhost:4000/api/users/getAll/fav/:userID
+router.get('/getAll/fav/:userID', getAllFavorites);
 module.exports = router;

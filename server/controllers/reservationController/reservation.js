@@ -360,7 +360,7 @@ exports.resetArchivedReservations = async (req, res) => {
       _id: userId,
       archivedVouchers: reservationId,
     });
-    console.log('req.user._id', userId);
+
     if (!user) {
       return res
         .status(404)
@@ -392,6 +392,7 @@ exports.resetArchivedReservations = async (req, res) => {
       archived: false,
       createdAt: Date.now(),
       expiry: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      expiredStatus: false,
     });
     await User.updateOne(
       { _id: userId },

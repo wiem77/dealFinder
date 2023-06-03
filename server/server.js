@@ -1,6 +1,5 @@
 const express = require('express');
 const {
-  deleteExpiredReservations,
   updateExpiredReservations,
 } = require('./utils/deleteExpiredRservation');
 const cors = require('cors');
@@ -24,41 +23,15 @@ const Reservation = require('./models/ReservationModel');
 const { generateQrCode } = require('./utils/generateQrCode');
 const Location = require('./models/LocationModel');
 const app = express();
-// Location.collection.createIndex(
-//   { coordinates: '2dsphere' },
-//   (error, result) => {
-//     if (error) {
-//       console.log("Erreur lors de la création de l'index géospatial :", error);
-//     } else {
-//       console.log('Index géospatial créé avec succès :', result);
-//     }
-//   }
-// );
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 dbConnect();
 
-app.use(
-  cors(['exp://192.168.8.101:19000', 'http://localhost:3000'])
-  // cors({
-  //   origin: ['http://localhost:3000', 'exp://192.168.8.123:19000'],
-  //   optionsSuccessStatus: 200,
-  // })
-);
+app.use(cors(['exp://192.168.8.101:19000', 'http://localhost:3000']));
 
-// deleteExpiredReservations();
 // updateExpiredReservations();
-let data = {
-  name: 'Employee Name',
-  age: 27,
-  department: 'Police',
-  id: 'aisuoiqu3234738jdhf100223',
-};
 
-// Converting the data into String format
-// let stringdata = JS ON.stringify(data);
-// generateQrCode(stringdata);
 app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/api', authRoutes);

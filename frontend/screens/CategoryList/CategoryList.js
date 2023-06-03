@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   SafeAreaView,
-  ActivityIndicator,
 } from 'react-native';
 
 import React, { useState, useContext, useEffect, useRef } from 'react';

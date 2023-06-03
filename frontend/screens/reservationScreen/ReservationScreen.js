@@ -32,15 +32,15 @@ const ReservationScreen = () => {
       const fetchData = async () => {
         try {
           const storedData = await AsyncStorage.getItem('reservationData');
-       
+
           if (storedData) {
             const response = await axios.get(
               `${baseUrl}/reservation/user/${user._id}/allReservation`
             );
-            
+
             const data = response.data.data;
             console.log('reservationUse ', data);
-         
+
             setReservationData(data);
             await AsyncStorage.setItem('reservationData', JSON.stringify(data));
           } else {
@@ -97,6 +97,38 @@ const ReservationScreen = () => {
       </View>
     );
   };
+  const handleResetArchivedReservation = async (reservationId) => {
+    console.log(reservationId);
+    try {
+      const response = await axios.put(
+        `${baseUrl}/reservation/users/${user._id}/resetArchivedReservations/${reservationId}`
+      );
+      const message = response.data.message;
+
+      Alert.alert('Réinitialisation réussie', message);
+
+      const updatedData = reservationData.map((item) => {
+        if (item._id === reservationId) {
+          return {
+            ...item,
+            expiredStatus: false,
+          };
+        }
+        return item;
+      });
+      setReservationData(updatedData);
+    } catch (error) {
+      console.error(
+        'Erreur lors de la réinitialisation de la réservation:',
+        error.message
+      );
+
+      Alert.alert(
+        'Erreur',
+        "Une erreur s'est produite lors de la réinitialisation de la réservation."
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -121,13 +153,28 @@ const ReservationScreen = () => {
                 styles.reservationCard,
                 item.expiredStatus ? styles.expiredCard : styles.validCard,
               ]}
-              onPress={() =>
-                item.expiredStatus
-                  ? alert('Réservation expirée')
-                  : navigation.navigate('QrCpdeReservation', {
-                      qrData: item,
-                    })
-              }
+              onPress={() => {
+                if (item.expiredStatus) {
+                  console.log(item._id);
+                  Alert.alert(
+                    'Réservation expirée',
+                    'Que souhaitez-vous faire ?',
+                    [
+                      {
+                        text: 'Réserver à nouveau',
+                        onPress: () => handleResetArchivedReservation(item._id),
+                      },
+                      {
+                        text: 'OK',
+                      },
+                    ]
+                  );
+                } else {
+                  navigation.navigate('QrCpdeReservation', {
+                    qrData: item,
+                  });
+                }
+              }}
             >
               <View style={styles.cardContent}>
                 <View>

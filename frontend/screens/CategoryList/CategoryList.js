@@ -17,7 +17,7 @@ import { Colors } from '../../constants/Colors';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import Search from '../../components/SerachBar/Search';
 import { baseUrl } from '../../config/config';
@@ -29,7 +29,7 @@ import { AuthContext } from '../../context/AuthProvider';
 import axios from 'axios';
 import Loading2 from '../../components/loading2/Loading2';
 import LocContext from '../../context/LocationProv';
-
+import { useFocusEffect } from '@react-navigation/native';
 export const CategoryList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -59,13 +59,15 @@ export const CategoryList = () => {
       );
       const data = response.data;
       setCategories(data);
-      console.log('Data fetched categoriessssssss:', data);
+      console.log('Data fetched categories:', data);
 
       if (data.length === 0) {
         console.log('Les catégories sont vides.');
       } else {
         console.log('Les catégories ne sont pas vides.');
       }
+
+      await AsyncStorage.setItem('categoriesData', JSON.stringify(data)); // Sauvegarder les catégories dans AsyncStorage
     } catch (error) {
       console.error(error);
     } finally {
@@ -74,14 +76,31 @@ export const CategoryList = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
+    const fetchCategoriesData = async () => {
+      try {
+        const storedData = await AsyncStorage.getItem('categoriesData');
+        console.log('Stored categories data:', storedData);
+
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          setCategories(parsedData);
+        } else {
+          await fetchCategories();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategoriesData();
   }, []);
 
-  useEffect(() => {
-    if (!isFetchingCategories) {
+  useFocusEffect(
+    React.useCallback(() => {
       fetchCategories();
-    }
-  }, [categories]);
+    }, [])
+  );
+
   const fetchStores = async () => {
     try {
       setIsFetchingStores(true);
@@ -89,13 +108,14 @@ export const CategoryList = () => {
       const response = await axios.get(`${baseUrl}/store/getNewStore`);
       const data = response.data;
       setStores(data);
-      // console.log('Data fetched stores:', data);
 
       if (data.length === 0) {
         console.log('Les stores sont vides.');
       } else {
         console.log('Les stores ne sont pas vides.');
       }
+
+      await AsyncStorage.setItem('storesData', JSON.stringify(data));
     } catch (error) {
       console.error(error);
     } finally {
@@ -104,15 +124,31 @@ export const CategoryList = () => {
   };
 
   useEffect(() => {
-    fetchStores();
+    const fetchStoresData = async () => {
+      try {
+        const storedData = await AsyncStorage.getItem('storesData');
+        console.log('Stored stores data:', storedData);
+
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          setStores(parsedData);
+        } else {
+          await fetchStores();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStoresData();
   }, []);
 
-  useEffect(() => {
-    if (!isFetchingStores) {
+  useFocusEffect(
+    React.useCallback(() => {
       fetchStores();
-    }
-  }, [stores]);
-  // console.log('stores,', stores);
+    }, [])
+  );
+
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
 

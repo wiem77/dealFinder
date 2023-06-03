@@ -27,6 +27,7 @@ import CustomBtn from '../../components/customBtn/CustomBtn';
 import CustomCard from '../../components/customCard/CustomCard';
 import Loading from '../../components/loading/Loading';
 import { Button } from 'react-native-elements';
+import { combineImagePaths } from '../../util/CombinedPath';
 const { width, height } = Dimensions.get('window');
 const showAlert = (title, message) => {
   Alert.alert(
@@ -37,22 +38,19 @@ const showAlert = (title, message) => {
   );
 };
 const VoucherScreen = ({ route }) => {
-  const { selectedVoucher, selectedStore } = route.params;
-  console.log('selectedselectedStore', selectedStore);
+  const { selectedVoucher, imageStore } = route.params;
+  console.log('selectedselectedStore', imageStore);
   const [isExpanded, setIsExpanded] = useState(false);
   const [qrCodeData, setQrCodeData] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [hasFetchedData, setHasFetchedData] = useState(false);
+
   const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
+  console.log('user', user);
   const [hasToken, setHasToken] = useState(false);
-  if (token != null) {
-    console.log('test');
-  } else {
-    console.log('test2', token);
-  }
+
   const handelBackPressed = () => {
     navigation.goBack();
   };
@@ -68,7 +66,6 @@ const VoucherScreen = ({ route }) => {
     if (token) {
       const voucherId = selectedVoucher._id;
       const userId = user._id;
-      console.log(voucherId);
       try {
         const response = await axios.post(
           `${baseUrl}/reservation/user/${userId}/vouchers/${voucherId}`,
@@ -152,7 +149,7 @@ const VoucherScreen = ({ route }) => {
         </SafeAreaView>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../../assets/cozy.png')}
+            source={combineImagePaths(imageStore)}
             style={{ width: 360, height: 260, resizeMode: 'contain' }}
           />
         </View>

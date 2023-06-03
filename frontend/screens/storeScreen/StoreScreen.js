@@ -59,13 +59,7 @@ const StoreScreen = ({ route }) => {
   const handelBackPressed = () => {
     navigation.goBack();
   };
-  useEffect(() => {
-    if (token) {
-      setHasToken(true);
-    } else {
-      setHasToken(false);
-    }
-  }, [token]);
+
   const handleClick = () => {
     if (favorites.includes(selectedStore)) {
       removeFromFavorites(selectedStore._id, token, userID);
@@ -79,8 +73,9 @@ const StoreScreen = ({ route }) => {
     const selectedVoucher = voucherInfo.find(
       (voucher) => voucher._id === voucherIdToFind
     );
+    const imageStore = selectedStore.store_image;
     console.log('selectedVoucher', selectedVoucher);
-    navigation.navigate('Voucher', { selectedVoucher, selectedStore });
+    navigation.navigate('Voucher', { selectedVoucher, imageStore });
   };
 
   const toggleEmailVisible = () => {

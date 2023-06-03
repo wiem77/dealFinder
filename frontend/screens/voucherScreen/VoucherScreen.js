@@ -26,7 +26,7 @@ import { FontSize } from '../../constants/FontSize';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import CustomCard from '../../components/customCard/CustomCard';
 import Loading from '../../components/loading/Loading';
-
+import { Button } from 'react-native-elements';
 const { width, height } = Dimensions.get('window');
 const showAlert = (title, message) => {
   Alert.alert(
@@ -41,7 +41,7 @@ const VoucherScreen = ({ route }) => {
   console.log('selectedselectedStore', selectedStore);
   const [isExpanded, setIsExpanded] = useState(false);
   const [qrCodeData, setQrCodeData] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasFetchedData, setHasFetchedData] = useState(false);
   const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
@@ -64,6 +64,7 @@ const VoucherScreen = ({ route }) => {
     }
   }, [token]);
   const handleReservationPressed = async () => {
+    setIsLoading(true);
     if (token) {
       const voucherId = selectedVoucher._id;
       const userId = user._id;
@@ -87,7 +88,6 @@ const VoucherScreen = ({ route }) => {
             {
               text: 'Ok',
               onPress: () => navigation.navigate('QrCode', { qrData }),
-
               style: 'destructive',
             },
           ]
@@ -95,6 +95,8 @@ const VoucherScreen = ({ route }) => {
       } catch (error) {
         const errorMessage = error.response?.data?.message || 'Erreur inconnue';
         showAlert('Reservastion invalide', errorMessage);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       Alert.alert(
@@ -111,11 +113,12 @@ const VoucherScreen = ({ route }) => {
             onPress: () => navigation.navigate('LoginIn'),
           },
           {
-            text: 'Continuer Votre Visiste',
+            text: 'Continuer Votre Visite',
             onPress: () => console.log('guest'),
           },
         ]
       );
+      setIsLoading(false);
     }
   };
 
@@ -136,9 +139,6 @@ const VoucherScreen = ({ route }) => {
   );
   return (
     <>
-      {/* {isLoading ? (
-        <Loading />
-      ) : ( */}
       <View style={styles.container}>
         <SafeAreaView>
           <TouchableOpacity>
@@ -216,20 +216,37 @@ const VoucherScreen = ({ route }) => {
             </View>
           </View>
           <View style={{ marginTop: '8%', marginBottom: '6%' }}>
-            <CustomBtn
-              style={{ marginTop: '6%' }}
-              text={'Reserver votre coupon'}
-              onPress={handleReservationPressed}
-              nameIcon={'cart-outline'}
-              sizeIcon={24}
-              colorIcon={Colors.white}
-            />
-          </View>
+            {isLoading ? (
+              <Button
+                title="Solid"
+                type="solid"
+                loading
+                buttonStyle={{
+                  backgroundColor: Colors.background,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  width: '100%',
+                  height: '10%',
+                  padding: 20,
+                  marginVertical: 6,
 
-         
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              />
+            ) : (
+              <CustomBtn
+                style={{ marginTop: '6%' }}
+                text={'Reserver votre coupon'}
+                onPress={handleReservationPressed}
+                nameIcon={'cart-outline'}
+                sizeIcon={24}
+                colorIcon={Colors.white}
+              />
+            )}
+          </View>
         </View>
       </View>
-      {/* )} */}
     </>
   );
 };

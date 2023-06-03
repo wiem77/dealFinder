@@ -25,7 +25,7 @@ export default StoreCard2 = ({ store, onRemoveFavorite }) => {
   const handleFavoritePress = () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
-      onRemoveFavorite(store.id);
+      onRemoveFavorite(store._id);
     }
   };
 

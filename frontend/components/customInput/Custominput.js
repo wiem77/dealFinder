@@ -19,6 +19,7 @@ const Custominput = ({
   defaultValue,
   placeHolder,
   type = 'PRIMARY',
+  keyboardType,
 }) => {
   return (
     <View>
@@ -46,6 +47,7 @@ const Custominput = ({
                 secureTextEntry={secureTextEntry}
                 defaultValue={defaultValue}
                 style={styles.input}
+                keyboardType={keyboardType}
               />
               <Entypo
                 name={iconName}

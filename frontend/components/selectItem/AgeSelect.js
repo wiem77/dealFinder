@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
+
+import { Select } from 'native-base';
+
 const AgeSelect = ({ selectedAge, onSelect }) => {
   const ages = ['Age'];
   for (let i = 17; i <= 90; i++) {
@@ -23,16 +26,25 @@ const AgeSelect = ({ selectedAge, onSelect }) => {
           fontFamily: 'poppins',
         }}
       >
-        sélectionner votre age:
+        Sélectionner votre âge:
       </Text>
-      <Picker
-        selectedValue={selectedAge}
-        onValueChange={(itemValue, itemIndex) => handleAgeSelect(itemValue)}
+      <View
+        style={{ marginTop: '5%', alignItems: 'center', marginBottom: '15%' }}
       >
-        {ages.map((age) => (
-          <Picker.Item key={age} label={`${age}`} value={age} />
-        ))}
-      </Picker>
+        <Select
+          selectedValue={selectedAge}
+          onValueChange={(itemValue) => handleAgeSelect(itemValue)}
+          minWidth={150}
+          maxWidth={100}
+          style={{
+            marginTop: '5%',
+          }}
+        >
+          {ages.map((age) => (
+            <Select.Item key={age} label={`${age}`} value={age} />
+          ))}
+        </Select>
+      </View>
     </View>
   );
 };

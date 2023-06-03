@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome5, Foundation } from '@expo/vector-icons';
+import { FontAwesome5, Foundation, Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 
 import { AuthContext } from '../../context/AuthProvider';
@@ -22,6 +22,8 @@ import Loading2 from '../../components/loading2/Loading2';
 const ReservationScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [reservationData, setReservationData] = useState([]);
+  const [showExpiredReservations, setShowExpiredReservations] = useState(false);
+
   const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
@@ -129,7 +131,9 @@ const ReservationScreen = () => {
       );
     }
   };
-
+  const filteredReservationData = showExpiredReservations
+    ? reservationData
+    : reservationData.filter((item) => !item.expiredStatus);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -141,11 +145,34 @@ const ReservationScreen = () => {
           style={styles.iconContainer}
         />
       </View>
+      <TouchableOpacity
+        style={styles.filterButton}
+        onPress={() => setShowExpiredReservations(!showExpiredReservations)}
+      >
+        <View style={styles.filterButtonContent}>
+          <Ionicons
+            name={
+              showExpiredReservations
+                ? 'md-checkmark-circle'
+                : 'md-close-circle'
+            }
+            size={20}
+            color="black"
+            style={styles.filterButtonIcon}
+          />
+          <Text style={styles.filterButtonText}>
+            {showExpiredReservations
+              ? 'Afficher tout'
+              : 'Afficher les non expirées'}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
       {isLoading ? (
         <Loading2 />
       ) : reservationData.length > 0 ? (
         <FlatList
-          data={reservationData}
+          data={filteredReservationData}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -382,6 +409,26 @@ const styles = StyleSheet.create({
     color: Colors.backgroundWhite,
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  filterButton: {
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  filterButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  filterButtonIcon: {
+    marginRight: 5,
+  },
+  filterButtonText: {
+    fontWeight: 'bold',
   },
 });
 

@@ -30,6 +30,7 @@ import axios from 'axios';
 import { CategoryContext } from '../../context/CtegoryProvider';
 
 import { CategoryList } from '../CategoryList/CategoryList';
+import LocContext from '../../context/LocationProv';
 
 const showAlert = (title, message) => {
   Alert.alert(
@@ -40,6 +41,10 @@ const showAlert = (title, message) => {
   );
 };
 const HomeScreen = () => {
+  const { latitude, longitude } = useContext(LocContext);
+
+  console.log('altitudeHOMe', latitude, 'longitudeHome', longitude);
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [showNewItems, setShowNewItems] = useState(true);
 

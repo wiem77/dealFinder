@@ -33,6 +33,8 @@ import { CategoryContext } from '../../context/CtegoryProvider';
 import randomcolor from 'randomcolor';
 import { LinearProgress } from 'react-native-elements';
 import { LocationContext } from '../../context/LocationProvider';
+import Loading2 from '../../components/loading2/Loading2';
+import LocContext from '../../context/LocationProv';
 const MapScreen = () => {
   const navigation = useNavigation();
   const [circleRadius, setCircleRadius] = useState(10000);
@@ -41,9 +43,8 @@ const MapScreen = () => {
   const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
   const { categories } = useContext(CategoryContext);
-  const locCtx = useContext(LocationContext);
-  console.log('locCtx', locCtx.location);
 
+  const { latitude, longitude, cityLocation } = useContext(LocContext);
   useEffect(() => {
     const requestLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -121,7 +122,7 @@ const MapScreen = () => {
   const handelBackPressed = () => {
     navigation.goBack();
   };
-  console.log(markers);
+
   const handleCircleRadiusChange = (value) => {
     setCircleRadius(value);
     console.log('value', value);
@@ -161,10 +162,7 @@ const MapScreen = () => {
 
       <View style={styles.contentContainer}>
         {isLoading ? (
-          <BlurView intensity={50} tint="dark" style={styles.loadingIndicator}>
-            <LinearProgress color="#FAF7F4" style={styles.progressBar} />
-            <Text style={styles.loadingText}>Chargement en cours...</Text>
-          </BlurView>
+          <Loading2 />
         ) : (
           <MapView
             ref={mapRef}

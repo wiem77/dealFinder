@@ -11,6 +11,7 @@ import { NativeBaseProvider, extendTheme } from 'native-base';
 import { LocationProvider } from './context/LocationProvider';
 import { FavoritesProvider } from './context/FavoriteProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LocProvider } from './context/LocationProv';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
@@ -19,7 +20,7 @@ export default function App() {
 
   return (
     <NativeBaseProvider>
-      <LocationProvider>
+      <LocProvider>
         <StoresProvider>
           <CategoryProvider>
             <FavoritesProvider>
@@ -30,7 +31,7 @@ export default function App() {
             </FavoritesProvider>
           </CategoryProvider>
         </StoresProvider>
-      </LocationProvider>
+      </LocProvider>
     </NativeBaseProvider>
   );
 }

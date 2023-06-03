@@ -14,13 +14,14 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthProvider';
 import { LocationContext } from '../../context/LocationProvider';
 import { login } from '../../util/auth';
+import LocContext from '../../context/LocationProv';
 
 const LoginScreen = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const authCtx = useContext(AuthContext);
-  const locCtx = useContext(LocationContext);
-  console.log('locCtx', locCtx.location);
   const navigation = useNavigation();
+  const { altitude, longitude, cityLocation } = useContext(LocContext);
+  console.log(altitude, longitude, cityLocation);
   const showAlert = (title, message) => {
     Alert.alert(
       title,

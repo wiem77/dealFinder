@@ -37,6 +37,7 @@ import { useForm } from 'react-hook-form';
 import Loading2 from '../../components/loading2/Loading2';
 import { LocationContext } from '../../context/LocationProvider';
 import { Button, Icon, LinearProgress } from 'react-native-elements';
+import LocContext from '../../context/LocationProv';
 const showAlert = (title, message) => {
   Alert.alert(
     title,
@@ -54,16 +55,17 @@ const SignUpScreen = () => {
     trigger,
   } = useForm();
   const pwd = watch('password');
-  const [location, setLocation] = useState(null);
-  const [locationName, setLocationName] = useState(null);
-  const [locationRegion, setLocationRegion] = useState(null);
-  const [locationCountry, setLocationCountry] = useState(null);
+  // const [location, setLocation] = useState(null);
+  // const [locationName, setLocationName] = useState(null);
+  // const [locationRegion, setLocationRegion] = useState(null);
+  // const [locationCountry, setLocationCountry] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
-
-  const locCtx = useContext(LocationContext);
-  console.log('locCtx', locCtx.locationName);
+  const { latitude, longitude, cityLocation, locationRegion } =
+    useContext(LocContext);
+  // const locCtx = useContext(LocationContext);
+  // console.log('locCtx', locCtx.locationName);
   const [currentIndex, setCurrentIndex] = useState(0);
   const validateStep = async (stepIndex) => {
     switch (stepIndex) {
@@ -205,9 +207,9 @@ const SignUpScreen = () => {
         age: selectedAge,
         roles: 'consommateur',
         type: 'Point',
-        coordinates: [location?.coords.longitude, location?.coords.latitude],
-        formattedAddress: `${locationName}`,
-        city: locationName,
+        coordinates: [longitude, latitude],
+        formattedAddress: `${cityLocation}${locationRegion}`,
+        city: cityLocation,
         // country: locationCountry,
       };
       console.log(ress);
@@ -242,9 +244,8 @@ const SignUpScreen = () => {
           roles: 'consommateur',
           type: 'Point',
           coordinates: [location.coords.longitude, location.coords.latitude],
-          formattedAddress: `${locationName}, ${locationRegion}`,
-          city: locationName,
-          country: locationCountry,
+          formattedAddress: `${cityLocation}, ${locationRegion}`,
+          city: cityLocation,
         },
       });
       navigation.navigate('OtpScreen', { email: data.email });
@@ -274,7 +275,7 @@ const SignUpScreen = () => {
             size={30}
             color={Colors.background}
           />
-          {locationName && (
+          {cityLocation && (
             <Text
               style={{
                 fontFamily: 'inter',
@@ -282,7 +283,7 @@ const SignUpScreen = () => {
                 color: Colors.black,
               }}
             >
-              {locationName}, {locationRegion}
+              {cityLocation}
             </Text>
           )}
         </View>

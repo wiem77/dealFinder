@@ -16,17 +16,24 @@ import axios from 'axios';
 import { baseUrl } from '../../config/config';
 import Loading from '../../components/loading/Loading';
 import { LocationContext } from '../../context/LocationProvider';
+import LocContext from '../../context/LocationProv';
 
 const WelcomeScreen = () => {
-  const {
-    setLocation,
-    setLocationName,
-    setLocationRegion,
-    setAltitude,
-    setLongitude,
-  } = useContext(LocationContext);
+  // const {
+  //   setLocation,
+  //   setLocationName,
+  //   setLocationRegion,
+  //   setAltitude,
+  //   setLongitude,
+  // } = useContext(LocationContext);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const { setLatitude, setLongitude, setCityLocation ,setLocationRegion} = useContext(LocContext);
+  // const [location, setLocation] = useState();
+  // const [locationName, setLocationName] = useState();
+  // const [locationRegion, setLocationRegion] = useState();
+  // const [altitude, setAltitude] = useState();
+  // const [longitude, setLongitude] = useState();
   const handleLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -36,7 +43,7 @@ const WelcomeScreen = () => {
     }
 
     let currentLocation = await Location.getCurrentPositionAsync({});
-    setLocation(currentLocation);
+    // setLocation(currentLocation);
     console.log('location', currentLocation);
 
     let { latitude, longitude, altitude } = currentLocation.coords;
@@ -46,13 +53,13 @@ const WelcomeScreen = () => {
       longitude,
     });
 
-    // let { city, region } = geocode[0];
+    let { city, region } = geocode[0];
     // console.log(city, region);
     // setLocationName(city);
-    // setLocationRegion(region);
-    // setAltitude(altitude);
-    // setLongitude(longitude);
-
+    setLocationRegion(region);
+    setLatitude(latitude);
+    setLongitude(longitude);
+    setCityLocation(city);
     setLoading(false);
   };
 
@@ -62,17 +69,31 @@ const WelcomeScreen = () => {
 
   const OnLoginPressed = () => {
     handleLocationPermission();
-    navigation.navigate('LoginIn');
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      navigation.navigate('LoginIn');
+    }, 2000);
   };
 
   const OnSignUpPressed = () => {
     handleLocationPermission();
-    navigation.navigate('SignUp');
-  };
+    setLoading(true);
 
+    setTimeout(() => {
+      setLoading(false);
+      navigation.navigate('SignUp');
+    }, 2000);
+  };
   const guestPressed = () => {
     handleLocationPermission();
-    navigation.navigate('Home');
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      navigation.navigate('Home');
+    }, 2000);
   };
 
   if (loading) {
@@ -127,11 +148,6 @@ export default WelcomeScreen;
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: Colors.backgroundWhite,
-    // marginTop: '50%',
-    // width: wp('84%'),
-    // left: wp('7%'),
-    // top: hp('22.2%'),
-    // position: 'absolute',
   },
   subtitle: {
     marginVertical: '5%',

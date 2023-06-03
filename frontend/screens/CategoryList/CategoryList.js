@@ -16,7 +16,6 @@ import { Colors } from '../../constants/Colors';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { StoreContext } from '../../context/StoreProvider';
 import VerticalStoreCard from '../../components/verticalCard/StoreCard';
 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -28,11 +27,14 @@ import CustomCard from '../../components/customCard/CustomCard';
 import { AuthContext } from '../../context/AuthProvider';
 
 import axios from 'axios';
+import Loading2 from '../../components/loading2/Loading2';
+import LocContext from '../../context/LocationProv';
 
 export const CategoryList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedStores, setSelectedStores] = useState([]);
+  const { latitude, longitude, cityLocation } = useContext(LocContext);
 
   const [categories, setCategories] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -40,25 +42,24 @@ export const CategoryList = () => {
   const [isFetchingCategories, setIsFetchingCategories] = useState(false);
   const [isFetchingStores, setIsFetchingStores] = useState(false);
   const navigation = useNavigation();
-  const userCtx = useContext(AuthContext);
+
   const scrollViewRef = useRef(null);
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
   };
-  const cityLocation = userCtx?.user?.location?.city;
-  console.log(userCtx?.user?.location.coordinates[0]);
-  const laltitude = userCtx.user?.location?.coordinates[0];
-  const longitude = userCtx.user?.location?.coordinates[1];
+  // const cityLocation = userCtx?.user?.location?.city;
+  // const laltitude = userCtx.user?.location?.coordinates[0];
+  // const longitude = userCtx.user?.location?.coordinates[1];
   const fetchCategories = async () => {
     try {
       setIsFetchingCategories(true);
 
       const response = await axios.get(
-        `${baseUrl}/category/getAllCategory/${laltitude}/${longitude}/${cityLocation}`
+        `${baseUrl}/category/getAllCategory/${longitude}/${latitude}/${cityLocation}`
       );
       const data = response.data;
       setCategories(data);
-      console.log('Data fetched categories:', data);
+      console.log('Data fetched categoriessssssss:', data);
 
       if (data.length === 0) {
         console.log('Les catégories sont vides.');
@@ -88,7 +89,7 @@ export const CategoryList = () => {
       const response = await axios.get(`${baseUrl}/store/getNewStore`);
       const data = response.data;
       setStores(data);
-      console.log('Data fetched stores:', data);
+      // console.log('Data fetched stores:', data);
 
       if (data.length === 0) {
         console.log('Les stores sont vides.');
@@ -111,7 +112,7 @@ export const CategoryList = () => {
       fetchStores();
     }
   }, [stores]);
-  console.log('stores,', stores);
+  // console.log('stores,', stores);
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
 
@@ -159,15 +160,14 @@ export const CategoryList = () => {
   if (!categories && !stores) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="blue" />
+        <Loading2 />
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator size="large" color="blue" />
+        <Loading2 />
       ) : (
         <>
           <SafeAreaView style={[styles.safeArea, { marginLeft: 20 }]}>

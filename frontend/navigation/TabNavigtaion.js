@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Colors } from '../constants/Colors';
 import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,9 +10,13 @@ import CartScreen from '../screens/cartScreen/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import MapScreen from '../screens/mapScreen/MapScreen';
 import ReservationScreen from '../screens/reservationScreen/ReservationScreen';
+import { AuthContext } from '../context/AuthProvider';
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
   return (
     <Tab.Navigator
       screenOptions={{
@@ -57,20 +61,22 @@ const TabNavigation = () => {
           tabBarLabel: 'Favorites',
         }}
       />
-      <Tab.Screen
-        name="Cart"
-        component={ReservationScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name={focused ? 'cart' : 'cart-outline'}
-              size={20}
-              color={focused ? Colors.darkred : 'grey'}
-            />
-          ),
-          tabBarLabel: 'Cart',
-        }}
-      />
+      {token && user ? (
+        <Tab.Screen
+          name="Cart"
+          component={ReservationScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <Ionicons
+                name={focused ? 'cart' : 'cart-outline'}
+                size={20}
+                color={focused ? Colors.darkred : 'grey'}
+              />
+            ),
+            tabBarLabel: 'Cart',
+          }}
+        />
+      ) : null}
       <Tab.Screen
         name="Map"
         component={MapScreen}

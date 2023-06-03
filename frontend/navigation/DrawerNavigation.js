@@ -66,18 +66,30 @@ const DrawerContent = (props) => {
         )}
         style={styless.drawerItem}
         labelStyle={styless.drawerItemLabel}
-        
       />
     </DrawerContentScrollView>
   );
 };
 
 const DrawerNavigation = () => {
+  const [hasToken, setHasToken] = React.useState(false);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+  const user = authCtx.user;
   const Drawer = createDrawerNavigator();
+
+  React.useEffect(() => {
+ 
+    if (token) {
+      setHasToken(true);
+    } else {
+      setHasToken(false);
+    }
+  }, [token]);
 
   return (
     <Drawer.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         activeTintColor: '#FBF5F5',
         inactiveTintColor: '#FBF5F5',
         activeBackgroundColor: '#FBF5F5',
@@ -90,7 +102,7 @@ const DrawerNavigation = () => {
           backgroundColor: '#FBF5F5',
           width: 240,
         },
-      }}
+      })}
       drawerContent={(props) => <DrawerContent {...props} />}
     >
       <Drawer.Screen
@@ -109,29 +121,34 @@ const DrawerNavigation = () => {
           drawerItemStyle: { marginTop: '20%' },
         }}
       />
-      <Drawer.Screen
-        name="History"
-        component={HistoryScreen}
-        options={{
-          drawerLabel: 'Historique',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="menu" size={30} color="black" />
-          ),
-          drawerItemStyle: { marginTop: '20%' },
-        }}
-      />
+      {hasToken && (
+        <Drawer.Screen
+          name="History"
+          component={HistoryScreen}
+          options={{
+            drawerLabel: 'Historique',
+            drawerIcon: ({ color, size }) => (
+              <Icon name="menu" size={30} color="black" />
+            ),
+            drawerItemStyle: { marginTop: '20%' },
+          }}
+        />
+      )}
 
-      <Drawer.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          drawerLabel: 'Profil',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="ios-person-circle-outline" size={30} color="black" />
-          ),
-          drawerItemStyle: { marginTop: '20%' },
-        }}
-      />
+      {hasToken && (
+        <Drawer.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            drawerLabel: 'Profil',
+            drawerIcon: ({ color, size }) => (
+              <Icon name="ios-person-circle-outline" size={30} color="black" />
+            ),
+            drawerItemStyle: { marginTop: '20%' },
+          }}
+        />
+      )}
+
       <Drawer.Screen
         name="Contact"
         component={ContactScreen}
@@ -146,6 +163,7 @@ const DrawerNavigation = () => {
     </Drawer.Navigator>
   );
 };
+
 const styless = StyleSheet.create({
   drawerHeader: {
     alignItems: 'center',

@@ -14,11 +14,9 @@ import StoreCard2 from '../../components/storeCard2/StoreCard';
 
 import Colors from '../../constants/Colors';
 
-import Imgtest from '../../assets/image/Store1.png';
 import { AuthContext } from '../../context/AuthProvider';
 import { FavoritesContext } from '../../context/FavoriteProvider';
 const { width } = Dimensions.get('window');
-const cardWidth = width * 0.9;
 
 const Favorite = () => {
   const authCtx = useContext(AuthContext);

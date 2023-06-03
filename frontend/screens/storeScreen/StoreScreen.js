@@ -51,8 +51,7 @@ const StoreScreen = ({ route }) => {
   const favoritesContext = useContext(FavoritesContext);
   const { favorites, addToFavorites, removeFromFavorites } = favoritesContext;
   const authCtx = useContext(AuthContext);
-  const token = authCtx.token;
-  const userID = authCtx.user._id;
+
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
@@ -74,33 +73,45 @@ const StoreScreen = ({ route }) => {
   useEffect(() => {
     const updateFavorites = async () => {
       try {
-        const storedFavorites = await AsyncStorage.getItem('favorites');
-        const parsedFavorites = storedFavorites
-          ? JSON.parse(storedFavorites)
-          : [];
-        if (isFavorite && !parsedFavorites.includes(selectedStore)) {
-          parsedFavorites.push(selectedStore);
-          await AsyncStorage.setItem(
-            'favorites',
-            JSON.stringify(parsedFavorites)
-          );
-        } else if (!isFavorite && parsedFavorites.includes(selectedStore)) {
-          const updatedFavorites = parsedFavorites.filter(
-            (store) => store !== selectedStore
-          );
-          await AsyncStorage.setItem(
-            'favorites',
-            JSON.stringify(updatedFavorites)
-          );
+        if (isFavorite && !favorites.includes(selectedStore)) {
+          addToFavorites(selectedStore);
+        } else if (!isFavorite && favorites.includes(selectedStore)) {
+          removeFromFavorites(selectedStore);
         }
+
+        await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+        await AsyncStorage.setItem(
+          'favoriteColor',
+          isFavorite ? 'red' : 'black'
+        );
       } catch (error) {
         console.log('Error updating favorites:', error);
       }
     };
 
     updateFavorites();
-  }, [isFavorite, selectedStore]);
+  }, [isFavorite]);
 
+
+
+  useEffect(() => {
+    const loadFavoriteColor = async () => {
+      try {
+        const favoriteColor = await AsyncStorage.getItem('favoriteColor');
+        if (favoriteColor) {
+          setIsFavorite(favoriteColor === 'red');
+        }
+      } catch (error) {
+        console.log('Error loading favorite color:', error);
+      }
+    };
+
+    loadFavoriteColor();
+  }, []);
+
+ 
+
+  const iconColor = isFavorite ? 'red' : 'black';
   const navigation = useNavigation();
 
   const handelBackPressed = () => {
@@ -148,16 +159,19 @@ const StoreScreen = ({ route }) => {
       if (favorites.includes(selectedStore)) {
         removeFromFavorites(selectedStore);
         setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+        setIsFilled(false);
       } else {
         addToFavorites(selectedStore);
         setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+        setIsFilled(true);
       }
       await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+      await AsyncStorage.setItem('favoriteColor', isFilled ? 'red' : 'black'); // Ajouter cette ligne
     } catch (error) {
       console.log('Error handling favorite:', error);
     }
   };
-  const iconColor = isFavorite ? Colors.lightRed2 : 'black';
+
   return (
     <>
       <View style={styles.container}>

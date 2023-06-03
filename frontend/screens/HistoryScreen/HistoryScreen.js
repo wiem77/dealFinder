@@ -49,6 +49,13 @@ const HistoryScreen = () => {
           } else {
             setHistoryData(JSON.parse(storedData));
           }
+
+          const storedVoucherStates = await AsyncStorage.getItem(
+            'voucherStates'
+          );
+          if (storedVoucherStates) {
+            setVoucherStates(JSON.parse(storedVoucherStates));
+          }
         } catch (error) {
           console.error(error);
         } finally {
@@ -61,13 +68,15 @@ const HistoryScreen = () => {
   );
 
   const handleLike = async (id) => {
-    setVoucherStates((prevState) => ({
-      ...prevState,
+    const updatedVoucherStates = {
+      ...voucherStates,
       [id]: {
         liked: true,
         disliked: false,
       },
-    }));
+    };
+
+    setVoucherStates(updatedVoucherStates);
 
     try {
       await axios.post(
@@ -79,19 +88,25 @@ const HistoryScreen = () => {
           },
         }
       );
+      await AsyncStorage.setItem(
+        'voucherStates',
+        JSON.stringify(updatedVoucherStates)
+      );
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleDislike = async (id) => {
-    setVoucherStates((prevState) => ({
-      ...prevState,
+    const updatedVoucherStates = {
+      ...voucherStates,
       [id]: {
         liked: false,
         disliked: true,
       },
-    }));
+    };
+
+    setVoucherStates(updatedVoucherStates);
 
     try {
       await axios.post(
@@ -102,6 +117,10 @@ const HistoryScreen = () => {
             'x-access-token': token,
           },
         }
+      );
+      await AsyncStorage.setItem(
+        'voucherStates',
+        JSON.stringify(updatedVoucherStates)
       );
     } catch (error) {
       console.error(error);

@@ -40,7 +40,7 @@ const StoreScreen = ({ route }) => {
   const formattedStoreName =
     storeName.charAt(0).toUpperCase() + storeName.slice(1).toLowerCase();
   const voucherInfo = Object.values(selectedStore.vouchers);
-
+  const [hasToken, setHasToken] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [emailVisible, setEmailVisible] = useState(false);
@@ -59,7 +59,13 @@ const StoreScreen = ({ route }) => {
   const handelBackPressed = () => {
     navigation.goBack();
   };
-
+  useEffect(() => {
+    if (token) {
+      setHasToken(true);
+    } else {
+      setHasToken(false);
+    }
+  }, [token]);
   const handleClick = () => {
     if (favorites.includes(selectedStore)) {
       removeFromFavorites(selectedStore._id, token, userID);

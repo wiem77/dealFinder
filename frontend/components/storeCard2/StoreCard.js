@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,46 +8,61 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
 import { Colors } from '../../constants/Colors';
 
 const { width } = Dimensions.get('screen');
-const cardWidth = width / 2;
+const cardWidth = width / 4;
 
 import { useNavigation } from '@react-navigation/native';
+import { combineImagePaths } from '../../util/CombinedPath';
+import { useContext } from 'react';
+import { FavoritesContext } from '../../context/FavoriteProvider';
 
-export default StoreCard2 = ({ store, onRemoveFavorite }) => {
+export default StoreCard2 = ({ store }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const favCtx = useContext(FavoritesContext);
 
-  const navigation = useNavigation();
+  useEffect(() => {
+    setIsFavorite(favCtx.favorites.some((fav) => fav._id === store._id));
+  }, [favCtx.favorites, store._id]);
 
   const handleFavoritePress = () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
-      onRemoveFavorite(store._id);
+      favCtx.addToFavorites(store);
+    } else {
+      favCtx.removeFromFavorites(store);
     }
   };
+
+  const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       underlayColor={Colors.white}
       activeOpacity={0.9}
-      onPress={() => navigation.navigate('Store')}
+      onPress={() => navigation.navigate('Store', { selectedStore: store })}
     >
       <View style={styles.card}>
         <View style={{ alignItems: 'center' }}>
           <Image
-            source={store.image}
+            source={combineImagePaths(store.store_image)}
             resizeMode="cover"
-            style={{ height: cardWidth / 1.5, width: cardWidth + 50 }}
+            style={{
+              height: cardWidth / 1,
+              width: cardWidth + 150,
+              marginVertical: 10,
+            }}
           />
         </View>
         <View style={styles.storeInfoContainer}>
           <Text style={styles.storeName}>{store.store_name}</Text>
           <View style={styles.storeLocationContainer}>
-            <MaterialIcons name="location-on" size={14} color={Colors.grey} />
-            <Text style={styles.storeLocationText}>{store.distance}</Text>
+            <AntDesign name="star" size={24} color="#FFD700" />
+
+            <Text style={styles.storeLocationText}>{store.rating}</Text>
           </View>
         </View>
 
@@ -59,15 +74,18 @@ export default StoreCard2 = ({ store, onRemoveFavorite }) => {
             justifyContent: 'space-between',
           }}
         >
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-            {store.discount}%
-          </Text>
+          <View style={styles.storeLocationContainer}>
+            <MaterialIcons name="location-on" size={24} color={Colors.grey} />
+            <Text style={styles.storeLocationText}>
+              {store.locations[0].city}
+            </Text>
+          </View>
           <TouchableOpacity onPress={handleFavoritePress}>
             <View style={styles.addToCartBtn}>
               <MaterialIcons
                 name={isFavorite ? 'favorite' : 'favorite-border'}
                 size={24}
-                color="red"
+                color={isFavorite ? 'red' : 'black'}
               />
             </View>
           </TouchableOpacity>
@@ -93,17 +111,19 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   storeName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
+    color: Colors.background,
+    marginTop: 10,
   },
   storeLocationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   storeLocationText: {
-    fontSize: 14,
-    color: Colors.grey,
+    fontSize: 18,
+    color: Colors.black,
     marginLeft: 4,
   },
 });

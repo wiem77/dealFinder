@@ -482,3 +482,68 @@ module.exports.deleteReservation = async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+module.exports.checkReservation = async (req, res) => {
+  const userId = req.params.userId;
+  const storeId = req.params.storeId;
+
+  try {
+    const user = await User.findById(userId).populate('reservedVouchers');
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Utilisateur non trouvé.' });
+    }
+
+    const reservedVouchers = user.reservedVouchers;
+
+    let hasValidReservation = false;
+    let hasExpiredReservation = false;
+
+    for (const reservedVoucher of reservedVouchers) {
+      if (
+        reservedVoucher.voucher &&
+        reservedVoucher.voucher.store &&
+        reservedVoucher.voucher.store.toString() === storeId &&
+        !reservedVoucher.archived &&
+        !reservedVoucher.used
+      ) {
+        hasValidReservation = true;
+        break;
+      }
+
+      if (
+        reservedVoucher.voucher &&
+        reservedVoucher.voucher.store &&
+        reservedVoucher.voucher.store.toString() === storeId &&
+        reservedVoucher.archived &&
+        !reservedVoucher.used
+      ) {
+        hasExpiredReservation = true;
+      }
+    }
+
+    if (hasValidReservation) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vous avez déjà réservé un coupon valide dans ce magasin.',
+      });
+    }
+
+    if (hasExpiredReservation) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vous avez une réservation expirée pour ce magasin.',
+      });
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Erreur lors de la vérification de la réservation :', error);
+    return res.status(500).json({
+      success: false,
+      message:
+        "Une erreur s'est produite lors de la vérification de la réservation.",
+    });
+  }
+};

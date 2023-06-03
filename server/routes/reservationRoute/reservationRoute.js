@@ -8,6 +8,7 @@ const {
   getReservationByCode,
   getUserReservations,
   deleteReservation,
+  checkReservation,
 } = require('../../controllers/reservationController/reservation');
 const { auth } = require('../../middleWare/auth');
 const router = express.Router();
@@ -37,4 +38,6 @@ router.get('/verify/:resCode/:store_id', verifyCodeReservation);
 router.delete('/delete/reservation/:reservationId', deleteReservation);
 //root:http://localhost:4000/api/reservation/user/:userId/allReservation
 router.get('/user/:userId/allReservation', getAllReservationByIDUSer);
+//root:http://localhost:4000/api/reservation/users/:userId/stores/:storeId/reservation-check
+router.get('/users/:userId/stores/:storeId/reservation-check', checkReservation);
 module.exports = router;

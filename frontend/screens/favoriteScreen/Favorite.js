@@ -43,7 +43,7 @@ const Favorite = () => {
       </SafeAreaView>
 
       <View style={styles.contentContainer}>
-        {favCtx.favorites.length === 0 ? (
+        {favCtx.favorites?.length === 0 ? (
           <Text style={styles.noFavoritesText}>Pas de favoris</Text>
         ) : (
           <FlatList

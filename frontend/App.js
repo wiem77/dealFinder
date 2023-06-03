@@ -10,11 +10,13 @@ import { CategoryProvider } from './context/CtegoryProvider';
 import { NativeBaseProvider, extendTheme } from 'native-base';
 import { LocationProvider } from './context/LocationProvider';
 import { FavoritesProvider } from './context/FavoriteProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App() {
   const [fontsLoaded] = useFonts(customFonts);
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
+
   return (
     <NativeBaseProvider>
       <LocationProvider>

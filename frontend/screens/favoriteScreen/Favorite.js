@@ -21,11 +21,9 @@ const { width } = Dimensions.get('window');
 const cardWidth = width * 0.9;
 
 const Favorite = () => {
-  const [favoriteStores, setFavoriteStores] = useState([]);
   const authCtx = useContext(AuthContext);
   const favCtx = useContext(FavoritesContext);
   const user = authCtx.user;
-  console.log('userFavorites', favCtx.favorites);
 
   return (
     <View style={styles.container}>
@@ -48,12 +46,7 @@ const Favorite = () => {
         ) : (
           <FlatList
             data={favCtx.favorites}
-            renderItem={({ item }) => (
-              <StoreCard2
-                store={item}
-                // onRemoveFavorite={handleRemoveFavorite}
-              />
-            )}
+            renderItem={({ item }) => <StoreCard2 store={item} />}
             keyExtractor={(item) => item._id}
             contentContainerStyle={{ paddingBottom: 20 }}
           />
@@ -69,6 +62,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF5F5',
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    marginVertical: 10,
   },
   header: {
     backgroundColor: '#FFF',
@@ -84,10 +80,11 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   contentContainer: {
-    flex: 1,
+    flexGrow: 1,
 
     paddingVertical: 10,
     paddingHorizontal: 10,
+    marginBottom: '50%',
   },
   promoContainer: {
     alignItems: 'center',

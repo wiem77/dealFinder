@@ -28,12 +28,18 @@ export default StoreCard2 = ({ store }) => {
     setIsFavorite(favCtx.favorites.some((fav) => fav._id === store._id));
   }, [favCtx.favorites, store._id]);
 
-  const handleFavoritePress = () => {
+  const handleFavoritePress = async () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
       favCtx.addToFavorites(store);
     } else {
       favCtx.removeFromFavorites(store);
+    }
+
+    try {
+      await AsyncStorage.setItem('favoriteColor', isFavorite ? 'black' : 'red');
+    } catch (error) {
+      console.log('Error updating favorite color:', error);
     }
   };
 

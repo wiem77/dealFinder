@@ -1,16 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { useContext } from 'react';
-import { Colors } from '../constants/Colors';
-import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import HomeScreen from '../screens/homeScreen/HomeScreen';
-import Search from '../screens/searchScreen/Search';
 import Favorite from '../screens/favoriteScreen/Favorite';
-import CartScreen from '../screens/cartScreen/CartScreen';
-import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import MapScreen from '../screens/mapScreen/MapScreen';
 import ReservationScreen from '../screens/reservationScreen/ReservationScreen';
+
 import { AuthContext } from '../context/AuthProvider';
+import { Colors } from '../constants/Colors';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {

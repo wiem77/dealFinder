@@ -1,31 +1,21 @@
 import React, { useContext } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  StatusBar,
-  TouchableOpacity,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View } from 'react-native';
+
 import {
   DrawerContentScrollView,
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import HistoryScreen from '../screens/HistoryScreen/HistoryScreen';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
-import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
-import { AuthContext } from '../context/AuthProvider';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import ContactScreen from '../screens/contactScreen/ContactScreen';
+import HistoryScreen from '../screens/HistoryScreen/HistoryScreen';
+import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
 import TabNavigation from './TabNavigtaion';
-import { CategoryContext } from '../context/CtegoryProvider';
-import { StoreContext, StoresProvider } from '../context/StoreProvider';
-import StoreImages from '../screens/TestScreen';
+
+import { AuthContext } from '../context/AuthProvider';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const DrawerContent = (props) => {
   const clearAsyncStorage = async () => {
@@ -38,8 +28,7 @@ const DrawerContent = (props) => {
   };
 
   const authCtx = useContext(AuthContext);
-  const catCtx = useContext(CategoryContext);
-  const storeCtx = useContext(StoreContext);
+
   const handleLogout = () => {
     authCtx.logout();
     clearAsyncStorage;
@@ -79,7 +68,6 @@ const DrawerNavigation = () => {
   const Drawer = createDrawerNavigator();
 
   React.useEffect(() => {
- 
     if (token) {
       setHasToken(true);
     } else {

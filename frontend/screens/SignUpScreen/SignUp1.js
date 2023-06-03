@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 import * as Location from 'expo-location';
 import mime from 'mime';
-import Swiper from 'react-native-swiper';
+
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import {
@@ -35,27 +36,113 @@ import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import Loading2 from '../../components/loading2/Loading2';
 import { LocationContext } from '../../context/LocationProvider';
-
+import { Button, Icon, LinearProgress } from 'react-native-elements';
+const showAlert = (title, message) => {
+  Alert.alert(
+    title,
+    message,
+    [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+    { cancelable: false }
+  );
+};
 const SignUpScreen = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors: formErrors }, // Renommer errors en formErrors
+    watch,
+    trigger,
+  } = useForm();
+  const pwd = watch('password');
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
   const [locationRegion, setLocationRegion] = useState(null);
   const [locationCountry, setLocationCountry] = useState(null);
   const [loading, setLoading] = useState(false);
-  const swiperRef = useRef(null);
+
+  const [errors, setErrors] = useState({});
   const [swiperIndex, setSwiperIndex] = useState(0);
   const locCtx = useContext(LocationContext);
   console.log('locCtx', locCtx.locationName);
-  const goToNextStep = () => {
-    if (swiperRef.current) {
-      swiperRef.current.scrollBy(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const validateStep = async (stepIndex) => {
+    switch (stepIndex) {
+      case 0:
+        if (!errors?.nom || !errors?.prenom) {
+          return true;
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+          return false;
+        }
+      case 1:
+        if (selectedOption !== '' && selectedAge !== '') {
+          return true;
+        } else {
+          Alert.alert(
+            'Erreur',
+            'Veuillez sélectionner votre sexe et votre âge'
+          );
+          return false;
+        }
+      case 2:
+        if (!errors?.email || !errors?.phone) {
+          return true;
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+          return false;
+        }
+      case 3:
+        if (!errors?.password || !errors?.confirmPwd) {
+          return true;
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+          return false;
+        }
+      default:
+        return true;
+    }
+  };
+  const goToNextStep = async () => {
+    const isValid = await validateStep(currentIndex);
+    if (isValid) {
+      if (currentIndex === 0) {
+        await trigger(['nom', 'prenom']);
+        const isNomPrenomValid = !formErrors.nom && !formErrors.prenom;
+        if (isNomPrenomValid) {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setErrors({});
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+        }
+      } else if (currentIndex === 1) {
+        if (selectedOption !== '' && selectedAge !== '') {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setErrors({});
+        }
+      } else if (currentIndex === 2) {
+        await trigger(['email', 'phone']);
+        const isEmailPhoneValid = !formErrors.email && !formErrors.phone;
+        if (isEmailPhoneValid) {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setErrors({});
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+        }
+      } else if (currentIndex === 3) {
+        await trigger(['password', 'confirmPwd']);
+        const isPasswordValid = !formErrors.password && !formErrors.confirmPwd;
+        if (isPasswordValid) {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setErrors({});
+        } else {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs requis');
+        }
+      }
     }
   };
 
   const goToPreviousStep = () => {
-    if (swiperRef.current) {
-      swiperRef.current.scrollBy(-1);
-    }
+    setCurrentIndex((prevIndex) => prevIndex - 1);
   };
 
   useEffect(() => {
@@ -80,22 +167,7 @@ const SignUpScreen = () => {
   const [selectedAge, setSelectedAge] = useState(null);
 
   const navigation = useNavigation();
-  const showAlert = (title, message) => {
-    Alert.alert(
-      title,
-      message,
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-      { cancelable: false }
-    );
-  };
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm();
 
-  const pwd = watch('password');
   const [image, setImage] = useState(null);
 
   const handleOptionSelect = (value) => {
@@ -195,19 +267,17 @@ const SignUpScreen = () => {
             )}
           </View>
         </View>
-        <View style={{ height: '50%' }}>
-          <Swiper
-            ref={swiperRef}
-            index={swiperIndex}
-            showsPagination={true}
-            activeDotColor="red"
-            dotStyle={{ width: 10, height: 10 }}
-            scrollEnabled={false} // Désactiver le swipe manuel
-          >
+        <View style={{ height: '40%' }}>
+          {/* <LinearProgress
+            value={(currentIndex + 1) / 5}
+            colorScheme="info"
+            bg="gray.200"
+          /> */}
+          {currentIndex === 0 && (
             <View>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>
-                  Crée un Compte et devenez membre de DealFinder dès maintenant
+                  Créez un compte et devenez membre de DealFinder dès maintenant
                 </Text>
                 <Text style={styles.subtitle}>
                   Remplissez le formulaire pour nous rejoindre
@@ -236,10 +306,12 @@ const SignUpScreen = () => {
                 </View>
               </View>
             </View>
-            {/* sexe and age Swipe */}
+          )}
+
+          {currentIndex === 1 && (
             <View>
               <View style={styles.textcontainer}>
-                <Text style={styles.title}> Étape 2:</Text>
+                <Text style={styles.title}>Étape 2:</Text>
                 <Text style={styles.subtitle}>
                   Précisez votre âge et votre sexe ci-dessous
                 </Text>
@@ -269,14 +341,18 @@ const SignUpScreen = () => {
                     onSelect={handleOptionSelect}
                   />
                 </View>
+
                 <AgeSelect
                   selectedAge={selectedAge}
                   onSelect={handleAgeSelect}
                 />
-                <View style={{ marginTop: '2%' }}></View>
+
+                {/* <View style={{ marginTop: '5%' }}></View> */}
               </View>
             </View>
-            {/* Email&PHone */}
+          )}
+
+          {currentIndex === 2 && (
             <View>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>Étape 3:</Text>
@@ -312,13 +388,15 @@ const SignUpScreen = () => {
                     }}
                     placeHolder="Numéro de télephone"
                     iconName="phone"
+                    keyboardType="numeric"
                   />
                 </View>
               </View>
             </View>
+          )}
 
-            {/*Password and Confirm pwd */}
-            <View>
+          {currentIndex === 3 && (
+            <View style={styles.inputWrapper}>
               <View style={styles.textcontainer}>
                 <Text style={styles.title}>Étape 4:</Text>
                 <Text style={styles.subtitle}>
@@ -326,7 +404,7 @@ const SignUpScreen = () => {
                   ci-dessous :
                 </Text>
               </View>
-              <View style={styles.inputWrapper}>
+              <View style={{ marginTop: '12%' }}>
                 <Custominput
                   name="password"
                   control={control}
@@ -362,51 +440,91 @@ const SignUpScreen = () => {
                 </View>
               </View>
             </View>
+          )}
 
-            {/* UploadImage */}
+          {currentIndex === 4 && (
             <View>
               <View style={styles.textcontainer}>
-                <Text style={styles.title}>Dérniere étape:</Text>
-                <Text style={styles.subtitle}>télecharger votre image:</Text>
+                <Text style={styles.title}>Dernière étape:</Text>
+                <Text style={styles.subtitle}>Téléchargez votre image :</Text>
               </View>
               <View style={{ marginVertical: '10%' }}>
                 <ImagePi onImageSelected={handleImageSelected} />
               </View>
             </View>
-          </Swiper>
+          )}
         </View>
-        <View style={styles.btnContainer}>
-          <CustomBtn
-            text={'Soumettre'}
-            type="PRIMARY"
-            onPress={handleSubmit(OnSignInPressed2)}
-          />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginVertical: '10%',
+          }}
+        >
+          {currentIndex > 0 && (
+            <Button
+              type="outline"
+              title="Précédent"
+              icon={<Icon name="arrow-back" size={20} color="white" />}
+              onPress={goToPreviousStep}
+              buttonStyle={[styles.btn, { backgroundColor: Colors.background }]}
+              titleStyle={styles.btnText}
+            />
+          )}
+          {currentIndex < 4 && (
+            <Button
+              title="Suivant"
+              icon={<Icon name="arrow-forward" size={20} color="white" />}
+              onPress={goToNextStep}
+              buttonStyle={[styles.btn, { backgroundColor: Colors.background }]}
+              titleStyle={styles.btnText}
+            />
+          )}
         </View>
-        <TouchableOpacity onPress={goToNextStep}>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </TouchableOpacity>
 
-        {/* Bouton étape précédente */}
-        <TouchableOpacity onPress={goToPreviousStep}>
-          <MaterialIcons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
+        {currentIndex === 4 && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginVertical: '2%',
+            }}
+          >
+            <CustomBtn
+              text={'Soumettre'}
+              type="PRIMARY"
+              onPress={handleSubmit(OnSignInPressed2)}
+            />
+          </View>
+        )}
+
         <View style={styles.textbtnContainer}>
           <Text style={styles.text}>Vous avez déjà un compte ?</Text>
           <TouchableOpacity onPress={onLoginPressed}>
-            <Text style={styles.btnText}>Connexion</Text>
+            <Text
+              style={{
+                marginVertical: '2%',
+                color: Colors.background,
+                fontFamily: 'inter',
+                fontStyle: 'normal',
+                fontWeight: 'bold',
+                fontSize: FontSize.medium,
+              }}
+            >
+              Connexion
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </TouchableWithoutFeedback>
   );
 };
-
 export default SignUpScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: '#FBF5F5',
   },
   row: {
     flexDirection: 'row',
@@ -415,7 +533,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'flex-start',
     paddingLeft: '1%',
-    marginVertical: '9%',
+    marginVertical: '15%',
   },
   textcontainer: {
     paddingHorizontal: hp('2%'),
@@ -426,6 +544,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: '800',
     fontSize: 20,
+    marginVertical: '10%',
   },
   subtitle: {
     paddingHorizontal: hp('0.5%'),
@@ -441,8 +560,8 @@ const styles = StyleSheet.create({
     marginVertical: '5%',
     paddingHorizontal: hp('3%'),
   },
-  btnContainer: { marginTop: -20, paddingHorizontal: hp('3%') },
-  textbtnContainer: { marginTop: '2%', paddingHorizontal: hp('3%') },
+  btnContainer: { marginTop: '20%', paddingHorizontal: hp('3%') },
+  textbtnContainer: { marginTop: '10%', paddingHorizontal: hp('3%') },
   text: {
     color: Colors.text,
     fontFamily: 'inter',
@@ -452,28 +571,11 @@ const styles = StyleSheet.create({
   },
   btnText: {
     marginVertical: '2%',
-    color: Colors.red,
+    color: Colors.white,
     fontFamily: 'inter',
     fontStyle: 'normal',
     fontWeight: 'bold',
     fontSize: FontSize.small,
-  },
-
-  slide: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-  },
-  content: {
-    marginTop: '20%',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   createAccount: {

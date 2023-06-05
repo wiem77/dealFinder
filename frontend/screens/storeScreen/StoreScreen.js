@@ -33,6 +33,7 @@ import { combineImagePaths } from '../../util/CombinedPath';
 import { FavoritesContext } from '../../context/FavoriteProvider';
 import { AuthContext } from '../../context/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { log } from 'react-native-reanimated';
 const { width, height } = Dimensions.get('window');
 
 const StoreScreen = ({ route }) => {
@@ -60,6 +61,10 @@ const StoreScreen = ({ route }) => {
           const parsedFavorites = JSON.parse(storedFavorites);
           if (parsedFavorites.includes(selectedStore)) {
             setIsFavorite(true);
+            await AsyncStorage.setItem(
+              'favoriteColor',
+              isFavorite ? 'red' : 'black'
+            );
           }
         }
       } catch (error) {
@@ -68,7 +73,7 @@ const StoreScreen = ({ route }) => {
     };
 
     fetchFavorites();
-  }, []);
+  }, [selectedStore]);
 
   useEffect(() => {
     const updateFavorites = async () => {
@@ -82,7 +87,7 @@ const StoreScreen = ({ route }) => {
         await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
         await AsyncStorage.setItem(
           'favoriteColor',
-          isFavorite ? 'red' : 'black'
+          favorites.includes(selectedStore) ? 'red' : 'black'
         );
       } catch (error) {
         console.log('Error updating favorites:', error);
@@ -90,14 +95,13 @@ const StoreScreen = ({ route }) => {
     };
 
     updateFavorites();
-  }, [isFavorite]);
-
-
+  }, [favorites, selectedStore]);
 
   useEffect(() => {
     const loadFavoriteColor = async () => {
       try {
         const favoriteColor = await AsyncStorage.getItem('favoriteColor');
+        console.log(favoriteColor);
         if (favoriteColor) {
           setIsFavorite(favoriteColor === 'red');
         }
@@ -108,8 +112,6 @@ const StoreScreen = ({ route }) => {
 
     loadFavoriteColor();
   }, []);
-
- 
 
   const iconColor = isFavorite ? 'red' : 'black';
   const navigation = useNavigation();
@@ -156,17 +158,19 @@ const StoreScreen = ({ route }) => {
   );
   const handleFavoriteClick = async () => {
     try {
-      if (favorites.includes(selectedStore)) {
+      if (isFavorite) {
         removeFromFavorites(selectedStore);
-        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
-        setIsFilled(false);
       } else {
         addToFavorites(selectedStore);
-        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
-        setIsFilled(true);
       }
+      setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+      setIsFilled(!prevIsFavorite);
+
       await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
-      await AsyncStorage.setItem('favoriteColor', isFilled ? 'red' : 'black'); // Ajouter cette ligne
+      await AsyncStorage.setItem(
+        'favoriteColor',
+        !prevIsFavorite ? 'red' : 'black'
+      );
     } catch (error) {
       console.log('Error handling favorite:', error);
     }

@@ -24,11 +24,12 @@ import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 
 import CustomBtn from '../../components/customBtn/CustomBtn';
-import CustomCard from '../../components/customCard/CustomCard';
-import Loading from '../../components/loading/Loading';
+
 import { Button } from 'react-native-elements';
 import { combineImagePaths } from '../../util/CombinedPath';
+
 const { width, height } = Dimensions.get('window');
+
 const showAlert = (title, message) => {
   Alert.alert(
     title,
@@ -48,9 +49,9 @@ const VoucherScreen = ({ route }) => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
-  console.log('user', user);
-  const [hasToken, setHasToken] = useState(false);
 
+  const [hasToken, setHasToken] = useState(false);
+  const nameV = selectedVoucher.name_V;
   const handelBackPressed = () => {
     navigation.goBack();
   };
@@ -66,14 +67,17 @@ const VoucherScreen = ({ route }) => {
     if (token) {
       const voucherId = selectedVoucher._id;
       const userId = user._id;
+      const config = {
+        headers: {
+          'x-access-token': token,
+        },
+      };
+
       try {
         const response = await axios.post(
           `${baseUrl}/reservation/user/${userId}/vouchers/${voucherId}`,
-          {
-            headers: {
-              'x-access-token': token,
-            },
-          }
+          null,
+          config
         );
         setQrCodeData(response?.data?.data);
         const qrData = response?.data?.data;
@@ -84,7 +88,7 @@ const VoucherScreen = ({ route }) => {
           [
             {
               text: 'Ok',
-              onPress: () => navigation.navigate('QrCode', { qrData }),
+              onPress: () => navigation.navigate('QrCode', { qrData, nameV }),
               style: 'destructive',
             },
           ]

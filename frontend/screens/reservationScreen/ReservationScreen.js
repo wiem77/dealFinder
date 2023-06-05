@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,17 +8,26 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome5, Foundation, Ionicons } from '@expo/vector-icons';
+
+import {
+  FontAwesome5,
+  Foundation,
+  Ionicons,
+  MaterialCommunityIcons,
+} from '@expo/vector-icons';
+
+import axios from 'axios';
+import { baseUrl } from '../../config/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { Colors } from '../../constants/Colors';
 
 import { AuthContext } from '../../context/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { baseUrl } from '../../config/config';
 import { useFocusEffect } from '@react-navigation/native';
+
 import Loading2 from '../../components/loading2/Loading2';
+
 const ReservationScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [reservationData, setReservationData] = useState([]);
@@ -33,11 +42,19 @@ const ReservationScreen = () => {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
+          const token = authCtx.token;
+          const config = {
+            headers: {
+              'x-access-token': token,
+            },
+          };
+
           const storedData = await AsyncStorage.getItem('reservationData');
 
           if (storedData) {
             const response = await axios.get(
-              `${baseUrl}/reservation/user/${user._id}/allReservation`
+              `${baseUrl}/reservation/user/${user._id}/allReservation`,
+              config
             );
 
             const data = response.data.data;
@@ -61,8 +78,15 @@ const ReservationScreen = () => {
 
   const handleDeleteReservation = async (reservationId) => {
     try {
+      const token = authCtx.token;
+      const config = {
+        headers: {
+          'x-access-token': token,
+        },
+      };
       await axios.delete(
-        `${baseUrl}/reservation/delete/reservation/${reservationId}`
+        `${baseUrl}/reservation/delete/reservation/${reservationId}`,
+        config
       );
       const newData = reservationData.filter(
         (item) => item._id !== reservationId
@@ -102,11 +126,18 @@ const ReservationScreen = () => {
   const handleResetArchivedReservation = async (reservationId) => {
     console.log(reservationId);
     try {
+      const token = authCtx.token;
+      const config = {
+        headers: {
+          'x-access-token': token,
+        },
+      };
       const response = await axios.put(
-        `${baseUrl}/reservation/users/${user._id}/resetArchivedReservations/${reservationId}`
+        `${baseUrl}/reservation/users/${user._id}/resetArchivedReservations/${reservationId}`,
+        null,
+        config
       );
       const message = response.data.message;
-
       Alert.alert('Réinitialisation réussie', message);
 
       const updatedData = reservationData.map((item) => {

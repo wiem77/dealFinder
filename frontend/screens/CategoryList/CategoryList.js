@@ -24,7 +24,7 @@ import { combineImagePaths } from '../../util/CombinedPath';
 
 import CustomCard from '../../components/customCard/CustomCard';
 import { AuthContext } from '../../context/AuthProvider';
-
+import * as Location from 'expo-location';
 import axios from 'axios';
 import Loading2 from '../../components/loading2/Loading2';
 import LocContext from '../../context/LocationProv';
@@ -33,27 +33,70 @@ export const CategoryList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedStores, setSelectedStores] = useState([]);
-  const { latitude, longitude, cityLocation } = useContext(LocContext);
+  const {
+    latitude,
+    longitude,
+    cityLocation,
+    setLatitude,
+    setLongitude,
+    setCityLocation,
+    setLocationRegion,
+  } = useContext(LocContext);
 
   const [categories, setCategories] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [stores, setStores] = useState();
   const [isFetchingCategories, setIsFetchingCategories] = useState(false);
   const [isFetchingStores, setIsFetchingStores] = useState(false);
   const navigation = useNavigation();
-
+  // const cityLocation = userCtx?.user?.location?.city;
+  // const laltitude = userCtx.user?.location?.coordinates[0];
+  // const longitude = userCtx.user?.location?.coordinates[1];
   const scrollViewRef = useRef(null);
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
   };
-  // const cityLocation = userCtx?.user?.location?.city;
-  // const laltitude = userCtx.user?.location?.coordinates[0];
-  // const longitude = userCtx.user?.location?.coordinates[1];
+  const handleLocationPermission = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied');
+      setIsLoading(false);
+      return;
+    }
+
+    let currentLocation = await Location.getCurrentPositionAsync({});
+    // setLocation(currentLocation);
+    console.log('location', currentLocation);
+
+    let { latitude, longitude, altitude } = currentLocation.coords;
+
+    let geocode = await Location.reverseGeocodeAsync({
+      latitude,
+      longitude,
+    });
+
+    let { city, region } = geocode[0];
+    // console.log(city, region);
+    // setLocationName(city);
+    setLocationRegion(region);
+    setLatitude(latitude);
+    setLongitude(longitude);
+    setCityLocation(city);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
+
   const fetchCategories = async () => {
     try {
       setIsFetchingCategories(true);
 
       const response = await axios.get(
+        `${baseUrl}/category/getAllCategory/${longitude}/${latitude}/${cityLocation}`
+      );
+      console.log(
         `${baseUrl}/category/getAllCategory/${longitude}/${latitude}/${cityLocation}`
       );
       const data = response.data;
@@ -71,6 +114,7 @@ export const CategoryList = () => {
       console.error(error);
     } finally {
       setIsFetchingCategories(false);
+      setIsLoading(false);
     }
   };
 

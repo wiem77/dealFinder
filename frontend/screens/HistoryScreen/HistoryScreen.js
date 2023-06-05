@@ -34,13 +34,15 @@ const HistoryScreen = () => {
           const storedData = await AsyncStorage.getItem('historyData');
           console.log('storedData1', storedData);
           if (storedData) {
+            const config = {
+              headers: {
+                'x-access-token': token,
+              },
+            };
+
             const response = await axios.get(
               `${baseUrl}/reservation/userReservation/usedTrue/${user._id}`,
-              {
-                headers: {
-                  'x-access-token': token,
-                },
-              }
+              config
             );
             const data = response.data;
             console.log('data12', data);
@@ -79,14 +81,16 @@ const HistoryScreen = () => {
     setVoucherStates(updatedVoucherStates);
 
     try {
+      const config = {
+        headers: {
+          'x-access-token': token,
+        },
+      };
+
       await axios.post(
         `${baseUrl}/users/newRating/${user._id}/${id}`,
         { ratingValue: 1 },
-        {
-          headers: {
-            'x-access-token': token,
-          },
-        }
+        config
       );
       await AsyncStorage.setItem(
         'voucherStates',
@@ -109,14 +113,15 @@ const HistoryScreen = () => {
     setVoucherStates(updatedVoucherStates);
 
     try {
+      const config = {
+        headers: {
+          'x-access-token': token,
+        },
+      };
       await axios.post(
         `${baseUrl}/users/newRating/${user._id}/${id}`,
         { ratingValue: -1 },
-        {
-          headers: {
-            'x-access-token': token,
-          },
-        }
+        config
       );
       await AsyncStorage.setItem(
         'voucherStates',

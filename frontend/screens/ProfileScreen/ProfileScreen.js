@@ -8,29 +8,29 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Custominput from '../../components/customInput/Custominput';
 import { useForm } from 'react-hook-form';
+
 import { EMAIL_REGEX, PWD_REGEX } from '../../config/config';
+
+import Custominput from '../../components/customInput/Custominput';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 import { Colors } from '../../constants/Colors';
 import { baseUrl } from '../../config/config';
 import axios from 'axios';
+
 import { AuthContext } from '../../context/AuthProvider';
 const { width, height } = Dimensions.get('window');
+
 const ProfileScreen = () => {
   const [name, setName] = useState('John Doe');
   const [email, setEmail] = useState('johndoe@example.com');
   const [phone, setPhone] = useState('1234567890');
   const [isEditingData, setIsEditingData] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const passwordInputRef = useRef(null);
-  const confirmPwdInputRef = useRef(null);
 
   const {
     control,
@@ -38,8 +38,10 @@ const ProfileScreen = () => {
     formState: { errors },
     watch,
   } = useForm();
-
   const pwd = watch('password');
+
+  const passwordInputRef = useRef(null);
+  const confirmPwdInputRef = useRef(null);
 
   const handleEditData = () => {
     setIsEditingData(true);
@@ -63,8 +65,11 @@ const ProfileScreen = () => {
   };
 
   const handleSavePassword = (data) => {
-    console.log(data.password, data.confirmPwd);
-    console.log(token);
+    const config = {
+      headers: {
+        'x-access-token': authCtx.token,
+      },
+    };
     axios
       .put(
         `${baseUrl}/users/${user._id}/password`,
@@ -72,11 +77,7 @@ const ProfileScreen = () => {
           newPassword: data.password,
           confirmPassword: data.confirmPwd,
         },
-        {
-          headers: {
-            'x-access-token': token,
-          },
-        }
+        config
       )
       .then((response) => {
         console.log(response.data);
@@ -93,6 +94,11 @@ const ProfileScreen = () => {
       });
   };
   const handleSaveData = (data) => {
+    const config = {
+      headers: {
+        'x-access-token': authCtx.token,
+      },
+    };
     axios
       .put(
         `${baseUrl}/users/${user._id}/update`,
@@ -100,11 +106,7 @@ const ProfileScreen = () => {
           email: data.email,
           telephone: data.phone,
         },
-        {
-          headers: {
-            'x-access-token': token,
-          },
-        }
+        config
       )
       .then((response) => {
         console.log(response.data);
@@ -120,7 +122,7 @@ const ProfileScreen = () => {
         );
       });
   };
-  console.log(user);
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>

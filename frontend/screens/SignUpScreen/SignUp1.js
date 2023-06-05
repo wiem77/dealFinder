@@ -55,15 +55,15 @@ const SignUpScreen = () => {
     trigger,
   } = useForm();
   const pwd = watch('password');
-  // const [location, setLocation] = useState(null);
-  // const [locationName, setLocationName] = useState(null);
-  // const [locationRegion, setLocationRegion] = useState(null);
-  // const [locationCountry, setLocationCountry] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState(null);
+  const [locationRegion, setLocationRegion] = useState(null);
+  const [locationCountry, setLocationCountry] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
-  const { latitude, longitude, cityLocation, locationRegion } =
-    useContext(LocContext);
+  const { latitude, longitude, cityLocation } = useContext(LocContext);
+  console.log();
   // const locCtx = useContext(LocationContext);
   // console.log('locCtx', locCtx.locationName);
   const [currentIndex, setCurrentIndex] = useState(0);

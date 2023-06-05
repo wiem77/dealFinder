@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
-
+import { RefreshControl } from 'react-native-web-refresh-control';
 import { useNavigation } from '@react-navigation/native';
 
 import { Colors } from '../../constants/Colors';
@@ -33,6 +33,8 @@ export const CategoryList = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedStores, setSelectedStores] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const {
     latitude,
     longitude,
@@ -235,6 +237,15 @@ export const CategoryList = () => {
     console.log('selectedStore', selectedStore);
     navigation.navigate('Store', { selectedStore: selectedStore });
   };
+  const refreshing = async () => {
+    setIsRefreshing(true);
+
+    console.log('refreching');
+    await fetchCategories();
+    await fetchStores();
+
+    setIsRefreshing(false);
+  };
 
   if (!categories && !stores) {
     return (
@@ -275,6 +286,12 @@ export const CategoryList = () => {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.categoryListContainer}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={isRefreshing}
+                      onRefresh={refreshing}
+                    />
+                  }
                 >
                   {categories.categories
                     .find(
@@ -316,6 +333,12 @@ export const CategoryList = () => {
                     <ScrollView
                       contentContainerStyle={{ paddingBottom: '70%' }}
                       showsVerticalScrollIndicator={true}
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={isRefreshing}
+                          onRefresh={refreshing}
+                        />
+                      }
                     >
                       <View>
                         <View style={styles.newItemsContainer}>

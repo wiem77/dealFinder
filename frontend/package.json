@@ -56,7 +56,8 @@
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-more-text": "^2.2.0",
-    "react-native-web": "~0.18.10"
+    "react-native-web": "~0.18.10",
+    "react-native-web-refresh-control": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

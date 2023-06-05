@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,12 @@ import {
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
-import uri from '../../assets/image/Sport.png';
+
 import { Dimensions } from 'react-native';
-import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FavoritesContext } from '../../context/FavoriteProvider';
+import { AuthContext } from '../../context/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function VerticalStoreCard({
   storeName,
@@ -18,22 +21,42 @@ export default function VerticalStoreCard({
   distance,
   imageUri,
   voucher,
-  onPressFavorite,
+  store,
   onPressStore,
 }) {
-  const [favorite, setFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const favCtx = useContext(FavoritesContext);
+  const authCtx = useContext(AuthContext);
+  const user = authCtx.user;
+  useEffect(() => {
+    setIsFavorite(favCtx.favorites.some((fav) => fav._id === store._id));
+  }, [favCtx.favorites, store._id]);
 
-  const handlePressFavorite = () => {
-    setFavorite(!favorite);
-    onPressFavorite({
-      storeName,
-      subCategory,
-      distance,
-      imageUri,
-      voucher,
-    });
+  const handlePressFavorite = async () => {
+    setIsFavorite(!isFavorite);
+    if (!isFavorite) {
+      favCtx.addToFavorites(store, authCtx.token, user._id);
+    } else {
+      favCtx.removeFromFavorites(store, authCtx.token, user._id);
+    }
+
+    try {
+      await AsyncStorage.setItem('favoriteColor', isFavorite ? 'red' : 'black');
+    } catch (error) {
+      console.log('Error updating favorite color:', error);
+    }
   };
-  console.log(imageUri);
+  // const handlePressFavorite = () => {
+  //   setFavorite(!favorite);
+  //   onPressFavorite({
+  //     storeName,
+  //     subCategory,
+  //     distance,
+  //     imageUri,
+  //     voucher,
+  //   });
+  // };
+
   return (
     <TouchableOpacity onPress={onPressStore}>
       <View style={styles.container}>
@@ -46,9 +69,9 @@ export default function VerticalStoreCard({
               <TouchableOpacity onPress={handlePressFavorite}>
                 <View style={styles.circle}>
                   <Ionicons
-                    name={favorite ? 'heart-sharp' : 'heart-outline'}
+                    name={isFavorite ? 'heart-sharp' : 'heart-outline'}
                     size={25}
-                    color={favorite ? Colors.red : 'white'}
+                    color={isFavorite ? Colors.red : 'white'}
                   />
                 </View>
               </TouchableOpacity>

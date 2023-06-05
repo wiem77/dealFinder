@@ -449,14 +449,7 @@ export const CategoryList = () => {
                         }
                         imageUri={combineImagePaths(item.store_image)}
                         onPressStore={() => handleStoreSelected(item._id)}
-                        onPressFavorite={() =>
-                          handleFavorite(
-                            userId,
-                            item._id,
-                            isFavorite,
-                            item.store_name
-                          )
-                        }
+                        store={item}
                       />
                     </View>
                   )}

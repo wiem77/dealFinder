@@ -5,34 +5,50 @@ import {
   Platform,
   ScrollView,
   Image,
+  SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import { Colors } from '../../constants/Colors';
 import { FontSize } from '../../constants/FontSize';
 import CustomBtn from '../../components/customBtn/CustomBtn';
 
-import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const qrCardHeight = Dimensions.get('window').height * 0.8;
 const qrCodeSize = qrCardHeight * 0.5;
 const windowHeight = Dimensions.get('window').height;
 const QrCodeScreen = ({ route }) => {
-  const { qrData } = route.params;
-
+  const { qrData, nameV } = route.params;
+  console.log(nameV);
   const qrCodeUrl = qrData?.qrCode;
   const voucherName = qrData?.vouchers?.name_V;
   const storeName = qrData?.vouchers?.store.store_name;
 
-  const expiryDate = qrData?.expiry.substr(0, 10);
+  const expiryDate = qrData.expiry.substring(0, 10);
+  const navigation = useNavigation();
   console.log(qrData);
+  const handelBackPressed = () => {
+    navigation.goBack();
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        {/* <TouchableOpacity>
+          <AntDesign
+            style={{ marginTop: '5%', marginLeft: 15 }}
+            name="arrowleft"
+            size={30}
+            color="black"
+            onPress={handelBackPressed}
+          />
+        </TouchableOpacity> */}
         <View style={styles.textContainer}>
           <Text style={styles.text}>Scanner-QrCode </Text>
         </View>
@@ -46,14 +62,14 @@ const QrCodeScreen = ({ route }) => {
           />
         </View>
         <View style={styles.textWarrper}>
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <Text style={styles.text1}>{storeName}</Text>
-            <Text style={styles.text2}>{voucherName}</Text>
-          </View>
+            <Text style={styles.text2}>{nameV}</Text>
+          </View> */}
           <View style={styles.separator} />
           <View style={styles.row}>
-            <Text style={styles.text1}>Numéro de Télephone</Text>
-            <Text style={[styles.text2, styles.phone]}>50-777-999</Text>
+            <Text style={styles.text1}>Nom de coupon</Text>
+            <Text style={[styles.text2, styles.phone]}>{nameV}</Text>
           </View>
           <View style={styles.separator} />
           <View style={styles.row}>
@@ -62,7 +78,18 @@ const QrCodeScreen = ({ route }) => {
           </View>
           <View style={styles.separator} />
         </View>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <CustomBtn
+            text="Retour à l'accueil"
+            onPress={() => navigation.navigate('Home')}
+            type="WHITE3"
+            nameIcon="home"
+            sizeIcon={20}
+            colorIcon="black"
+          />
+        </View>
       </ScrollView>
+      <View></View>
     </View>
   );
 };
@@ -86,28 +113,28 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
     borderRadius: 8,
     borderWidth: 1,
-    width: wp('80%'),
+    width: wp('60%'),
     height: wp('12%'),
     padding: 15,
 
     alignItems: 'center',
 
-    ...Platform.select({
-      ios: {
-        shadowColor: Colors.black,
-        shadowOffset: {
-          width: 0,
-          height: 10,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 10,
-        shadowColor: Colors.black,
-        shadowRadius: 10,
-      },
-    }),
+    // ...Platform.select({
+    //   ios: {
+    //     shadowColor: Colors.black,
+    //     shadowOffset: {
+    //       width: 0,
+    //       height: 10,
+    //     },
+    //     shadowOpacity: 0.3,
+    //     shadowRadius: 10,
+    //   },
+    //   android: {
+    //     elevation: 10,
+    //     shadowColor: Colors.black,
+    //     shadowRadius: 10,
+    //   },
+    // }),
   },
   qrCard: {
     backgroundColor: 'rgba(140, 138, 138, 0.08)',

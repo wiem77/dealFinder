@@ -21,8 +21,8 @@ const { width } = Dimensions.get('window');
 const Favorite = () => {
   const authCtx = useContext(AuthContext);
   const favCtx = useContext(FavoritesContext);
-  const user = authCtx.user;
-
+  const token = authCtx.token;
+  console.log(token);
   return (
     <View style={styles.container}>
       <SafeAreaView>

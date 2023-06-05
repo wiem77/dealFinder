@@ -52,7 +52,8 @@ const StoreScreen = ({ route }) => {
   const favoritesContext = useContext(FavoritesContext);
   const { favorites, addToFavorites, removeFromFavorites } = favoritesContext;
   const authCtx = useContext(AuthContext);
-
+  const userToken = authCtx.token;
+  const user = authCtx.user;
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
@@ -159,17 +160,17 @@ const StoreScreen = ({ route }) => {
   const handleFavoriteClick = async () => {
     try {
       if (isFavorite) {
-        removeFromFavorites(selectedStore);
+        removeFromFavorites(selectedStore, userToken, user._id);
       } else {
-        addToFavorites(selectedStore);
+        addToFavorites(selectedStore, userToken, user._id);
       }
       setIsFavorite((prevIsFavorite) => !prevIsFavorite);
-      setIsFilled(!prevIsFavorite);
+      setIsFilled(!isFavorite);
 
       await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
       await AsyncStorage.setItem(
         'favoriteColor',
-        !prevIsFavorite ? 'red' : 'black'
+        !isFavorite ? 'red' : 'black'
       );
     } catch (error) {
       console.log('Error handling favorite:', error);

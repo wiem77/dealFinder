@@ -86,6 +86,8 @@
 // export { FavoritesContext, FavoritesProvider };
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { baseUrl } from '../config/config';
 
 export const FavoritesContext = createContext();
 
@@ -115,14 +117,56 @@ export const FavoritesProvider = ({ children }) => {
     }
   };
 
-  const addToFavorites = (store) => {
+  // const addToFavorites = (store) => {
+  //   setFavorites((prevFavorites) => [...prevFavorites, store]);
+
+  // };
+  const addToFavorites = (store, token, userID) => {
+    console.log(store._id, token, userID);
     setFavorites((prevFavorites) => [...prevFavorites, store]);
+
+    if (token) {
+      const newFavorites = [...favorites, store];
+
+      axios
+        .put(
+          `${baseUrl}/users/${userID}/favorite-stores/${store._id}`,
+          { favorites: newFavorites },
+          { headers: { 'x-access-token': token } }
+        )
+        .catch((error) => {
+          console.log('Error updating favorites:', error);
+        });
+    }
   };
 
-  const removeFromFavorites = (store) => {
+  // const removeFromFavorites = (store) => {
+  //   setFavorites((prevFavorites) =>
+  //     prevFavorites.filter((fav) => fav !== store)
+  //   );
+
+  // };
+  const removeFromFavorites = (store, token, userID) => {
     setFavorites((prevFavorites) =>
       prevFavorites.filter((fav) => fav !== store)
     );
+
+    if (token) {
+      const newFavorites = favorites.filter((fav) => fav !== store);
+
+      axios
+        .put(
+          `${baseUrl}/users/${userID}/favorite-stores/${store._id}`,
+          { favorites: newFavorites },
+          { headers: { 'x-access-token': token } }
+        )
+        .catch((error) => {
+          console.log('Error updating favorites:', error);
+        });
+    }
+    // else {
+    //   saveFavoritesToStorage(favorites);
+    // }
   };
 
   useEffect(() => {

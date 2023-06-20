@@ -29,6 +29,7 @@ const HomeScreen = () => {
   const token = authCtx.token;
   const store = authCtx.store;
   const id = store?._id;
+ 
   const fetchData = async () => {
     try {
       console.log(id);

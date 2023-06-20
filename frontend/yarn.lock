@@ -9068,6 +9068,11 @@ react-native-view-more-text@^2.2.0:
   dependencies:
     prop-types "^15.5.7"
 
+react-native-web-refresh-control@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/react-native-web-refresh-control/-/react-native-web-refresh-control-1.1.1.tgz"
+  integrity sha512-vHCB4SEVJMrZgVo43dR+h8sg71AaybaPaIqyfzgmY9ejjRdrhbGHncPs2yAhjEzXC+OUt1cSmIpjsltLBYj9KA==
+
 "react-native-web@>= 0.11", react-native-web@~0.18.10:
   version "0.18.12"
   resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.18.12.tgz"

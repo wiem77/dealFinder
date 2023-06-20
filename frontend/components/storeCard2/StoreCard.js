@@ -19,11 +19,17 @@ import { useNavigation } from '@react-navigation/native';
 import { combineImagePaths } from '../../util/CombinedPath';
 import { useContext } from 'react';
 import { FavoritesContext } from '../../context/FavoriteProvider';
-
+import { AuthContext } from '../../context/AuthProvider';
+import { baseUrl } from '../../config/config';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default StoreCard2 = ({ store }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const favCtx = useContext(FavoritesContext);
+  const authCtx = useContext(AuthContext);
 
+  const userToken = authCtx.token;
+  const user = authCtx.user;
   useEffect(() => {
     setIsFavorite(favCtx.favorites.some((fav) => fav._id === store._id));
   }, [favCtx.favorites, store._id]);
@@ -31,18 +37,55 @@ export default StoreCard2 = ({ store }) => {
   const handleFavoritePress = async () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
-      favCtx.addToFavorites(store);
+      favCtx.addToFavorites(store, userToken, user._id);
     } else {
-      favCtx.removeFromFavorites(store);
+      favCtx.removeFromFavorites(store, userToken, user._id);
     }
 
     try {
-      await AsyncStorage.setItem('favoriteColor', isFavorite ? 'black' : 'red');
+      await AsyncStorage.setItem('favoriteColor', isFavorite ? 'red' : 'black');
     } catch (error) {
       console.log('Error updating favorite color:', error);
     }
   };
+  // const handleFavoritePress = async () => {
+  //   setIsFavorite(!isFavorite);
+  //   console.log(`${baseUrl}/users/${user._id}/favorite-stores/${store._id}`);
+  //   console.log(userToken);
+  //   if (userToken) {
+  //     try {
+  //       const response = await axios.post(
+  //         `${baseUrl}/users/${user._id}/favorite-stores/${store._id}`,
+  //         { storeId: store._id }
 
+  //       );
+
+  //       if (!response.ok) {
+  //         console.log('Error adding to favorites:', response.status);
+  //         setIsFavorite(isFavorite);
+  //       }
+  //     } catch (error) {
+  //       console.log('Error adding to favorites:', error);
+  //       setIsFavorite(isFavorite);
+  //     }
+  //   } else {
+  //     nt;
+  //     if (!isFavorite) {
+  //       favCtx.addToFavorites(store);
+  //     } else {
+  //       favCtx.removeFromFavorites(store);
+  //     }
+
+  //     try {
+  //       await AsyncStorage.setItem(
+  //         'favoriteColor',
+  //         isFavorite ? 'red' : 'black'
+  //       );
+  //     } catch (error) {
+  //       console.log('Error updating favorite color:', error);
+  //     }
+  //   }
+  // };
   const navigation = useNavigation();
 
   return (

@@ -12,7 +12,7 @@ const VerificationScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
 
   const handleVerification = () => {
-    // Handle verification logic here
+  
   };
 
   return (

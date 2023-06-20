@@ -80,19 +80,19 @@ const ScanQrScreen = () => {
       console.log(error);
       Alert.alert(
         'Erreur',
-        // "Une erreur s'est produite lors de la vérification du code. Veuillez rescanner le Qr-Code."
+
         error.message
       );
       isAlertDisplayed = true;
     }
 
-    setTimeout(() => {
-      setLoading(false);
+    // setTimeout(() => {
+    //   setLoading(false);
 
-      if (!isAlertDisplayed) {
-        alert(`Les données suivantes ont été numérisées et vérifiées: ${text}`);
-      }
-    }, 3000);
+    //   if (!isAlertDisplayed) {
+    //     alert(`Les données suivantes ont été numérisées et vérifiées: ${text}`);
+    //   }
+    // }, 3000);
   };
 
   const askForCameraPermission = () => {

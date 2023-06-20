@@ -28,7 +28,8 @@ const WelcomeScreen = () => {
   // } = useContext(LocationContext);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { setLatitude, setLongitude, setCityLocation ,setLocationRegion} = useContext(LocContext);
+  const { setLatitude, setLongitude, setCityLocation, setLocationRegion } =
+    useContext(LocContext);
   // const [location, setLocation] = useState();
   // const [locationName, setLocationName] = useState();
   // const [locationRegion, setLocationRegion] = useState();
@@ -74,7 +75,7 @@ const WelcomeScreen = () => {
     setTimeout(() => {
       setLoading(false);
       navigation.navigate('LoginIn');
-    }, 2000);
+    }, 1000);
   };
 
   const OnSignUpPressed = () => {
@@ -84,7 +85,7 @@ const WelcomeScreen = () => {
     setTimeout(() => {
       setLoading(false);
       navigation.navigate('SignUp');
-    }, 2000);
+    }, 1000);
   };
   const guestPressed = () => {
     handleLocationPermission();
@@ -93,7 +94,7 @@ const WelcomeScreen = () => {
     setTimeout(() => {
       setLoading(false);
       navigation.navigate('Home');
-    }, 2000);
+    }, 1000);
   };
 
   if (loading) {

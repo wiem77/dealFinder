@@ -28,6 +28,7 @@ router.get('/userReservation/usedTrue/:userId', getUserReservations);
 //root:http://localhost:4000/api/reservation/users/:userId/resetArchivedReservations/:reservationId
 router.put(
   '/users/:userId/resetArchivedReservations/:reservationId',
+
   resetArchivedReservations
 );
 
@@ -39,5 +40,8 @@ router.delete('/delete/reservation/:reservationId', deleteReservation);
 //root:http://localhost:4000/api/reservation/user/:userId/allReservation
 router.get('/user/:userId/allReservation', getAllReservationByIDUSer);
 //root:http://localhost:4000/api/reservation/users/:userId/stores/:storeId/reservation-check
-router.get('/users/:userId/stores/:storeId/reservation-check', checkReservation);
+router.get(
+  '/users/:userId/stores/:storeId/reservation-check',
+  checkReservation
+);
 module.exports = router;

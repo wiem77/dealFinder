@@ -21,10 +21,9 @@ const router = express.Router();
 
 //root:http://localhost:4000/api/store/loginStore
 router.post('/loginStore', loginStore);
-router.post('/logout', auth, logout);
+router.post('/logout', logout);
 //root:http://localhost:4000/api/store/addStore
 router.post('/addStore', uploader.single('image'), addStore);
-
 
 //root:http://localhost:4000/api/store/getNewStore
 router.get('/getNewStore', getNewStoresOfWeek);

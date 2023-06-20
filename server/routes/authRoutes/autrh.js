@@ -9,7 +9,7 @@ const {
   signUp,
   signIn,
   getUserIdByEmail,
-  test,
+
   getUsers,
   updateUserPassword,
   updateUser,
@@ -17,8 +17,6 @@ const {
 const router = express.Router();
 const uploader = require('../../config/multerConfig');
 
-//root:http://localhost:4000/api/signUp
-router.get('/test', test);
 //root:http://localhost:4000/api/users/:userId/password
 router.put('/users/:userId/password', updateUserPassword);
 //root:http://localhost:4000/users/:userId/update

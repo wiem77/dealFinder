@@ -14,6 +14,7 @@ export default CustomCard = ({
   imageUri,
   onPressStore,
 }) => {
+  console.log(storeName);
   return (
     <TouchableOpacity onPress={onPressStore}>
       <View style={styles.card}>

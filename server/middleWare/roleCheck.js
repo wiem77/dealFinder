@@ -1,10 +1,14 @@
-const User = require('../models/User')
-
 exports.roleCheck = (req, res, next) => {
-  if (req.user.roles === 'admin') {
+  console.log('Checking user role...');
+
+  
+  const userRole = req.body.userRole; 
+  console.log(req.body.userRole);
+  if (userRole === 'admin') {
+    console.log('User is an admin');
     next();
   } else {
-    res.status(403).json({ error: true, message: 'You are not authorized' });
+    console.log('User is not an admin');
+    return res.status(403).json({ error: true, message: 'Forbidden' });
   }
 };
-

@@ -16,13 +16,23 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../../context/AuthProvider';
 
 import { Colors } from '../../constants/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SpeedDialContent = (props) => {
   const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
+  const clearAsyncStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log('AsyncStorage cleared successfully.');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+    }
+  };
 
   const handleLogout = () => {
     authCtx.logout();
+    clearAsyncStorage;
   };
   const handleNavigateHome = () => {
     navigation.navigate('Home');

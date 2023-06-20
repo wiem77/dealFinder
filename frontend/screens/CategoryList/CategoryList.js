@@ -111,7 +111,7 @@ export const CategoryList = () => {
         console.log('Les catégories ne sont pas vides.');
       }
 
-      await AsyncStorage.setItem('categoriesData', JSON.stringify(data)); // Sauvegarder les catégories dans AsyncStorage
+      await AsyncStorage.setItem('categoriesData', JSON.stringify(data));
     } catch (error) {
       console.error(error);
     } finally {
@@ -370,53 +370,68 @@ export const CategoryList = () => {
                             )}
                           />
                         </View>
-                        {categories?.categories?.map((category) => {
-                          if (
-                            selectedCategory === null &&
-                            category.subcategories &&
-                            category.subcategories.length > 0
-                          ) {
-                            return (
-                              <View
-                                key={category.category_name}
-                                style={styles.newItemsContainer}
-                              >
-                                <Text style={styles.categoryName}>
-                                  {category.category_name}
-                                </Text>
-                                <FlatList
-                                  data={category.subcategories[0]?.stores}
-                                  keyExtractor={(item) => item._id}
-                                  horizontal
-                                  showsHorizontalScrollIndicator={false}
-                                  contentContainerStyle={styles.newItemsList}
-                                  renderItem={({ item }) => (
-                                    <CustomCard
-                                      storeName={item.store_name}
-                                      voucher={
-                                        Object.values(item.vouchers)[0]
-                                          ?.discount
-                                      }
-                                      distance={
-                                        Object.values(item.locations)[0].city
-                                      }
-                                      subCategory={
-                                        Object.values(item.sub_categories)[0]
-                                          ?.subCategory_name
-                                      }
-                                      onPressStore={() =>
-                                        handleStoreSelected(item._id)
-                                      }
-                                      imageUri={combineImagePaths(
-                                        item.store_image
-                                      )}
-                                    />
-                                  )}
-                                />
-                              </View>
-                            );
-                          }
-                        })}
+
+                        <View>
+                          {categories?.categories?.map((category) => {
+                            if (
+                              selectedCategory === null &&
+                              category.subcategories &&
+                              category.subcategories.length > 0
+                            ) {
+                              const displayedStores = {}; // Objet pour stocker les magasins déjà affichés
+
+                              return (
+                                <View
+                                  key={category.category_name}
+                                  style={styles.newItemsContainer}
+                                >
+                                  <Text style={styles.categoryName}>
+                                    {category.category_name}
+                                  </Text>
+                                  <FlatList
+                                    data={category.subcategories.flatMap(
+                                      (subcategory) =>
+                                        subcategory.stores.filter((store) => {
+                                         
+                                          if (!displayedStores[store._id]) {
+                                            displayedStores[store._id] = true; 
+                                            return true; 
+                                          }
+                                          return false; 
+                                        })
+                                    )}
+                                    keyExtractor={(item) => item._id}
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={styles.newItemsList}
+                                    renderItem={({ item }) => (
+                                      <CustomCard
+                                        storeName={item.store_name}
+                                        voucher={
+                                          Object.values(item.vouchers)[0]
+                                            ?.discount
+                                        }
+                                        distance={
+                                          Object.values(item.locations)[0].city
+                                        }
+                                        subCategory={
+                                          Object.values(item.sub_categories)[0]
+                                            ?.subCategory_name
+                                        }
+                                        onPressStore={() =>
+                                          handleStoreSelected(item._id)
+                                        }
+                                        imageUri={combineImagePaths(
+                                          item.store_image
+                                        )}
+                                      />
+                                    )}
+                                  />
+                                </View>
+                              );
+                            }
+                          })}
+                        </View>
                       </View>
                     </ScrollView>
                   </View>
@@ -431,29 +446,33 @@ export const CategoryList = () => {
                   },
                 ]}
               >
-                <FlatList
-                  data={selectedStores}
-                  keyExtractor={(item) => item._id}
-                  showsVerticalScrollIndicator={false}
-                  numColumns={2}
-                  contentContainerStyle={styles.flatListContent}
-                  renderItem={({ item }) => (
-                    <View style={styles.cardContainer}>
-                      <VerticalStoreCard
-                        key={item._id}
-                        storeName={item.store_name}
-                        distance={Object.values(item.locations)[0].city}
-                        voucher={Object.values(item.vouchers)[0]?.discount}
-                        subCategory={
-                          Object.values(item.sub_categories)[0].subCategory_name
-                        }
-                        imageUri={combineImagePaths(item.store_image)}
-                        onPressStore={() => handleStoreSelected(item._id)}
-                        store={item}
-                      />
-                    </View>
-                  )}
-                />
+                <View style={{ flexGrow: 1, marginBottom: '70%' }}>
+                  <FlatList
+                    style={{ flexGrow: 1, marginBottom: '40%' }}
+                    data={selectedStores}
+                    keyExtractor={(item) => item._id}
+                    showsVerticalScrollIndicator={false}
+                    numColumns={2}
+                    contentContainerStyle={styles.flatListContent}
+                    renderItem={({ item }) => (
+                      <View style={styles.cardContainer}>
+                        <VerticalStoreCard
+                          key={item._id}
+                          storeName={item.store_name}
+                          distance={Object.values(item.locations)[0].city}
+                          voucher={Object.values(item.vouchers)[0]?.discount}
+                          subCategory={
+                            Object.values(item.sub_categories)[0]
+                              .subCategory_name
+                          }
+                          imageUri={combineImagePaths(item.store_image)}
+                          onPressStore={() => handleStoreSelected(item._id)}
+                          store={item}
+                        />
+                      </View>
+                    )}
+                  />
+                </View>
               </View>
             </View>
           </View>

@@ -47,8 +47,10 @@ module.exports.signUp = async (req, res) => {
     let picturePath;
     if (req.file) {
       const fileName = req.file.filename;
+      console.log(`http://localhost:4000/public/image/${fileName}`);
       const media = new Media({
-        path: `C:/Users/User/Desktop/All/DealFinder/server/controllers/image/${fileName}`,
+        path: `http://localhost:4000/public/image/${fileName}`,
+
         extension: fileName.split('.').pop(),
       });
       await media.save();
@@ -163,14 +165,6 @@ module.exports.signIn = async (req, res) => {
         path: 'picturePath',
         select: '_id path',
       });
-    // .populate({
-    //   path: 'usedVouchers',
-    //   select: 'qrCode expiry archived used',
-    //   populate: {
-    //     path: 'voucher',
-    //     select: 'name_V discount is_available',
-    //   },
-    // });
 
     if (!user) {
       console.log(user);
@@ -193,7 +187,7 @@ module.exports.signIn = async (req, res) => {
         accessToken,
         refreshToken,
         message: 'Logged in successfully as admin',
-        role: user.roles,
+        role: 'admin',
         user: {
           _id: user._id,
           name: user.nom,
@@ -215,6 +209,53 @@ module.exports.signIn = async (req, res) => {
   } catch (error) {
     console.error('Server error:', error.message);
     return res.status(500).send({ message: 'Server error' });
+  }
+};
+module.exports.signInAdmin = async (req, res) => {
+  console.log('Entering login function...');
+  console.log(req.body);
+  try {
+    console.log('Looking up user...');
+    const user = await User.findOne({ email: req.body.email }).populate({
+      path: 'picturePath',
+      select: '_id path',
+    });
+
+    if (!user) {
+      console.log(user);
+      return res
+        .status(400)
+        .send({ message: 'Mot de passe ou email invalide' });
+    }
+
+    console.log('Comparing passwords...');
+    const validPwd = await bcrypt.compare(req.body.password, user.password);
+    if (!validPwd) {
+      return res.status(400).send({ message: 'Mot de passe invalide' });
+    }
+
+    if (user.roles[0] === 'admin') {
+      const { accessToken, refreshToken } = await generateAuthToken(user);
+      return res.status(200).send({
+        accessToken,
+        refreshToken,
+        message: "Connecté en tant qu'administrateur",
+        role: 'admin',
+        user: {
+          _id: user._id,
+          name: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          password: user.password,
+          roles: user.roles,
+        },
+      });
+    } else {
+      return res.status(401).send({ message: "Vous n'êtes pas autorisé" });
+    }
+  } catch (error) {
+    console.error('Erreur du serveur:', error.message);
+    return res.status(500).send({ message: 'Erreur du serveur' });
   }
 };
 

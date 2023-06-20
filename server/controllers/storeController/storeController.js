@@ -15,8 +15,8 @@ const crypto = require('crypto');
 const Rating = require('../../models/RatingsModel');
 const getLocationAdrs = require('../../utils/generateAdresse').getLocationAdrs;
 function generateAccessCode() {
-  const code = crypto.randomBytes(4).toString('hex'); // Génère un code hexadécimal de 8 caractères
-  return code.toUpperCase(); // Convertit le code en majuscules
+  const code = crypto.randomBytes(4).toString('hex');
+  return code.toUpperCase();
 }
 exports.addStore = async (req, res, next) => {
   console.log('add2...');
@@ -73,7 +73,7 @@ exports.addStore = async (req, res, next) => {
       return res.status(400).send({ message: 'sub_categories is required' });
     }
 
-    const accessCode = generateAccessCode(); // Génère un accessCode unique
+    const accessCode = generateAccessCode();
 
     const store = new Store({
       store_name: StoreName,
@@ -85,7 +85,7 @@ exports.addStore = async (req, res, next) => {
       subCategories: [subCategories],
       vouchers: [],
       store_image: [media._id],
-      accesscode: accessCode, // Ajoute l'accessCode au modèle Store
+      accesscode: accessCode,
     });
     for (const subCategoryId of subCategories) {
       const subCategory = await SubCategory.findById(subCategoryId);
@@ -188,6 +188,17 @@ exports.getNewStoresOfWeek = async (req, res) => {
     });
   }
 };
+function calculateRating(totalLikes, totalDislikes) {
+  const totalRatings = totalLikes + totalDislikes;
+  if (totalRatings === 0) {
+    return 0;
+  }
+
+  const positiveRatio = totalLikes / totalRatings;
+  const rating = positiveRatio * 5;
+
+  return Math.round(rating * 10) / 10;
+}
 exports.getAllStores = async (req, res) => {
   console.log('get All');
   try {
@@ -211,12 +222,14 @@ exports.getAllStores = async (req, res) => {
     for (let i = 0; i < stores.length; i++) {
       const store = stores[i];
       const ratings = await Rating.find({ store: store._id }).lean();
+      console.log(ratings);
       const totalLikes = ratings.filter((rating) => rating.like === 1).length;
       const totalDislikes = ratings.filter(
         (rating) => rating.like === -1
       ).length;
       const rating = calculateRating(totalLikes, totalDislikes);
       store.rating = rating;
+      console.log(rating);
     }
 
     res.status(200).json(stores);
@@ -225,30 +238,6 @@ exports.getAllStores = async (req, res) => {
     res.status(500).json({ error: 'Error getting all stores.' });
   }
 };
-
-function calculateRating(totalLikes, totalDislikes) {
-  const totalRatings = totalLikes + totalDislikes;
-  if (totalRatings === 0) {
-    return 0;
-  }
-
-  const positiveRatio = totalLikes / totalRatings;
-  const rating = positiveRatio * 5;
-
-  return Math.round(rating * 10) / 10;
-}
-
-function calculateRating(totalLikes, totalDislikes) {
-  const totalRatings = totalLikes + totalDislikes;
-  if (totalRatings === 0) {
-    return 0;
-  }
-
-  const positiveRatio = totalLikes / totalRatings;
-  const rating = positiveRatio * 5;
-
-  return Math.round(rating * 10) / 10;
-}
 
 module.exports.getOneStore = (req, res) => {
   console.log('ONE Store..');
@@ -459,7 +448,7 @@ module.exports.getStoreImages = async (req, res) => {
   try {
     const storeId = req.params.storeId;
 
-    // Recherche du magasin par ID
+   
     const store = await Store.findById(storeId).populate('store_image');
 
     if (!store) {

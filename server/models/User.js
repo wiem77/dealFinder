@@ -41,11 +41,13 @@ const UserSchema = new mongoose.Schema({
     ref: 'Location',
     required: true,
   },
-  roles: {
-    type: String,
-    enum: ['admin', 'consommateur', 'visiteur'],
-    default: 'visiteur',
-  },
+  roles: [
+    {
+      type: String,
+      enum: ['admin', 'consommateur', 'visiteur'],
+      default: ['visiteur'],
+    },
+  ],
   favorite_stores: [
     {
       type: Schema.Types.ObjectId,

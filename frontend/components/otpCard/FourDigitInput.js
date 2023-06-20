@@ -25,7 +25,8 @@ const FourDigitInput = ({ onComplete }) => {
 
   const handleDigitChange = (index, text) => {
     const newDigits = [...digits];
-    newDigits[index] = text[0];
+    newDigits[index] = text.length > 0 ? text[0] : '';
+
     setDigits(newDigits);
     if (text.length === 1 && index < 3 && inputRefs.current[index + 1]?.focus) {
       inputRefs.current[index + 1].focus();

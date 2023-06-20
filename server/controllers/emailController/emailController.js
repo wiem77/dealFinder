@@ -1,31 +1,24 @@
 const User = require('../../models/User');
 const Otp = require('../../models/OtpVerification');
 const sendEmail = require('../../utils/generatEmailValidation');
-
 const generateOTP = require('../../utils/generateOTP');
+
 module.exports.verifyEmailWithOTP = async (req, res) => {
   try {
     const { id } = req.params;
     const otp = req.body.otp;
-    console.log('id:', id);
-    console.log('otp:', otp);
-
     const otpVerification = await Otp.findOne({
       userId: id,
       otp: otp,
       expiredAt: { $gt: Date.now() },
     });
-    console.log('otpVerification:', otpVerification);
-
     if (!otpVerification) {
       return res.status(404).send({ message: 'Invalid OTP' });
     }
-
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).send({ message: 'User not found' });
     }
-
     if (user.verified) {
       await Otp.deleteOne({ _id: otpVerification._id });
       return res.status(400).send({ message: 'Email already verified' });

@@ -1,6 +1,6 @@
 const Location = require('../../models/LocationModel');
 const Store = require('../../models/StoreModel');
-const User = require('../../models/User'); // Importez le modèle User
+const User = require('../../models/User');
 const Voucher = require('../../models/VoucherModel');
 const { getLocationAdrs } = require('../../utils/generateAdresse');
 module.exports.getRecentVouchers = async (req, res) => {
@@ -119,7 +119,6 @@ module.exports.getUsersAndCountRoles = async (req, res) => {
       is_available: true,
     });
 
-    // Calculez la moyenne des vouchers disponibles
     const availableVouchersAvgDiscount = await Voucher.aggregate([
       { $match: { is_available: true } },
       { $group: { _id: null, avgDiscount: { $avg: '$discount' } } },

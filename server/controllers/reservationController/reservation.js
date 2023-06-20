@@ -60,8 +60,6 @@ module.exports.verifyCodeReservation = async (req, res) => {
 };
 module.exports.createReservation = async (req, res) => {
   const { userId, voucherId } = req.params;
-  console.log('userId ', userId);
-  console.log(voucherId, userId);
   try {
     const voucher = await Voucher.findOne({
       _id: voucherId,

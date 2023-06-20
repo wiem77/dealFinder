@@ -1,10 +1,12 @@
 const Category = require('../../models/CategoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Media = require('../../models/MediaModel');
-const geolib = require('geolib');
-
 const Rating = require('../../models/RatingsModel');
 const Location = require('../../models/LocationModel');
+const { calculateDistance } = require('../../utils/calculDistance');
+
+const { calculateRating } = require('../../utils/calculateRating');
+
 module.exports.addCategory = async (req, res) => {
   const categoryName = req.body.category_name.trim().toUpperCase();
 
@@ -80,33 +82,6 @@ module.exports.deleteCategory = async (req, res) => {
       res.status(400).send({ success: false, msg: error.message });
     });
 };
-function toRadians(degrees) {
-  console.log('degrees,', degrees);
-  return degrees * (Math.PI / 180);
-}
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  console.log(lat1, lon1, lat2, lon2);
-  const lat1Rad = toRadians(lat1);
-  const lon1Rad = toRadians(lon1);
-  const lat2Rad = toRadians(lat2);
-  const lon2Rad = toRadians(lon2);
-
-  const deltaLat = lat2Rad - lat1Rad;
-  const deltaLon = lon2Rad - lon1Rad;
-
-  const a =
-    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1Rad) *
-      Math.cos(lat2Rad) *
-      Math.sin(deltaLon / 2) *
-      Math.sin(deltaLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  const distance = R * c;
-  return distance;
-}
 
 module.exports.updateCategory = async (req, res) => {
   const categoryId = req.params.id;
@@ -201,17 +176,70 @@ module.exports.findCategory = (req, res) => {
       res.status(400).send({ success: false, msg: error.message });
     });
 };
-function calculateRating(totalLikes, totalDislikes) {
-  const totalRatings = totalLikes + totalDislikes;
-  if (totalRatings === 0) {
-    return 0;
+
+module.exports.getAllCategoryWithLoc = (req, res) => {
+  const { latitude, longitude } = req.params;
+  if (!latitude || !longitude) {
+    return res
+      .status(400)
+      .json({ error: 'Les coordonnées de localisation sont manquantes.' });
   }
-
-  const positiveRatio = totalLikes / totalRatings;
-  const rating = positiveRatio * 5;
-
-  return Math.round(rating * 10) / 10;
-}
+  Category.find({})
+    .populate({
+      path: 'subcategories',
+      populate: {
+        path: 'stores',
+        model: 'Store',
+        select: '-accesscode',
+        populate: [
+          {
+            path: 'vouchers',
+            model: 'Voucher',
+          },
+          {
+            path: 'locations',
+            model: 'Location',
+          },
+          {
+            path: 'store_image',
+            model: 'Media',
+            select: '_id path',
+          },
+        ],
+      },
+    })
+    .populate('category_image')
+    .then((categories) => {
+      categories.forEach((category) => {
+        category.subcategories = category.subcategories.filter(
+          (subcategory) => {
+            return subcategory.stores.some((store) => {
+              return store.locations.some((location) => {
+                const distance = calculateDistance(
+                  parseFloat(latitude),
+                  parseFloat(longitude),
+                  location.coordinates[0],
+                  location.coordinates[1]
+                );
+                console.log('distance', distance);
+                location.distance = distance;
+                const maxDistance = 7;
+                return distance <= maxDistance;
+              });
+            });
+          }
+        );
+      });
+      categories = categories.filter(
+        (category) => category.subcategories.length > 0
+      );
+      res.status(200).send({ success: true, categories: categories });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({ success: false, msg: error.message, error });
+    });
+};
 
 // module.exports.getAllCategoryWithLoc = async (req, res) => {
 //   const { latitude, longitude } = req.params;
@@ -284,8 +312,7 @@ function calculateRating(totalLikes, totalDislikes) {
 //             (rating) => rating.like === -1
 //           ).length;
 //           console.log(totalLikes, totalDislikes);
-//           const rating = calculateRating(totalLikes, totalDislikes);
-
+// const rating = calculateRating(totalLikes, totalDislikes);
 //           store.rating.average = rating;
 //         }
 //       }
@@ -302,70 +329,3 @@ function calculateRating(totalLikes, totalDislikes) {
 //   }
 // };
 //
-module.exports.getAllCategoryWithLoc = (req, res) => {
-  const { latitude, longitude } = req.params;
-  console.log('latitude', latitude, 'longitude', longitude);
-  if (!latitude || !longitude) {
-    return res
-      .status(400)
-      .json({ error: 'Les coordonnées de localisation sont manquantes.' });
-  }
-  Category.find({})
-    .populate({
-      path: 'subcategories',
-      populate: {
-        path: 'stores',
-        model: 'Store',
-        select: '-accesscode',
-        populate: [
-          {
-            path: 'vouchers',
-            model: 'Voucher',
-          },
-          {
-            path: 'locations',
-            model: 'Location',
-          },
-          {
-            path: 'store_image',
-            model: 'Media',
-            select: '_id path',
-          },
-        ],
-      },
-    })
-    .populate('category_image')
-    .then((categories) => {
-      categories.forEach((category) => {
-        category.subcategories = category.subcategories.filter(
-          (subcategory) => {
-            return subcategory.stores.some((store) => {
-              return store.locations.some((location) => {
-                const distance = calculateDistance(
-                  parseFloat(latitude),
-                  parseFloat(longitude),
-                  location.coordinates[0],
-                  location.coordinates[1]
-                );
-                console.log('distance', distance);
-                location.distance = distance;
-                const maxDistance = 7;
-                return distance <= maxDistance;
-              });
-            });
-          }
-        );
-      });
-      console.log(categories);
-
-      categories = categories.filter(
-        (category) => category.subcategories.length > 0
-      );
-
-      res.status(200).send({ success: true, categories: categories });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(400).send({ success: false, msg: error.message, error });
-    });
-};

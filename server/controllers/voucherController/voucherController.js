@@ -3,7 +3,6 @@ const Store = require('../../models/StoreModel');
 const Voucher = require('../../models/VoucherModel');
 module.exports.createVoucher = async (req, res) => {
   try {
-    console.log('tetstt');
     const { name_V, description, validity_date, available_vouchers, discount } =
       req.body;
     const storeId = req.params.storeId;
@@ -48,9 +47,7 @@ module.exports.createVoucher = async (req, res) => {
       .json({ message: 'An error occurred while creating the voucher' });
   }
 };
-
 module.exports.updateVoucher = async (req, res) => {
-  console.log('update voucher');
   try {
     const { id } = req.params;
     const {
@@ -157,7 +154,6 @@ module.exports.findVouchers = async (req, res) => {
 };
 module.exports.findVouchersByStoreId = async (req, res) => {
   try {
-    console.log('hani jyyyt');
     const storeId = req.params.id;
     console.log(storeId);
     const vouchers = await Voucher.find({ store: storeId })
@@ -176,7 +172,7 @@ module.exports.findVouchersByStoreId = async (req, res) => {
 
 module.exports.findVoucherWithId = async (req, res) => {
   const { id: voucherId } = req.params;
-  console.log(voucherId);
+
   try {
     const vouchers = await Voucher.find({ _id: voucherId })
       .populate('store', 'store_name')

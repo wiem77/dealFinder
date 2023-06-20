@@ -1,9 +1,10 @@
 const SubCategory = require('../../models/subCategoryModel');
 const Category = require('../../models/CategoryModel');
 const Store = require('../../models/StoreModel');
+const {
+  removeStoreFromSubCategory,
+} = require('../../utils/removeStoreFromsubCat');
 module.exports.addSubCategory = async (req, res) => {
-  console.log(req.params);
-  console.log('Add..');
   try {
     const categoryId = req.params.id;
     console.log(req.body);
@@ -63,7 +64,6 @@ module.exports.addSubCategory = async (req, res) => {
 
 module.exports.getSubCategoryById = (req, res) => {
   const SubcategoryId = req.params.id;
-
   SubCategory.findById(SubcategoryId)
     .then((subcategory) => {
       if (!subcategory) {
@@ -78,7 +78,6 @@ module.exports.getSubCategoryById = (req, res) => {
 
 module.exports.getSubCategoryByName = (req, res) => {
   const subcategoryName = req.params.name;
-
   SubCategory.findOne({ subCategory_name: subcategoryName })
 
     .then((category) => {
@@ -169,63 +168,6 @@ module.exports.deleteSubCategory = async (req, res) => {
     });
   } catch (error) {
     res.status(400).send({ success: false, msg: error.message, error });
-  }
-};
-
-// module.exports.deleteSubCategory = async (req, res) => {
-//   console.log('subCategoryId,');
-//   const subCategoryId = req.params.id;
-//   console.log('subCategoryId,', subCategoryId);
-//   SubCategory.findOneAndDelete({ _id: subCategoryId })
-//     .populate('category', '_id')
-//     .then((deletedSubCategory) => {
-//       if (!deletedSubCategory) {
-//         return res.status(400).send({ msg: 'Subcategory not found' });
-//       }
-
-//       const categoryId = deletedSubCategory.category._id;
-//       const StoreId = deletedSubCategory.stores._id;
-//       Category.findOneAndUpdate(
-//         { _id: categoryId },
-//         { $pull: { subcategories: subCategoryId } },
-//         { new: true }
-//       )
-//         .then((updatedCategory) => {
-//           if (!updatedCategory) {
-//             return res
-//               .status(400)
-//               .send({ msg: 'Category not found for subcategory' });
-//           }
-
-//           res.status(200).send({
-//             success: true,
-//             msg: 'Subcategory deleted',
-//             deletedSubCategory,
-//           });
-//         })
-//         .catch((error) => {
-//           res.status(400).send({ success: false, msg: error.message, error });
-//         });
-//     })
-//     .catch((error) => {
-//       res.status(400).send({ success: false, msg: error.message, error });
-//     });
-// };
-const removeStoreFromSubCategory = async (storeId, subCategoryId) => {
-  try {
-    const subCategory = await SubCategory.findById(subCategoryId);
-    if (!subCategory) {
-      throw new Error(
-        `La sous-catégorie avec l'ID ${subCategoryId} n'existe pas`
-      );
-    }
-    subCategory.stores = subCategory.stores.filter((id) => id !== storeId);
-    await subCategory.save();
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      `Une erreur s'est produite lors de la suppression du magasin avec l'ID ${storeId} de la sous-catégorie avec l'ID ${subCategoryId}`
-    );
   }
 };
 

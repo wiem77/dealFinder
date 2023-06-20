@@ -2,10 +2,7 @@ const express = require('express');
 const {
   updateExpiredReservations,
 } = require('./utils/deleteExpiredRservation');
-const cors = require('cors');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+
 const authRoutes = require('./routes/authRoutes/autrh');
 const guestRoutes = require('./routes/guestRoutes/guest');
 const categoryRoutes = require('./routes/categoryRoutes/categoryRoutes');
@@ -17,18 +14,23 @@ const voucherRoutes = require('./routes/voucherRoutes/voucherRoutes');
 const reservationRoutes = require('./routes/reservationRoute/reservationRoute');
 const userRoutes = require('./routes/userRoutes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes/AdminRoutes');
-require('dotenv').config({ path: './config/.env' });
-const dbConnect = require('./config/connectDb');
-const Reservation = require('./models/ReservationModel');
-const { generateQrCode } = require('./utils/generateQrCode');
-const Location = require('./models/LocationModel');
-const app = express();
 
+const cors = require('cors');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
+require('dotenv').config({ path: './config/.env' });
+
+const dbConnect = require('./config/connectDb');
+
+const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 dbConnect();
 
-app.use(cors(['exp://192.168.8.101:19000', 'http://localhost:3000']));
+app.use(cors(['exp://192.168.1.137:19000', 'http://localhost:3000']));
 
 // updateExpiredReservations();
 
@@ -47,7 +49,7 @@ app.use('/api/subCategory', subcategoryRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/vouchers', voucherRoutes);
 app.use('/api/reservation', reservationRoutes);
-//setPORT
+
 const PORT = 4000;
 app.listen(PORT, (err) =>
   err

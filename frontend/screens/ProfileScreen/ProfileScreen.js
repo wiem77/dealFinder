@@ -19,6 +19,7 @@ import { baseUrl } from '../../config/config';
 import axios from 'axios';
 
 import { AuthContext } from '../../context/AuthProvider';
+import { combineImagePaths } from '../../util/CombinedPath';
 const { width, height } = Dimensions.get('window');
 
 const ProfileScreen = () => {
@@ -31,7 +32,19 @@ const ProfileScreen = () => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = authCtx.user;
-
+  // const ImagePaths = (imagePaths) => {
+  //   return imagePaths.map((imagePath) => {
+  //     const modifiedPath = imagePath.path.replace(
+  //       'http://localhost:4000',
+  //       `http://${serverIP}:4000`
+  //     );
+  //     return modifiedPath;
+  //   });
+  // };
+  // console.log(user.picturePath);
+  const imageUri = user.picturePath;
+  const combinedPaths = combineImagePaths([imageUri]);
+  console.log(combinedPaths);
   const {
     control,
     handleSubmit,
@@ -126,10 +139,7 @@ const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          style={styles.profileImage}
-          source={require('../../assets/image/avatar.png')}
-        />
+        <Image style={styles.profileImage} source={combinedPaths} />
       </View>
       <View style={styles.contentContainer}>
         {isEditingPassword ? (
